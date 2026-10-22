@@ -4,45 +4,41 @@ export interface FaqItem {
   answer: string;
 }
 
-/**
- * Seluruh ketentuan bisnis (harga, waktu, domain/hosting, pembayaran, revisi)
- * dipertahankan dari penawaran asli.
- */
 export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "paket",
-    question: "Apa saja yang saya dapatkan dari paket website?",
+    question: "Apa saja yang sudah didapat kalau pesan paket website di sini?",
     answer:
-      "Setiap paket mencakup website landing page atau portfolio yang mobile-friendly, copywriting, CTA WhatsApp, dan revisi sesuai paket. Paket Growth menambahkan setup 1 campaign Meta Ads dengan targeting lokal serta basic pixel & tracking. Paket Premium menambahkan form lead, setup 2 campaign dengan angle berbeda, dan optimasi awal. Semua paket sudah termasuk domain .com / .id dan hosting untuk tahun pertama.",
+      "Semua paket sudah termasuk pembuatan website khusus usaha service AC, penulisan teks halaman, tombol chat WhatsApp otomatis, revisi sesuai paket, serta domain (.com atau .id) dan hosting gratis untuk tahun pertama. Kalau ambil Paket Growth, Anda sekalian dibuatkan campaign iklan Facebook/Instagram (Meta Ads) lengkap dengan materi iklan dan pemasangan Meta Pixel.",
   },
   {
     id: "waktu",
-    question: "Berapa lama proses pengerjaan website?",
+    question: "Berapa hari pengerjaan sampai websitenya jadi?",
     answer:
-      "Estimasi umum pengerjaan adalah 3–5 hari kerja setelah konsultasi selesai dan seluruh data (foto, daftar layanan, area kerja, kontak) diterima lengkap. Paket Premium dapat membutuhkan 5–7 hari kerja karena cakupannya lebih luas.",
+      "Rata-rata 3 sampai 5 hari kerja terhitung sejak data dasar usaha Anda (nama usaha, daftar layanan, area kerja, foto jika ada, dan nomor WhatsApp) saya terima. Untuk Paket Premium yang halamannya lebih banyak biasanya sekitar 5 sampai 7 hari kerja.",
   },
   {
     id: "domain",
-    question: "Apakah domain dan hosting sudah termasuk?",
+    question: "Apakah sudah termasuk biaya domain dan hosting?",
     answer:
-      "Ya. Domain .com atau .id dan hosting sudah termasuk untuk tahun pertama di semua paket. Detail perpanjangan tahun berikutnya akan dibahas secara transparan saat konsultasi, jadi tidak ada biaya yang disembunyikan.",
+      "Sudah. Tahun pertama domain .com atau .id dan hosting sudah masuk ke harga paket, jadi Anda tinggal terima beres. Biaya perpanjangan tahun depannya juga saya infokan di awal saat ngobrol di WhatsApp supaya sama-sama enak dan transparan.",
   },
   {
     id: "pembayaran",
-    question: "Bagaimana sistem pembayarannya?",
+    question: "Bagaimana cara bayarnya? Aman tidak?",
     answer:
-      "Pembayaran dilakukan dalam dua tahap: 50% sebelum pengerjaan dimulai dan 50% setelah website siap dan Anda setujui. Metode pembayaran yang tersedia: transfer bank, QRIS, dan dompet digital. Seluruh pembayaran berlangsung di luar website ini melalui kanal yang disepakati saat konsultasi.",
+      "Pembayaran dibagi dua tahap. Awal pengerjaan cukup DP 50% dulu, lalu sisa 50% baru dilunasi setelah website selesai dikerjakan dan Anda cek sendiri hasilnya. Pembayaran bisa lewat transfer bank, QRIS, atau e-wallet sesuai kesepakatan di chat.",
   },
   {
     id: "revisi",
-    question: "Berapa kali saya bisa melakukan revisi?",
+    question: "Kalau ada bagian tulisan atau warna yang kurang srek, bisa minta ubah?",
     answer:
-      "Paket Basic dan Growth mencakup 1x revisi ringan, sedangkan Paket Premium 2x. Revisi meliputi perubahan teks, warna, urutan section, atau konten. Perubahan besar yang keluar dari cakupan awal akan dibahas dan disepakati terpisah terlebih dahulu.",
+      "Bisa. Paket Basic dan Growth mendapat 1x revisi ringan, sedangkan Paket Premium 2x revisi. Anda bebas minta sesuaikan teks layanan, tarif, foto, warna, atau urutan bagian halaman sebelum website dinaikkan penuh.",
   },
   {
     id: "konsultasi",
-    question: "Apakah saya bisa konsultasi dulu sebelum memesan?",
+    question: "Boleh tanya-tanya dulu di WhatsApp walaupun belum pasti pesan sekarang?",
     answer:
-      "Tentu. Konsultasi awal gratis dan tanpa komitmen melalui WhatsApp. Ceritakan kebutuhan bisnis Anda, dan kami bantu rekomendasikan paket yang paling sesuai. Jika Anda punya kebutuhan khusus di luar paket yang ada, semuanya bisa didiskusikan melalui penawaran custom di Paket Premium.",
+      "Santai saja, boleh banget. Chat dulu ceritakan kondisi usaha AC Anda sekarang dan daerah mana saja yang dilayani. Saya bantu kasih saran jujur paket mana yang paling masuk akal buat kebutuhan Anda saat ini, tanpa paksaan harus langsung jadi.",
   },
 ];

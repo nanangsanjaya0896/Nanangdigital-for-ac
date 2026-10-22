@@ -12,28 +12,28 @@ interface Feature {
 const FEATURES: Feature[] = [
   {
     icon: Smartphone,
-    feature: "Desain mobile-friendly",
-    benefit: "Mudah diakses calon pelanggan dari ponsel.",
+    feature: "Nyaman dibuka dari layar HP",
+    benefit: "Pelanggan yang lagi buru-buru cari tukang AC bisa baca info dan klik tombol tanpa perlu zoom layar.",
   },
   {
     icon: MessageCircle,
-    feature: "CTA WhatsApp jelas",
-    benefit: "Mempermudah calon pelanggan menghubungi bisnis Anda.",
+    feature: "Tombol WhatsApp otomatis isi pesan",
+    benefit: "Begitu diklik, chat langsung terisi jenis layanan sehingga Anda tidak perlu tanya dari awal lagi.",
   },
   {
     icon: PenTool,
-    feature: "Copywriting dasar",
-    benefit: "Membantu layanan lebih mudah dipahami tanpa istilah teknis.",
+    feature: "Teks layanan ditulisin sampai rapi",
+    benefit: "Layanan cuci rutin, isi freon, dan bongkar pasang tertulis jelas pakai bahasa sehari-hari pelanggan.",
   },
   {
     icon: BadgeCheck,
-    feature: "Landing page profesional",
-    benefit: "Membantu usaha Anda terlihat lebih terpercaya.",
+    feature: "Domain resmi .com atau .id sendiri",
+    benefit: "Nama usaha Anda tampil jauh lebih meyakinkan waktu dibagikan di grup warga atau Google Maps.",
   },
   {
     icon: Target,
-    feature: "Struktur promosi siap iklan",
-    benefit: "Mendukung kampanye lokal sesuai paket yang dipilih.",
+    feature: "Siap dipasang Meta Pixel & iklan",
+    benefit: "Kalau sewaktu-waktu mau jalankan iklan Facebook atau Instagram, halamannya sudah siap pakai.",
   },
 ];
 
@@ -41,20 +41,19 @@ export default function FeaturesSection() {
   return (
     <section
       id="fitur"
-      aria-label="Fitur dan manfaatnya untuk bisnis"
+      aria-label="Detail fasilitas website"
       className="relative border-y border-line bg-ink-soft py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="06"
-          eyebrow="Fitur & Manfaat"
+          eyebrow="Detail Website"
           title={
             <>
-              Fitur Teknis, Diterjemahkan Menjadi{" "}
-              <span className="text-accent">Manfaat Bisnis</span>.
+              Dibuat Praktis Supaya <span className="text-accent">Pelanggan Cepat Paham</span>.
             </>
           }
-          description="Anda tidak perlu memahami istilah website. Ini yang sebenarnya Anda dapatkan dari setiap fitur yang kami bangun:"
+          description="Anda cukup fokus ke urusan kerja lapangan. Urusan tampilan, kata-kata, sampai teknis domain biar saya yang siapkan."
         />
 
         <div className="mt-14">

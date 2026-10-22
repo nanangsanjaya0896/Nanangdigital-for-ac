@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Compass, ListChecks, Hand, MessageCircle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
@@ -14,43 +15,45 @@ interface Approach {
 const APPROACHES: Approach[] = [
   {
     icon: Compass,
-    title: "Memahami kebutuhan bisnis",
+    title: "Ngobrol santai soal usaha Anda dulu",
     description:
-      "Pengerjaan dimulai dari diskusi tentang layanan, area kerja, dan calon pelanggan Anda.",
+      "Kita mulai dari layanan apa saja yang paling sering dipesan, area mana yang ingin dikejar, dan kebiasaan pelanggan Anda.",
   },
   {
     icon: ListChecks,
-    title: "Menyusun informasi yang jelas",
+    title: "Merapikan susunan info layanan & harga",
     description:
-      "Konten ditata agar pengunjung langsung paham apa yang Anda tawarkan, tanpa istilah teknis.",
+      "Supaya orang awam sekali lihat langsung paham bedanya cuci rutin, tambah freon, atau bongkar pasang.",
   },
   {
     icon: Hand,
-    title: "Mendesain yang mudah digunakan",
+    title: "Bikin tampilan yang enteng di HP",
     description:
-      "Tampilan dibuat nyaman dibaca dan mudah ditekan, terutama dari layar ponsel.",
+      "Tidak kebanyakan animasi berat yang bikin loading lama. Fokusnya tulisan jelas dan tombol gampang dipencet.",
   },
   {
     icon: MessageCircle,
-    title: "Mengarahkan pengunjung ke WhatsApp",
+    title: "Mengantar orang langsung chat ke nomor Anda",
     description:
-      "Setiap halaman punya satu misi sederhana: menghasilkan chat dari calon pelanggan.",
+      "Begitu calon pelanggan cocok lihat info di halaman, sekali klik langsung nyambung ke WhatsApp usaha Anda.",
   },
 ];
 
-const SKILL_CHIPS = ["Web Development", "Landing Page", "Copywriting", "Meta Ads"];
+const SKILL_CHIPS = ["Website Usaha AC", "Landing Page", "Copywriting", "Meta Ads"];
 
 export default function FounderSection() {
+  const [photoFailed, setPhotoFailed] = useState(false);
+
   return (
     <section id="tentang" aria-label={`Tentang ${BUSINESS.brand}`} className="relative py-24 md:py-32">
       <div className="section-wrap">
         <SectionHeader
           index="03"
-          eyebrow="Tentang NanangDigital"
+          eyebrow="Siapa yang Mengerjakan"
           title={
             <>
-              Dibangun untuk Membantu Bisnis Lokal{" "}
-              <span className="text-accent">Tampil Meyakinkan</span> Secara Online.
+              Langsung Dikerjakan Sendiri oleh{" "}
+              <span className="text-accent">Nanang Sanjaya</span>.
             </>
           }
         />
@@ -64,10 +67,21 @@ export default function FounderSection() {
                 className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-accent/10 blur-3xl"
               />
               <div className="relative flex items-center gap-5">
-                <div className="bg-grid flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] to-[#0d1a15]">
-                  <span className="font-display text-3xl font-bold tracking-tight text-transparent [background:linear-gradient(135deg,#00df8f,#00b373)] [background-clip:text]">
-                    NS
-                  </span>
+                <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] to-[#0d1a15]">
+                  {!photoFailed ? (
+                    <img
+                      src={BUSINESS.founderPhoto.url}
+                      alt={BUSINESS.founderPhoto.alt}
+                      loading="lazy"
+                      decoding="async"
+                      onError={() => setPhotoFailed(true)}
+                      className="h-full w-full object-cover object-[50%_22%]"
+                    />
+                  ) : (
+                    <span className="font-display text-3xl font-bold tracking-tight text-transparent [background:linear-gradient(135deg,#00df8f,#00b373)] [background-clip:text]">
+                      NS
+                    </span>
+                  )}
                 </div>
                 <div>
                   <h3 className="font-display text-xl font-bold tracking-tight md:text-2xl">
@@ -80,13 +94,14 @@ export default function FounderSection() {
               </div>
 
               <p className="relative mt-6 text-sm leading-relaxed text-mist">
-                Menangani langsung setiap proyek dari konsultasi awal sampai website tayang — tidak
-                ada perantara, tidak ada penjelasan berbelit. Foto resmi menyusul setelah tersedia.
+                Dari obrolan pertama di WhatsApp, penulisan isi halaman, sampai website naik tayang
+                dan siap dipasang iklan, semuanya saya pegang sendiri. Jadi komunikasi cepat
+                nyambung tanpa dilempar ke admin lain.
               </p>
 
               <div className="relative mt-7 border-t border-line pt-6">
                 <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-mist">
-                  Fokus pengerjaan
+                  Yang Saya Kerjakan Sehari-hari
                 </p>
                 <ul className="mt-4 flex flex-wrap gap-2" aria-label="Fokus pengerjaan">
                   {SKILL_CHIPS.map((chip) => (
@@ -106,16 +121,17 @@ export default function FounderSection() {
           <div>
             <Reveal delay={0.1}>
               <p className="text-base leading-relaxed text-mist md:text-lg">
-                {BUSINESS.brand} adalah layanan pembuatan website yang berfokus pada satu niche:{" "}
+                Kenapa {BUSINESS.brand} cuma fokus di{" "}
                 <strong className="font-semibold text-white">
-                  bisnis service AC dan cuci AC rumahan
+                  usaha service AC dan cuci AC panggilan
                 </strong>
-                . Fokus ini dipilih dengan sengaja — agar struktur halaman, bahasa, dan alur
-                konsultasinya benar-benar sesuai dengan cara pelanggan AC mencari jasa.
+                ? Karena kebutuhan tukang dan bengkel AC itu beda jauh dengan toko baju atau kafe.
+                Pelanggan AC sering butuh cepat saat unit di kamar tiba-tiba panas atau bocor air,
+                jadi halamannya harus ringkas dan meyakinkan.
               </p>
               <p className="mt-5 text-base leading-relaxed text-mist md:text-lg">
-                Tidak ada birokrasi berlapis. Anda berbicara langsung dengan orang yang mengerjakan
-                website Anda, dari diskusi kebutuhan sampai website siap dipakai berpromosi.
+                Anda juga tidak perlu pusing mikirin istilah koding, hosting, atau pixel iklan.
+                Cukup kirim data usaha lewat chat, sisanya saya bereskan sampai siap pakai.
               </p>
             </Reveal>
 
@@ -143,9 +159,15 @@ export default function FounderSection() {
             </ol>
 
             <Reveal delay={0.5}>
-              <a href={WA_LINK_GENERAL} target="_blank" rel="noopener noreferrer" className="btn-primary mt-9">
+              <a
+                href={WA_LINK_GENERAL}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track-source="founder_cta"
+                className="btn-primary mt-9"
+              >
                 <WhatsAppIcon className="h-4 w-4" />
-                Konsultasi Gratis
+                Ngobrol Langsung di WhatsApp
               </a>
             </Reveal>
           </div>

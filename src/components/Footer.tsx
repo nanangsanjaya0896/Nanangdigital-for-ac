@@ -6,14 +6,14 @@ import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 const FOOT_NAV_LEFT = [
   { id: "beranda", label: "Beranda" },
   { id: "tentang", label: "Tentang" },
-  { id: "karya", label: "Karya" },
+  { id: "karya", label: "Contoh Desain" },
   { id: "layanan", label: "Layanan" },
 ] as const;
 
 const FOOT_NAV_RIGHT = [
-  { id: "paket", label: "Paket Harga" },
-  { id: "proses", label: "Proses" },
-  { id: "faq", label: "FAQ" },
+  { id: "paket", label: "Pilihan Paket" },
+  { id: "proses", label: "Alur Kerja" },
+  { id: "faq", label: "Tanya Jawab" },
   { id: "kontak", label: "Kontak" },
 ] as const;
 
@@ -31,27 +31,29 @@ export default function Footer() {
         <div className="grid gap-12 md:grid-cols-2 md:gap-8">
           {/* Kolom kiri */}
           <div>
-            <a href="#beranda" aria-label="NanangDigital — kembali ke atas">
+            <a href="#beranda" aria-label="NanangDigital, kembali ke atas">
               <Logo className="text-2xl md:text-3xl" />
             </a>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-mist md:text-base">
-              Jasa pembuatan website dan dukungan promosi digital untuk {BUSINESS.niche}.
-              Fokus pada satu hal: membuat bisnis Anda mudah dihubungi calon pelanggan.
+              Jasa pembuatan website dan setting iklan Meta Ads khusus {BUSINESS.niche}. Dikerjakan
+              langsung sampai siap dipakai menerima panggilan pelanggan.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-4">
               <a
                 href={WA_LINK_GENERAL}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-track-source="footer_cta"
                 className="btn-primary text-sm"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                Konsultasi Gratis
+                Chat di WhatsApp
               </a>
               <a
                 href={BUSINESS.whatsapp.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-track-source="footer_phone"
                 className="font-mono text-sm tracking-wide text-mist transition-colors hover:text-accent"
                 aria-label={`Nomor WhatsApp ${BUSINESS.whatsapp.display}`}
               >
@@ -64,7 +66,7 @@ export default function Footer() {
           <nav aria-label="Navigasi footer" className="grid grid-cols-2 gap-8 md:justify-items-end">
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-                Navigasi
+                Halaman
               </h3>
               <ul className="mt-5 space-y-3">
                 {FOOT_NAV_LEFT.map((link) => (
@@ -81,7 +83,7 @@ export default function Footer() {
             </div>
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-                Penawaran
+                Info Paket
               </h3>
               <ul className="mt-5 space-y-3">
                 {FOOT_NAV_RIGHT.map((link) => (
@@ -105,7 +107,7 @@ export default function Footer() {
             © 2026 {BUSINESS.brand}. Seluruh hak cipta dilindungi.
           </p>
           <p className="text-xs text-mist">
-            {BUSINESS.founder} · {BUSINESS.role}
+            {BUSINESS.founder}, {BUSINESS.role}
           </p>
           <a
             href="#beranda"

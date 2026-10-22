@@ -6,12 +6,12 @@ import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 const MARQUEE_ITEMS = [
-  "Landing Page Service AC",
-  "Setup Meta Ads",
-  "Copywriting Iklan",
-  "Mobile-Friendly",
-  "CTA WhatsApp Jelas",
-  "Bundling Website + Iklan",
+  "Website Usaha Service AC",
+  "Setup Meta Ads Lokal",
+  "Teks Layanan Jelas",
+  "Nyaman Dibuka dari HP",
+  "Tombol Chat WhatsApp",
+  "Gratis Domain & Hosting 1 Tahun",
 ];
 
 export default function Hero() {
@@ -49,21 +49,20 @@ export default function Hero() {
       </span>
 
       <div className="section-wrap relative grid min-h-screen items-center gap-14 pb-28 pt-36 lg:grid-cols-[1.12fr_0.88fr] lg:gap-10 lg:pb-24 lg:pt-28">
-        {/* Kolom kiri — entrance memakai CSS murni agar headline selalu tampil */}
+        {/* Kolom kiri */}
         <div className="max-w-2xl">
-          <p className="hero-in hero-d1 inline-flex items-center gap-3 rounded-full border border-accent/30 bg-accent/[0.07] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent sm:text-xs">
+          <p className="hero-in hero-d1 inline-flex items-center gap-3 rounded-full border border-accent/30 bg-accent/[0.07] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-accent sm:text-xs">
             <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>
-            Website Khusus Bisnis Service AC
+            Khusus Teknisi & Usaha Service AC
           </p>
 
-          <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.65rem] xl:text-[4.1rem]">
-            Website Profesional untuk Bisnis <span className="text-accent">Service AC</span> yang
-            Ingin Lebih Mudah{" "}
+          <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
+            Biar Usaha <span className="text-accent">Service AC</span> Anda Gampang Ditemukan &{" "}
             <span className="relative inline-block">
-              Mendapatkan <span className="text-outline">Pelanggan</span>.
+              Dihubungi <span className="text-outline">Pelanggan</span>.
               <span
                 aria-hidden="true"
                 className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
@@ -72,9 +71,9 @@ export default function Hero() {
           </h1>
 
           <p className="hero-in hero-d3 mt-7 max-w-xl text-base leading-relaxed text-mist md:text-lg">
-            {BUSINESS.brand} membantu teknisi dan pemilik usaha service AC tampil lebih kredibel
-            lewat website profesional, CTA WhatsApp yang jelas, dan dukungan promosi iklan — tanpa
-            proses yang rumit.
+            Saya bantu buatkan website yang rapi plus setting iklan Facebook & Instagram untuk usaha
+            service AC Anda. Selesai dalam 3 sampai 5 hari kerja, sudah beres sama domain dan
+            hosting tahun pertama.
           </p>
 
           <div className="hero-in hero-d4 mt-10 flex flex-wrap items-center gap-4">
@@ -82,13 +81,14 @@ export default function Hero() {
               href={WA_LINK_GENERAL}
               target="_blank"
               rel="noopener noreferrer"
+              data-track-source="hero_primary_cta"
               className="btn-primary"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              Konsultasi Gratis via WhatsApp
+              Chat & Konsultasi Gratis
             </a>
             <a href="#paket" className="btn-ghost">
-              Lihat Paket Harga
+              Cek Paket Mulai Rp1,5 Jt
               <ArrowDown className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
@@ -98,19 +98,19 @@ export default function Hero() {
               href="#karya"
               className="group inline-flex items-center gap-2 text-sm font-medium text-mist transition-colors hover:text-accent"
             >
-              Lihat karya & contoh tampilan
+              Intip contoh tampilan website AC
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 aria-hidden="true"
               />
             </a>
             <p className="mt-4 text-xs tracking-wide text-mist/80">
-              Gratis · Tanpa komitmen · Bahasa sederhana
+              Boleh tanya-tanya dulu santai di WA. Pelunasan 50% baru dibayar setelah website jadi.
             </p>
           </div>
         </div>
 
-        {/* Kolom kanan: kartu ID founder (interaktif: drag + float) */}
+        {/* Kolom kanan: kartu ID founder */}
         <motion.div
           ref={dragAreaRef}
           initial={reduced ? { opacity: 0 } : { opacity: 0, y: 48, rotate: 2 }}
@@ -133,7 +133,7 @@ export default function Hero() {
             animate={reduced ? undefined : { y: [0, -15, 0], rotateZ: [-1, 1, -1] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           >
-            {/* Pembungkus drag terpisah agar transform tidak konflik */}
+            {/* Pembungkus drag terpisah */}
             <motion.div
               drag={canDrag}
               dragConstraints={{ top: -50, bottom: 50, left: -50, right: 50 }}
@@ -159,7 +159,6 @@ export default function Hero() {
                   <span className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-mist">
                     NanangDigital ID
                   </span>
-                  {/* Barcode dekoratif */}
                   <span aria-hidden="true" className="flex h-5 items-end gap-[3px]">
                     {[3, 1, 2, 1, 3, 2, 1, 2, 3, 1, 2].map((w, i) => (
                       <span
@@ -171,8 +170,8 @@ export default function Hero() {
                   </span>
                 </div>
 
-                {/* Foto founder resmi — fallback monogram bila gagal dimuat */}
-                <div className="relative mt-6 aspect-[4/3.2] overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] via-[#131c26] to-[#0d1a15]">
+                {/* Foto founder resmi */}
+                <div className="relative mt-6 aspect-[4/3.5] overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] via-[#131c26] to-[#0d1a15]">
                   {!photoFailed ? (
                     <>
                       <img
@@ -181,7 +180,7 @@ export default function Hero() {
                         fetchPriority="high"
                         decoding="async"
                         onError={() => setPhotoFailed(true)}
-                        className="absolute inset-0 h-full w-full object-cover"
+                        className="absolute inset-0 h-full w-full object-cover object-[50%_22%]"
                       />
                       <span
                         aria-hidden="true"
@@ -212,13 +211,13 @@ export default function Hero() {
 
                 <dl className="relative mt-6 space-y-3 border-t border-line pt-5 text-sm">
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-mist">Fokus</dt>
-                    <dd className="text-right font-medium">Website Service AC</dd>
+                    <dt className="text-mist">Spesialis</dt>
+                    <dd className="text-right font-medium">Website Usaha AC</dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-mist">Kontak</dt>
+                    <dt className="text-mist">WhatsApp</dt>
                     <dd className="text-right font-mono text-[0.8rem]">
-                      wa.me/{BUSINESS.whatsapp.intl}
+                      {BUSINESS.whatsapp.display}
                     </dd>
                   </div>
                 </dl>
@@ -227,10 +226,11 @@ export default function Hero() {
                   href={WA_LINK_GENERAL}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-track-source="hero_id_card_cta"
                   className="relative mt-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-deep py-3.5 text-sm font-bold text-[#04140c] transition-transform duration-300 hover:scale-[1.03] active:scale-95"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
-                  KONSULTASI GRATIS
+                  NGOBROL DI WHATSAPP
                 </a>
               </div>
             </motion.div>

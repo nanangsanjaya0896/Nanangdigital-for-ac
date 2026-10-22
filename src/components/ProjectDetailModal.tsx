@@ -14,8 +14,7 @@ interface ProjectDetailModalProps {
 }
 
 /**
- * Modal detail karya — tidak berpindah halaman.
- * role dialog, aria-modal, Escape, focus trap, klik backdrop menutup.
+ * Modal detail karya tanpa berpindah halaman.
  */
 export default function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -142,8 +141,7 @@ export default function ProjectDetailModal({ project, onClose }: ProjectDetailMo
                 Diskusikan tampilan seperti ini
               </a>
               <p className="text-xs leading-relaxed text-mist">
-                Karya ini adalah {PROJECT_TYPE_LABEL[project.type].toLowerCase()} untuk menunjukkan
-                contoh tampilan — bukan klaim hasil proyek klien.
+                Gambar ini merupakan {PROJECT_TYPE_LABEL[project.type].toLowerCase()} referensi desain yang siap disesuaikan penuh dengan identitas usaha AC Anda.
               </p>
             </div>
           </div>

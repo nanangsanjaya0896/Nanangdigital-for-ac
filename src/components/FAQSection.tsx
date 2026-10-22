@@ -7,10 +7,6 @@ import WhatsAppIcon from "./WhatsAppIcon";
 import { FAQ_ITEMS } from "../data/faq";
 import { waUrl } from "../data/business";
 
-/**
- * FAQ interaktif: beberapa jawaban boleh terbuka bersamaan,
- * penuh dukungan keyboard dan aria-expanded (FR-06).
- */
 export default function FAQSection() {
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(
     () => new Set(FAQ_ITEMS[0] ? [FAQ_ITEMS[0].id] : [])
@@ -31,34 +27,35 @@ export default function FAQSection() {
         <div>
           <SectionHeader
             index="11"
-            eyebrow="FAQ"
+            eyebrow="Tanya Jawab"
             title={
               <>
-                Pertanyaan yang Sering <span className="text-accent">Ditanyakan</span>.
+                Hal yang Paling Sering <span className="text-accent">Ditanyakan</span>.
               </>
             }
-            description="Semua ketentuan penting — pengerjaan, domain, hosting, pembayaran, dan revisi — dijawab langsung di sini."
+            description="Soal waktu pengerjaan, biaya domain tahun depan, cara bayar, sampai revisi sudah saya rangkum jujur di sini."
           />
 
           <Reveal delay={0.2}>
             <div className="mt-10 rounded-3xl border border-line bg-surface p-7">
               <h3 className="font-display text-lg font-semibold tracking-tight">
-                Masih ada pertanyaan lain?
+                Ada hal lain yang mau ditanyakan dulu?
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-mist">
-                Tanyakan langsung — konsultasi gratis dan tanpa komitmen. Tidak ada pertanyaan yang
-                terlalu sederhana.
+                Langsung chat saja di WhatsApp. Mau baru sekadar tanya-tanya atau cek kecocokan
+                paket dulu tetap saya balas santai.
               </p>
               <a
                 href={waUrl(
-                  "Halo NanangDigital, saya sudah membaca FAQ di website dan masih ada pertanyaan tentang pembuatan website service AC."
+                  "Halo Mas Nanang, saya baru baca tanya-jawab di website dan mau tanya sedikit soal pembuatan website AC."
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-track-source="faq_cta"
                 className="btn-primary mt-6 w-full text-sm"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                Tanya via WhatsApp
+                Tanya Langsung di WA
               </a>
             </div>
           </Reveal>
