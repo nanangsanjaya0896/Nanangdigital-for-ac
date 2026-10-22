@@ -57,8 +57,8 @@ export default function ProjectStack({
                 onClick={() => (isFront ? onNext() : onSelect(index))}
                 aria-label={
                   isFront && count > 1
-                    ? `${project.title} — klik untuk melihat karya berikutnya`
-                    : `Pilih karya ${project.title}`
+                    ? `${project.title}, klik untuk melihat contoh berikutnya`
+                    : `Pilih contoh ${project.title}`
                 }
                 className="absolute inset-x-0 top-0 mx-auto w-full max-w-[33rem] cursor-pointer overflow-hidden rounded-3xl border border-line bg-surface text-left shadow-[0_40px_90px_-30px_rgba(0,0,0,0.85)]"
                 style={{ transformOrigin: "center bottom", transformStyle: "preserve-3d" }}
@@ -97,7 +97,7 @@ export default function ProjectStack({
                       className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[0.65rem] font-semibold text-white/90 backdrop-blur"
                     >
                       <MousePointerClick className="h-3 w-3" />
-                      Klik: berikutnya
+                      Geser contoh
                     </span>
                   )}
                 </div>

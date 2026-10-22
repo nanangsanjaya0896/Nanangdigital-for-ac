@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, ShieldCheck, Gift, ArrowRight } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
@@ -20,17 +20,48 @@ export default function PricingSection() {
       <div className="section-wrap relative">
         <SectionHeader
           index="07"
-          eyebrow="Paket & Harga"
+          eyebrow="Pilihan Paket"
           align="center"
           title={
             <>
-              Harga Transparan, <span className="text-accent">Tanpa Biaya Tersembunyi</span>.
+              Biaya Jelas di Awal, <span className="text-accent">Tinggal Terima Beres</span>.
             </>
           }
-          description="Pilih sesuai tahap bisnis Anda. Semua paket dikerjakan langsung oleh Nanang Sanjaya dengan proses yang jelas."
+          description="Pilih paket sesuai kebutuhan usaha AC Anda saat ini. Semuanya sudah termasuk domain serta hosting tahun pertama."
         />
 
-        <div className="mt-16 grid items-stretch gap-6 lg:grid-cols-3">
+        {/* Banner Jaminan Pembayaran Aman */}
+        <Reveal delay={0.08}>
+          <div className="mx-auto mt-10 flex max-w-3xl flex-col items-center justify-between gap-4 rounded-2xl border border-accent/40 bg-gradient-to-r from-accent/[0.11] via-surface to-surface px-6 py-4 text-center sm:flex-row sm:text-left">
+            <div className="flex items-center gap-3.5">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent/40 bg-accent/15 text-accent">
+                <ShieldCheck className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+              </span>
+              <div>
+                <p className="font-display text-sm font-bold tracking-tight text-white md:text-base">
+                  Aman, Pelunasan Setelah Website Jadi
+                </p>
+                <p className="mt-0.5 text-xs leading-relaxed text-mist md:text-sm">
+                  Cukup DP <strong className="text-white">50%</strong> saat mulai pengerjaan, sisa{" "}
+                  <strong className="text-accent">50% baru dibayar setelah website selesai dan Anda cocok</strong>.
+                </p>
+              </div>
+            </div>
+            <a
+              href="#bonus"
+              className="group inline-flex shrink-0 items-center gap-1.5 rounded-full border border-accent/35 bg-accent/10 px-4 py-2 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-[#04140c]"
+            >
+              <Gift className="h-3.5 w-3.5" aria-hidden="true" />
+              Dapat 3 Bonus Gratis
+              <ArrowRight
+                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </Reveal>
+
+        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
           {PLANS.map((plan, i) => (
             <Reveal key={plan.id} delay={i * 0.1} className="h-full">
               <article
@@ -42,7 +73,7 @@ export default function PricingSection() {
               >
                 {plan.popular && (
                   <span className="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-accent to-accent-deep px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-[#04140c] shadow-[0_8px_30px_-6px_rgba(0,223,143,0.6)]">
-                    Paling Populer
+                    Paling Banyak Dipilih
                   </span>
                 )}
 
@@ -53,7 +84,7 @@ export default function PricingSection() {
 
                 <div className="mt-6 border-t border-line pt-6">
                   <p className="text-[0.68rem] font-semibold uppercase tracking-[0.25em] text-mist">
-                    Harga
+                    Biaya Pembuatan
                   </p>
                   <p
                     className={`mt-2 font-display font-bold tracking-tight ${
@@ -64,14 +95,24 @@ export default function PricingSection() {
                   >
                     {plan.price}
                   </p>
-                  {plan.price === "Custom" && (
+                  {plan.price === "Custom" ? (
                     <p className="mt-2 text-xs leading-relaxed text-mist">
-                      Menyesuaikan kebutuhan, ditentukan lewat konsultasi.
+                      Menyesuaikan jumlah halaman dan kampanye iklan yang dibutuhkan.
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs leading-relaxed text-mist">
+                      Sudah termasuk domain .com/.id dan hosting tahun pertama.
                     </p>
                   )}
                 </div>
 
-                <ul className="mt-7 flex-1 space-y-3.5">
+                {plan.leadIn && (
+                  <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-accent">
+                    {plan.leadIn}
+                  </p>
+                )}
+
+                <ul className={`${plan.leadIn ? "mt-3.5" : "mt-7"} flex-1 space-y-3.5`}>
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-3 text-sm leading-relaxed text-white/90">
                       <span
@@ -90,8 +131,9 @@ export default function PricingSection() {
                   href={waUrl(plan.waMessage)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-track-source={`pricing_${plan.id}`}
                   className={`mt-9 w-full text-sm ${plan.popular ? "btn-primary" : "btn-ghost"}`}
-                  aria-label={`${plan.cta} — ${plan.name} ${plan.price}`}
+                  aria-label={`${plan.cta}, ${plan.name} ${plan.price}`}
                 >
                   <WhatsAppIcon className="h-4 w-4" />
                   {plan.cta}

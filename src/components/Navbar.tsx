@@ -13,13 +13,13 @@ const NAV_LINKS = [
   { id: "tentang", label: "Tentang" },
   { id: "karya", label: "Karya" },
   { id: "layanan", label: "Layanan" },
+  { id: "paket", label: "Paket Harga" },
   { id: "faq", label: "FAQ" },
 ] as const;
 
 const NAV_ID_LIST = NAV_LINKS.map((link) => link.id);
 
 const MOBILE_EXTRA_LINKS = [
-  { id: "paket", label: "Paket Harga" },
   { id: "proses", label: "Proses" },
   { id: "kontak", label: "Kontak" },
 ] as const;
@@ -63,7 +63,7 @@ export default function Navbar() {
         }`}
       >
         <div className="section-wrap flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
-          <a href="#beranda" aria-label="NanangDigital — kembali ke beranda" className="shrink-0">
+          <a href="#beranda" aria-label="NanangDigital, kembali ke beranda" className="shrink-0">
             <Logo className="text-xl md:text-2xl" />
           </a>
 
@@ -101,6 +101,7 @@ export default function Navbar() {
               href={WA_LINK_GENERAL}
               target="_blank"
               rel="noopener noreferrer"
+              data-track-source="navbar_desktop_cta"
               className="btn-primary hidden !px-6 !py-3 text-sm lg:inline-flex"
             >
               <WhatsAppIcon className="h-4 w-4" />
@@ -208,7 +209,7 @@ export default function Navbar() {
                   Konsultasi Gratis via WhatsApp
                 </a>
                 <p className="mt-4 text-center text-xs text-mist">
-                  Gratis, tanpa komitmen · Bahasa sederhana
+                  Tanya dulu santai di WA, gratis tanpa ikatan
                 </p>
               </motion.div>
             </nav>

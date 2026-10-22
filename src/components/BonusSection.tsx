@@ -8,34 +8,36 @@ interface Bonus {
   icon: LucideIcon;
   title: string;
   description: string;
-  badge?: string;
+  badge: string;
 }
 
 const BONUSES: Bonus[] = [
   {
     icon: MessagesSquare,
-    title: "Konsultasi Strategi Iklan Gratis",
+    title: "Sesi Diskusi Strategi Iklan Lokal",
     description:
-      "Sesi diskusi strategi iklan untuk bisnis AC Anda: angle komunikasi, area targeting, dan langkah awal yang masuk akal.",
+      "Kita bahas cara pasang iklan yang hemat budget khusus area sekitar bengkel Anda, mulai dari penentuan radius lokasi sampai kalimat pembukanya.",
     badge: "Senilai Rp300.000",
   },
   {
     icon: LayoutTemplate,
-    title: "5 Template Caption Media Sosial",
+    title: "5 Contekan Caption Siap Posting",
     description:
-      "Caption siap pakai untuk mempromosikan layanan cuci dan service AC Anda di media sosial — tinggal sesuaikan nama bisnis.",
+      "Teks promosi cuci dan perbaikan AC yang tinggal ganti nama usaha lalu pasang di Status WhatsApp, Instagram, atau grup Facebook warga.",
+    badge: "Bonus Gratis #2",
   },
   {
     icon: MapPin,
-    title: "Panduan Optimasi Google Maps / Google Bisnis",
+    title: "Panduan Merapikan Google Maps Bisnis",
     description:
-      "Langkah praktis agar usaha Anda lebih mudah ditemukan calon pelanggan di pencarian lokal sekitar area kerja.",
+      "Langkah demi langkah supaya titik lokasi usaha AC Anda gampang nongol waktu orang sekitar mengetik 'tukang service AC terdekat' di HP.",
+    badge: "Bonus Gratis #3",
   },
 ];
 
 export default function BonusSection() {
   return (
-    <section id="bonus" aria-label="Bonus penawaran" className="relative overflow-hidden py-24 md:py-32">
+    <section id="bonus" aria-label="Bonus tambahan" className="relative overflow-hidden py-24 md:py-32">
       <div
         aria-hidden="true"
         className="glow-orb absolute -left-52 top-1/2 h-[32rem] w-[32rem] -translate-y-1/2 rounded-full opacity-50"
@@ -43,13 +45,13 @@ export default function BonusSection() {
       <div className="section-wrap relative">
         <SectionHeader
           index="09"
-          eyebrow="Bonus"
+          eyebrow="Bonus Tambahan"
           title={
             <>
-              Bonus untuk <span className="text-accent">Memperlancar Promosi</span> Anda.
+              Dapat Sekalian <span className="text-accent">3 Bekal Promosi</span> Ini.
             </>
           }
-          description="Tiga pendamping praktis agar website baru Anda tidak berhenti sebagai halaman — tapi benar-benar mulai bekerja."
+          description="Begitu website selesai, Anda juga saya bekali tiga materi praktis ini supaya usaha makin cepat dikenal warga sekitar."
         />
 
         <div className="mt-14 grid gap-5 md:grid-cols-3">
@@ -62,12 +64,16 @@ export default function BonusSection() {
                     : "border-line bg-surface hover:border-accent/35"
                 }`}
               >
-                {bonus.badge && (
-                  <span className="absolute -top-3.5 left-7 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-accent to-accent-deep px-3.5 py-1 text-[0.68rem] font-bold tracking-wide text-[#04140c]">
-                    <Gift className="h-3 w-3" aria-hidden="true" />
-                    {bonus.badge}
-                  </span>
-                )}
+                <span
+                  className={`absolute -top-3.5 left-7 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-[0.68rem] font-bold tracking-wide ${
+                    i === 0
+                      ? "bg-gradient-to-r from-accent to-accent-deep text-[#04140c]"
+                      : "border border-accent/40 bg-ink text-accent"
+                  }`}
+                >
+                  <Gift className="h-3 w-3" aria-hidden="true" />
+                  {bonus.badge}
+                </span>
 
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-white/[0.03] text-accent">
                   <bonus.icon className="h-5 w-5" strokeWidth={1.85} aria-hidden="true" />
@@ -83,16 +89,17 @@ export default function BonusSection() {
 
         <Reveal delay={0.3}>
           <p className="mt-10 text-center text-sm text-mist">
-            Penasaran dengan bonusnya?{" "}
+            Mau tanya detail bonus ini untuk paket yang Anda incar?{" "}
             <a
               href={waUrl(
-                "Halo NanangDigital, saya ingin tanya tentang bonus (konsultasi strategi iklan, template caption, dan panduan Google Bisnis) untuk paket website service AC."
+                "Halo Mas Nanang, saya mau tanya soal bonus tambahan kalau bikin website service AC di NanangDigital."
               )}
               target="_blank"
               rel="noopener noreferrer"
+              data-track-source="bonus_cta"
               className="font-semibold text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-white"
             >
-              Tanyakan langsung saat konsultasi
+              Chat langsung di WhatsApp
             </a>
             .
           </p>

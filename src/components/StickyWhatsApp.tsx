@@ -24,6 +24,7 @@ export default function StickyWhatsApp() {
           href={WA_LINK_GENERAL}
           target="_blank"
           rel="noopener noreferrer"
+          data-track-source="sticky_whatsapp_cta"
           aria-label="Konsultasi gratis via WhatsApp"
           className="group fixed bottom-5 right-5 z-40 flex items-center gap-3 rounded-full bg-gradient-to-br from-accent to-accent-deep p-4 text-[#04140c] shadow-[0_10px_36px_-6px_rgba(0,223,143,0.55)] sm:bottom-6 sm:right-6 sm:pr-5 sm:pl-4"
           style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}

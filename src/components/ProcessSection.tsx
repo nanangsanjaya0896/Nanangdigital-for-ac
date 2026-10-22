@@ -20,66 +20,66 @@ interface Step {
 const STEPS: Step[] = [
   {
     icon: MessagesSquare,
-    title: "Konsultasi Gratis",
+    title: "Ngobrol di WhatsApp",
     description:
-      "Ceritakan kebutuhan bisnis Anda via WhatsApp. Gratis dan tanpa komitmen apa pun.",
+      "Ceritakan nama usaha, jenis jasa AC yang dilayani, dan daerah mana saja jangkauan teknisi Anda.",
   },
   {
     icon: Wrench,
-    title: "Pengerjaan Website",
+    title: "Pengerjaan 3 sampai 5 Hari",
     description:
-      "Website dikerjakan sekitar 3–5 hari kerja setelah seluruh data diterima lengkap.",
+      "Setelah data masuk dan DP 50%, website langsung saya kerjakan sampai rapi luar dalam.",
   },
   {
     icon: ClipboardCheck,
-    title: "Review & Revisi",
+    title: "Cek Hasil & Revisi",
     description:
-      "Anda meninjau hasilnya dan memberi masukan untuk revisi sesuai cakupan paket.",
+      "Link website saya kirim untuk Anda coba buka dari HP sendiri. Kurang srek tinggal bilang.",
   },
   {
     icon: Rocket,
-    title: "Live & Siap Iklan",
+    title: "Pelunasan & Langsung Aktif",
     description:
-      "Website tayang dan siap dipakai untuk promosi organik maupun iklan berbayar.",
+      "Begitu cocok, lunasi sisa 50% dan website resmi siap dipakai cari pelanggan maupun pasang iklan.",
   },
 ];
 
 const METHODOLOGY = [
   {
     id: "briefing",
-    title: "Briefing",
+    title: "Tanya Jawab Singkat di Chat",
     description:
-      "Diskusi singkat untuk menangkap kebutuhan, layanan prioritas, dan area kerja bisnis Anda.",
+      "Anda cukup kirim daftar layanan (misal cuci AC, isi freon, bongkar pasang), kisaran harga, area kecamatan, dan foto kerja kalau sudah ada.",
   },
   {
     id: "analisis",
-    title: "Analisis Kebutuhan",
+    title: "Menentukan Paket yang Pas",
     description:
-      "Menentukan paket yang paling sesuai serta apa saja yang perlu disiapkan sebelum pengerjaan.",
+      "Kita lihat bareng apakah saat ini cukup website dulu (Basic) atau sekalian nyalakan iklan lokal (Growth).",
   },
   {
     id: "struktur",
-    title: "Struktur & Konten",
+    title: "Menyusun Isi & Kalimat Halaman",
     description:
-      "Menyusun urutan halaman dan menulis konten dengan bahasa yang mudah dipahami calon pelanggan.",
+      "Semua info dirangkai pakai bahasa obrolan yang gampang ditangkap pemilik rumah, kos, maupun kantor.",
   },
   {
     id: "desain",
-    title: "Desain & Pengembangan",
+    title: "Pembuatan Tampilan & Tombol WA",
     description:
-      "Mengubah struktur menjadi tampilan website profesional yang selesai dibangun dan berfungsi penuh.",
+      "Halaman dirakit lengkap dengan tombol chat WhatsApp yang otomatis mengisi format pesan sesuai layanan.",
   },
   {
     id: "uji",
-    title: "Uji Responsif",
+    title: "Tes Buka di Berbagai Layar HP",
     description:
-      "Memastikan website nyaman dibuka di ponsel, tablet, dan komputer sebelum diserahkan ke Anda.",
+      "Saya cek ukuran tulisan, kecepatan buka halaman, dan fungsi semua tombol baik di HP maupun laptop.",
   },
   {
     id: "tayang",
-    title: "Finalisasi & Tayang",
+    title: "Serah Terima & Panduan Pakai",
     description:
-      "Revisi dibereskan, website di-online-kan, dan Anda menerima panduan penggunaan dasarnya.",
+      "Website dihubungkan ke domain resmi pilihan Anda, siap dibagikan ke pelanggan dan disambungkan ke iklan.",
   },
 ];
 
@@ -89,19 +89,19 @@ export default function ProcessSection() {
   return (
     <section
       id="proses"
-      aria-label="Proses kerja"
+      aria-label="Alur pengerjaan"
       className="relative border-y border-line bg-ink-soft py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="08"
-          eyebrow="Proses Kerja"
+          eyebrow="Alur Pengerjaan"
           title={
             <>
-              Empat Langkah Menuju <span className="text-accent">Online</span>.
+              Empat Tahap Praktis Sampai <span className="text-accent">Website Jadi</span>.
             </>
           }
-          description="Proses dibuat sederhana dan jelas dari awal — Anda selalu tahu sedang berada di tahap mana."
+          description="Alurnya dibuat sesederhana mungkin supaya tidak menyita waktu kerja Anda di lapangan."
         />
 
         {/* Timeline 4 langkah */}
@@ -137,20 +137,20 @@ export default function ProcessSection() {
           </ol>
         </div>
 
-        {/* Accordion metodologi (single-open) */}
+        {/* Accordion metodologi */}
         <div className="mt-20 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <Reveal>
             <h3 className="font-display text-2xl font-bold tracking-tight md:text-3xl">
-              Di Balik Empat Langkah Itu
+              Rincian yang Saya Kerjakan di Balik Layar
               <span className="text-accent">.</span>
             </h3>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-mist md:text-base">
-              Agar hasilnya rapi, setiap tahap besar dikerjakan lewat metodologi kecil yang runtut —
-              dari briefing sampai website tayang. Klik untuk melihat rinciannya.
+              Penasaran apa saja yang dibereskan selama proses pembuatan? Klik salah satu tahap di
+              samping untuk melihat detailnya.
             </p>
           </Reveal>
 
-          <div className="space-y-3" role="group" aria-label="Rincian metodologi pengerjaan">
+          <div className="space-y-3" role="group" aria-label="Rincian proses pengerjaan">
             {METHODOLOGY.map((item, i) => {
               const isOpen = openId === item.id;
               return (

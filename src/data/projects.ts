@@ -1,9 +1,6 @@
 /**
- * Data showcase karya.
- *
- * Aturan kejujuran (sesuai PRD):
- * - Semua item saat ini berjenis "demo" atau "concept" dan SELALU diberi label jelas.
- * - Jangan menambahkan klaim klien, angka hasil, atau testimoni tanpa izin resmi.
+ * Data showcase karya contoh tampilan.
+ * Semua item saat ini berjenis "demo" atau "concept" dan diberi label jujur apa adanya.
  */
 export type ProjectType = "client" | "demo" | "concept";
 
@@ -35,17 +32,17 @@ export const PROJECTS: Project[] = [
     category: "Website Service AC",
     title: "Bintang Jaya Teknik",
     description:
-      "Contoh homepage gelap untuk jasa service AC panggilan: hero tegas, daftar layanan rapi, dan CTA WhatsApp yang langsung terlihat.",
-    tags: ["Mobile-Friendly", "CTA WhatsApp", "Copywriting"],
+      "Contoh tampilan bertema gelap untuk jasa panggilan perbaikan dan cuci AC dengan daftar layanan rapi serta tombol WhatsApp yang langsung kelihatan.",
+    tags: ["Nyaman di HP", "Tombol WhatsApp", "Profil Teknisi"],
     image: "/images/karya-bintang-jaya.jpg",
     alt: "Mockup website Bintang Jaya Teknik bernuansa navy dengan hero teknisi service AC",
     overview:
-      "Demo ini dibuat untuk menunjukkan bagaimana bisnis service AC bisa tampil kredibel sejak layar pertama: pesan utama jelas, identitas teknisi terasa dekat, dan tombol WhatsApp besar yang tidak terlewat. Struktur seperti ini dapat disesuaikan dengan nama, warna, dan layanan bisnis Anda.",
+      "Contoh ini memperlihatkan tampilan untuk bengkel atau teknisi AC panggilan yang ingin terlihat rapi dan niat sejak pertama kali dibuka pelanggan. Nama usaha, warna, foto pengerjaan, dan daftar tarifnya nanti disesuaikan penuh dengan milik Anda.",
     scope: [
-      "Struktur one-page yang fokus mengarahkan pengunjung ke WhatsApp",
-      "Penulisan layanan dengan bahasa sederhana tanpa istilah teknis",
-      "Penempatan CTA WhatsApp di posisi-posisi strategis",
-      "Tampilan mobile-first untuk pengunjung dari ponsel",
+      "Susunan satu halaman yang langsung mengarahkan orang ke chat WhatsApp",
+      "Penjelasan layanan harian seperti cuci AC, isi freon, dan perbaikan bocor",
+      "Tombol panggil teknisi di bagian atas, tengah, dan bawah halaman",
+      "Ukuran tulisan dan tombol lega saat dibuka dari HP",
     ],
   },
   {
@@ -55,17 +52,17 @@ export const PROJECTS: Project[] = [
     category: "Website Service AC",
     title: "CoolMaster AC",
     description:
-      "Konsep tampilan terang dan bersih untuk jasa cuci AC rumahan, dengan kartu paket layanan yang mudah dibandingkan pengunjung.",
-    tags: ["Mobile-Friendly", "Paket Layanan", "CTA WhatsApp"],
+      "Contoh tampilan cerah warna putih-biru untuk jasa cuci AC rumahan, cocok bagi usaha yang ingin menonjolkan daftar paket cuci rutin.",
+    tags: ["Tema Terang", "Daftar Tarif Jelas", "Cuci AC Rumah"],
     image: "/images/karya-coolmaster.jpg",
     alt: "Mockup website CoolMaster AC bernuansa putih turquoise dengan kartu paket layanan",
     overview:
-      "Demo ini menunjukkan pendekatan tampilan yang lebih ringan dan bersahabat untuk jasa cuci AC rumahan. Fokusnya: paket layanan terbaca dalam sekali lirik, sehingga calon pelanggan cepat paham dan langsung menghubungi.",
+      "Banyak pemilik rumah suka membandingkan harga cuci 1 unit vs borongan beberapa unit sekaligus. Desain terang seperti ini membantu pelanggan membaca rincian tarif dalam hitungan detik lalu tinggal klik pesan.",
     scope: [
-      "Kartu paket layanan berdampingan agar mudah dibandingkan",
-      "Hierarki konten yang menuntun mata dari manfaat ke CTA",
-      "Tombol WhatsApp mengambang yang selalu terjangkau",
-      "Citra visual segar yang cocok untuk layanan kebersihan",
+      "Kartu daftar tarif cuci AC per PK atau paket beberapa unit rumah",
+      "Tampilan bersih yang memberi kesan teknisi rapi di rumah pelanggan",
+      "Tombol WhatsApp melayang di pojok layar supaya gampang ditekan kapan saja",
+      "Informasi cakupan kecamatan atau perumahan yang dilayani",
     ],
   },
   {
@@ -75,17 +72,17 @@ export const PROJECTS: Project[] = [
     category: "Landing Page",
     title: "Sinar Dingin Promo",
     description:
-      "Demo landing page promo cuci AC dengan penawaran musiman dan tombol WhatsApp besar, siap dijadikan tujuan klik iklan.",
-    tags: ["Promo", "Siap Iklan", "CTA WhatsApp"],
+      "Contoh halaman khusus promo musiman cuci AC yang dibuat ringkas untuk menampung klik dari iklan Facebook dan Instagram.",
+    tags: ["Halaman Promo", "Tujuan Klik Iklan", "Order Cepat"],
     image: "/images/karya-sinar-dingin.jpg",
     alt: "Mockup landing page promo Sinar Dingin dengan gradasi biru teal dan kartu promo",
     overview:
-      "Demo landing page yang dirancang khusus sebagai tujuan promosi: satu penawaran utama, satu aksi utama. Struktur seperti ini membantu pengunjung dari iklan langsung paham penawaran dan menghubungi bisnis tanpa distraksi.",
+      "Kalau Anda sedang bikin promo diskon cuci minimal 2 unit saat cuaca panas, halaman pendek seperti ini bekerja jauh lebih efektif daripada mengarahkan orang ke beranda medsos biasa.",
     scope: [
-      "Satu penawaran utama yang dominan di bagian atas",
-      "Elemen urgensi dan alasan memesan sekarang",
-      "CTA WhatsApp besar yang konsisten warna dan posisinya",
-      "Struktur ringkas dan cepat dimuat untuk trafik iklan",
+      "Penawaran promo langsung terpampang di layar paling atas",
+      "Keterangan syarat promo singkat supaya pelanggan tidak salah paham",
+      "Tombol ambil promo yang otomatis mengirim teks pemesanan ke WhatsApp",
+      "Ringan dimuat meskipun sinyal internet pelanggan pas-pasan",
     ],
   },
   {
@@ -95,17 +92,17 @@ export const PROJECTS: Project[] = [
     category: "Kampanye Digital",
     title: "Arctic Prima Ads",
     description:
-      "Konsep materi iklan Meta untuk jasa service AC: visual, headline, dan angle komunikasi yang diarahkan ke audiens lokal.",
-    tags: ["Meta Ads", "Targeting Lokal", "Kreatif Iklan"],
+      "Gambaran bentuk gambar dan teks iklan Facebook/Instagram untuk menjangkau warga di sekitar lokasi bengkel AC Anda.",
+    tags: ["Meta Ads", "Target Area Lokal", "Gambar & Teks Iklan"],
     image: "/images/karya-arctic-prima.jpg",
     alt: "Mockup konsep iklan media sosial Arctic Prima pada layar ponsel dengan aksen neon",
     overview:
-      "Konsep ini menggambarkan bentuk materi iklan yang disiapkan pada paket Growth dan Premium: visual yang berhenti di-scroll, headline yang bicara langsung ke masalah pelanggan, dan angle yang relevan untuk audiens lokal.",
+      "Pada paket Growth dan Premium, Anda juga dibuatkan materi iklan seperti contoh ini. Fokusnya sederhana: masalah yang sering dialami warga (AC kurang dingin, netes air, atau berdebu) dan ajakan panggil teknisi terdekat.",
     scope: [
-      "Eksplorasi beberapa sudut komunikasi (angle) iklan",
-      "Pasangan visual dan headline yang satu suara",
-      "Format materi untuk feed dan stories",
-      "Arah pengujian variasi untuk optimasi awal",
+      "Beberapa variasi sudut kalimat iklan sesuai keluhan AC yang paling umum",
+      "Ukuran materi pas untuk tampilan feed maupun story Instagram dan Facebook",
+      "Penargetan radius wilayah supaya chat yang masuk benar-benar satu area kerja",
+      "Pengujian beberapa materi di awal tayang untuk melihat mana yang paling ramai chat",
     ],
   },
   {
@@ -115,17 +112,17 @@ export const PROJECTS: Project[] = [
     category: "Website Portfolio",
     title: "KaryaKu Teknik",
     description:
-      "Konsep portfolio editorial untuk usaha teknisi AC yang ingin menonjolkan pengalaman dan galeri hasil pengerjaan.",
-    tags: ["Editorial", "Galeri Karya", "Tipografi Besar"],
+      "Konsep website profil usaha AC yang ingin menampilkan dokumentasi foto kerja lapangan untuk proyek rumah tinggal, kantor, maupun ruko.",
+    tags: ["Profil Usaha", "Galeri Kerja", "Kantor & Ruko"],
     image: "/images/karya-karyaku.jpg",
     alt: "Mockup konsep website portfolio KaryaKu Teknik bernuansa gelap editorial",
     overview:
-      "Konsep ini menunjukkan arah desain yang lebih berani untuk usaha AC yang ingin beda: tipografi besar, galeri pengerjaan, dan narasi kepercayaan. Cocok untuk pemilik usaha yang ingin brand-nya terasa premium.",
+      "Cocok untuk usaha AC yang sudah punya banyak foto hasil pemasangan atau perawatan rutin di kantor, sekolah, maupun ruko, sehingga calon klien korporat makin yakin saat mengecek profil usaha Anda.",
     scope: [
-      "Arah visual editorial dengan tipografi besar",
-      "Struktur galeri hasil pengerjaan yang rapi",
-      "Narasi kepercayaan tanpa klaim berlebihan",
-      "Keseimbangan gaya dan keterbacaan di ponsel",
+      "Galeri foto dokumentasi pengerjaan di lapangan yang tertata rapi",
+      "Penjelasan layanan kontrak perawatan berkala maupun panggilan harian",
+      "Tampilan tegas yang mengangkat citra bengkel AC berpengalaman",
+      "Tetap ringan dibuka baik dari laptop kantor maupun HP",
     ],
   },
   {
@@ -135,22 +132,21 @@ export const PROJECTS: Project[] = [
     category: "Landing Page",
     title: "Dingin Plus Express",
     description:
-      "Demo landing page mobile-first untuk layanan perbaikan AC cepat, dirancang nyaman ditekan dari iklan di ponsel.",
-    tags: ["Mobile-First", "Siap Iklan", "CTA WhatsApp"],
+      "Contoh halaman khusus panggilan perbaikan AC mendadak (AC mati total, bocor netes di kamar, atau tidak dingin) yang fokus dibuka dari HP.",
+    tags: ["Panggilan Cepat", "Fokus Layar HP", "Langsung Chat WA"],
     image: "/images/karya-dingin-plus.jpg",
     alt: "Mockup landing page mobile Dingin Plus dengan aksen kuning dan tombol WhatsApp",
     overview:
-      "Demo ini fokus pada pengalaman layar kecil: tombol besar, daftar layanan singkat, dan rute jelas menuju WhatsApp. Struktur seperti ini ideal untuk layanan yang dibutuhkan mendesak, di mana calon pelanggan ingin cepat menghubungi.",
+      "Orang yang AC kamarnya tiba-tiba bocor atau panas di malam hari biasanya buru-buru cari tukang dari HP. Halaman ini memangkas basa-basi supaya mereka langsung lihat area layanan dan klik tombol panggil.",
     scope: [
-      "Prioritas konten untuk kebutuhan mendesak",
-      "Ukuran tombol dan teks yang nyaman di layar kecil",
-      "Daftar layanan ringkas yang cepat dipindai",
-      "Satu aksi utama: chat WhatsApp tanpa berbelit",
+      "Susunan super ringkas khusus pelanggan yang butuh teknisi segera",
+      "Tombol WhatsApp ekstra jelas dan mudah dijangkau ibu jari",
+      "Daftar keluhan AC yang biasa ditangani tertulis lugas",
+      "Jam operasional dan area jangkauan langsung terbaca di bagian atas",
     ],
   },
 ];
 
-/** Kategori unik yang benar-benar ada pada data (untuk filter). */
 export const PROJECT_CATEGORIES: string[] = Array.from(
   new Set(PROJECTS.map((project) => project.category))
 );

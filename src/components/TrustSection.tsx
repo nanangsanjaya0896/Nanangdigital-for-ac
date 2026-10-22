@@ -1,9 +1,9 @@
 import {
-  Smartphone,
-  MessagesSquare,
+  ShieldCheck,
+  Clock,
   Snowflake,
-  ClipboardList,
-  MousePointerClick,
+  UserCheck,
+  Globe,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
@@ -15,35 +15,31 @@ interface TrustItem {
   description: string;
 }
 
-/**
- * Hanya memuat hal faktual tentang layanan — tanpa statistik atau klaim
- * yang belum tervalidasi (sesuai PRD §11.11).
- */
 const TRUST_ITEMS: TrustItem[] = [
   {
-    icon: Smartphone,
-    title: "Mobile-Friendly",
-    description: "Setiap website dirancang nyaman dibuka dari ponsel.",
+    icon: ShieldCheck,
+    title: "Pelunasan Setelah Cocok",
+    description: "DP 50% di awal, sisa 50% dibayar waktu website sudah beres.",
   },
   {
-    icon: MessagesSquare,
-    title: "Dukungan Konsultasi",
-    description: "Diskusi kebutuhan sebelum dan selama pengerjaan.",
+    icon: Clock,
+    title: "Beres 3 sampai 5 Hari",
+    description: "Jadwal pengerjaan jelas begitu data usaha sudah lengkap.",
+  },
+  {
+    icon: Globe,
+    title: "Terima Beres Sama Domain",
+    description: "Sudah dapat domain .com atau .id plus hosting tahun pertama.",
+  },
+  {
+    icon: UserCheck,
+    title: "Ngobrol Sama Pembuatnya",
+    description: "Langsung ditangani Nanang Sanjaya tanpa perantara admin.",
   },
   {
     icon: Snowflake,
-    title: "Fokus Niche AC",
-    description: "Struktur dan bahasa yang relevan untuk bisnis service AC.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Proses Jelas",
-    description: "Empat langkah terukur dari konsultasi sampai live.",
-  },
-  {
-    icon: MousePointerClick,
-    title: "CTA WhatsApp Mudah Ditemukan",
-    description: "Pengunjung selalu tahu cara menghubungi Anda.",
+    title: "Fokus Usaha Service AC",
+    description: "Paham kebutuhan order cuci rutin, isi freon, dan perbaikan.",
   },
 ];
 
@@ -57,14 +53,14 @@ export default function TrustSection() {
       <div className="section-wrap">
         <SectionHeader
           index="10"
-          eyebrow="Kenapa NanangDigital"
+          eyebrow="Kenapa Pesan di Sini"
           align="center"
           title={
             <>
-              Sederhana, Jelas, dan <span className="text-accent">Fokus pada Hasil</span>.
+              Enak Diajak Diskusi, <span className="text-accent">Jelas Hitung-hitungannya</span>.
             </>
           }
-          description="Tidak ada janji berlebihan. Ini hal yang benar-benar kami kerjakan untuk setiap website."
+          description="Lima hal yang jadi pegangan saya setiap kali mengerjakan website milik rekan-rekan teknisi AC."
         />
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

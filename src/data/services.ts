@@ -11,30 +11,30 @@ export interface Service {
 export const SERVICES: Service[] = [
   {
     number: "01",
-    title: "Pembuatan Landing Page Service AC",
+    title: "Pembuatan Website Usaha Service AC",
     description:
-      "Website satu halaman yang menjelaskan layanan Anda dengan rapi, lengkap dengan CTA WhatsApp dan tampilan profesional yang mobile-friendly.",
+      "Halaman resmi yang merangkum daftar jasa cuci AC, tambah freon, bongkar pasang, area jangkauan, sampai tombol panggil teknisi lewat WhatsApp.",
     icon: MonitorSmartphone,
   },
   {
     number: "02",
-    title: "Setup & Optimasi Meta Ads",
+    title: "Setup Iklan Facebook & Instagram",
     description:
-      "Penyiapan kampanye Facebook dan Instagram Ads dengan targeting lokal, agar jasa Anda menjangkau calon pelanggan di area layanan.",
+      "Iklan disetel khusus menjangkau pemilik rumah, kos, atau ruko di radius area kerja Anda supaya biaya iklan terpakai ke orang yang memang dekat.",
     icon: Megaphone,
   },
   {
     number: "03",
-    title: "Copywriting Iklan & Halaman",
+    title: "Penulisan Teks Halaman & Iklan",
     description:
-      "Teks iklan dan halaman yang mudah dipahami calon pelanggan, tanpa istilah teknis, dan mendorong mereka menghubungi Anda.",
+      "Anda cukup cerita layanan dan kisaran tarif biasa di lapangan. Urusan merangkai kalimat supaya calon pelanggan yakin memesan, saya yang bereskan.",
     icon: PenLine,
   },
   {
     number: "04",
-    title: "Bundling Website + Iklan",
+    title: "Paket Sekalian Website + Iklan",
     description:
-      "Paket gabungan: website sebagai rumah bisnis Anda, iklan sebagai mesin penarik pengunjung yang terus bekerja.",
+      "Begitu website selesai, iklan langsung diarahkan ke halaman tersebut. Praktis buat pemilik usaha yang tidak sempat mengurus teknis satu-satu.",
     icon: Package,
   },
 ];

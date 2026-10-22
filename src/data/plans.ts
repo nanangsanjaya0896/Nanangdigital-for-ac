@@ -1,14 +1,13 @@
 /**
- * Satu sumber data untuk ketiga paket penawaran.
- * Dipakai oleh PricingSection dan ringkasan harga di section lain.
+ * Data tiga paket penawaran NanangDigital.
  */
 export interface Plan {
   id: "basic" | "growth" | "premium";
   name: string;
-  /** Harga apa adanya sesuai penawaran bisnis (rupiah atau "Custom"). */
   price: string;
   tagline: string;
   popular: boolean;
+  leadIn?: string;
   features: string[];
   cta: string;
   waMessage: string;
@@ -19,61 +18,62 @@ export const PLANS: Plan[] = [
     id: "basic",
     name: "Basic",
     price: "Rp1.500.000",
-    tagline: "Untuk teknisi yang baru mulai tampil online.",
+    tagline: "Cocok buat teknisi atau usaha AC yang baru mau punya halaman resmi sendiri.",
     popular: false,
     features: [
-      "1 landing page / website portfolio",
-      "Copywriting dasar",
-      "CTA WhatsApp yang jelas",
-      "Tampilan mobile-friendly",
-      "1x revisi ringan",
-      "Panduan penggunaan basic",
+      "1 halaman website profil & daftar layanan AC",
+      "Penulisan teks layanan yang rapi dan gampang dipahami pelanggan",
+      "Tombol chat WhatsApp otomatis terisi format pesan",
+      "Tampilan ringan di HP Android maupun iPhone",
+      "Sudah termasuk domain .com / .id & hosting 1 tahun",
+      "1x revisi ringan dan panduan pakai",
     ],
-    cta: "Pilih Paket Basic",
+    cta: "Ambil Paket Basic",
     waMessage:
-      "Halo NanangDigital, saya tertarik dengan Paket Basic (Rp1.500.000) untuk website bisnis service AC saya. Boleh info lebih lanjut?",
+      "Halo Mas Nanang, saya tertarik ambil Paket Basic (Rp1.500.000) untuk usaha service AC saya. Boleh diskusi sebentar?",
   },
   {
     id: "growth",
     name: "Growth",
     price: "Rp2.000.000",
-    tagline: "Untuk usaha yang ingin mulai menarik lead lewat iklan.",
+    tagline: "Paling pas kalau sekalian mau langsung pasang iklan cari pelanggan di sekitar lokasi.",
     popular: true,
+    leadIn: "Dapat semua isi Paket Basic, ditambah:",
     features: [
-      "Website portfolio profesional",
-      "2–3 copy iklan kreatif",
-      "Setup 1 campaign Meta Ads",
-      "Targeting lokal sesuai area layanan",
-      "Basic pixel & tracking",
+      "Setup 1 campaign iklan Facebook & Instagram (Meta Ads)",
+      "2 sampai 3 variasi teks iklan siap tayang",
+      "Setting target lokasi khusus kecamatan / kota area kerja Anda",
+      "Pemasangan Meta Pixel supaya klik WA dari iklan tercatat",
+      "Sudah termasuk domain .com / .id & hosting 1 tahun",
       "1x revisi ringan",
     ],
-    cta: "Pilih Paket Growth",
+    cta: "Ambil Paket Growth",
     waMessage:
-      "Halo NanangDigital, saya tertarik dengan Paket Growth (Rp2.000.000) termasuk setup 1 campaign iklan. Boleh info lebih lanjut?",
+      "Halo Mas Nanang, saya tertarik Paket Growth (Rp2.000.000) yang sudah sekalian setup iklan Meta Ads. Boleh info detailnya?",
   },
   {
     id: "premium",
     name: "Premium",
     price: "Custom",
-    tagline: "Untuk bisnis yang butuh solusi lebih lengkap.",
+    tagline: "Buat usaha AC yang layanannya banyak, punya beberapa tim, atau mau kejar order lebih kencang.",
     popular: false,
+    leadIn: "Cakupan disesuaikan dengan kebutuhan usaha:",
     features: [
-      "Website portfolio lebih rapi & lengkap",
-      "Copywriting lebih persuasif",
-      "CTA WhatsApp + form lead",
-      "Setup 2 campaign dengan angle berbeda",
-      "Optimasi awal iklan",
-      "2x revisi",
-      "Scope mengikuti kesepakatan konsultasi",
+      "Website lebih lengkap untuk banyak jenis layanan & area",
+      "Penulisan materi halaman dan penawaran lebih mendalam",
+      "Tombol WhatsApp + formulir jadwal panggilan servis",
+      "Setup 2 campaign iklan dengan sudut penawaran berbeda",
+      "Pendampingan optimasi awal iklan setelah tayang",
+      "2x revisi + gratis domain .com / .id & hosting 1 tahun",
     ],
-    cta: "Konsultasikan Paket Premium",
+    cta: "Diskusikan Paket Premium",
     waMessage:
-      "Halo NanangDigital, saya ingin berkonsultasi mengenai Paket Premium (harga custom) untuk bisnis service AC saya.",
+      "Halo Mas Nanang, saya mau ngobrol dulu soal Paket Premium untuk usaha service AC saya.",
   },
 ];
 
 export const PRICING_NOTES = [
-  "Sudah termasuk domain .com / .id dan hosting untuk tahun pertama.",
-  "Pembayaran dua tahap: 50% sebelum pengerjaan, 50% setelah website siap dan disetujui.",
-  "Metode: transfer bank, QRIS, atau dompet digital — di luar website ini.",
+  "Gratis domain .com / .id dan hosting tahun pertama di semua paket.",
+  "Sudah termasuk 3 bonus tambahan untuk bantu promosi awal.",
+  "Bisa bayar lewat transfer bank, QRIS, atau e-wallet.",
 ];

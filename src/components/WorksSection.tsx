@@ -63,23 +63,24 @@ export default function WorksSection() {
       <div className="section-wrap">
         <SectionHeader
           index="04"
-          eyebrow="Karya"
+          eyebrow="Contoh Desain"
           title={
             <>
-              Contoh Tampilan untuk <span className="text-accent">Bisnis Service AC</span>.
+              Gambaran Tampilan untuk <span className="text-accent">Usaha Service AC</span>.
             </>
           }
-          description="Geser, klik, dan jelajahi contoh arah desain yang bisa Anda dapatkan. Setiap contoh diberi label jelas sesuai jenisnya."
+          description="Silakan geser atau klik kartu di bawah untuk melihat pilihan gaya desain yang bisa kami sesuaikan dengan nama usaha Anda."
         />
 
         <Reveal delay={0.1}>
           <p className="mt-6 inline-flex items-start gap-3 rounded-2xl border border-line bg-white/[0.02] px-5 py-4 text-sm leading-relaxed text-mist">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
             <span>
-              Contoh di bawah berstatus <strong className="font-semibold text-amber-200">Demo</strong>{" "}
-              atau <strong className="font-semibold text-sky-200">Konsep</strong> — dibuat untuk
-              menunjukkan gambaran hasil, bukan klaim proyek klien. Karya klien asli akan
-              ditampilkan setelah mendapat izin pemiliknya.
+              Seluruh gambar di bawah berstatus{" "}
+              <strong className="font-semibold text-amber-200">Demo</strong> dan{" "}
+              <strong className="font-semibold text-sky-200">Konsep</strong> sebagai referensi
+              tampilan. Nanti warna, logo, foto teknisi, dan rincian harganya diganti penuh memakai
+              identitas usaha Anda sendiri.
             </span>
           </p>
         </Reveal>
@@ -160,11 +161,11 @@ export default function WorksSection() {
                       onClick={(event) => openDetail(activeProject, event.currentTarget)}
                       className="btn-primary !px-7 !py-3.5 text-sm"
                     >
-                      Lihat Ringkasan
+                      Lihat Detail Contoh
                     </button>
                     <p className="mt-4 font-mono text-xs text-mist/60">
-                      {String(activeIdx + 1).padStart(2, "0")} /{" "}
-                      {String(filtered.length).padStart(2, "0")} · semua contoh di bawah
+                      Contoh {String(activeIdx + 1).padStart(2, "0")} dari{" "}
+                      {String(filtered.length).padStart(2, "0")}
                     </p>
                   </div>
                 </motion.aside>

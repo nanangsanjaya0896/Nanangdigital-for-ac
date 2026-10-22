@@ -23,42 +23,42 @@ interface Benefit {
 const BENEFITS: Benefit[] = [
   {
     icon: MonitorSmartphone,
-    title: "Website yang profesional",
-    description: "Tampilan rapi yang membuat usaha Anda langsung terlihat serius.",
+    title: "Tampilan usaha jauh lebih meyakinkan",
+    description: "Begitu halaman dibuka, pelanggan langsung lihat usaha Anda beneran niat dan rapi.",
   },
   {
     icon: MousePointerClick,
-    title: "CTA WhatsApp yang jelas",
-    description: "Pengunjung selalu tahu langkah berikutnya untuk menghubungi Anda.",
+    title: "Chat masuk sudah ada formatnya",
+    description: "Tombol WhatsApp langsung mengisi pesan layanan yang dipilih calon pelanggan.",
   },
   {
     icon: LayoutTemplate,
-    title: "Mobile-friendly",
-    description: "Nyaman dibuka dari ponsel, tempat sebagian besar calon pelanggan berada.",
+    title: "Enteng dibuka dari HP",
+    description: "Mayoritas orang cari tukang AC lewat HP, jadi ukuran teks dan tombolnya dibuat lega.",
   },
   {
     icon: PenLine,
-    title: "Copywriting dasar",
-    description: "Layanan dijelaskan dengan bahasa sederhana yang mudah dipahami.",
+    title: "Kalimat layanan beres ditulisin",
+    description: "Anda tinggal cerita layanan sehari-hari, saya yang susun bahasanya supaya enak dibaca.",
   },
   {
     icon: Megaphone,
-    title: "Siap dipromosikan",
-    description: "Dukungan setup iklan Meta sesuai paket yang Anda pilih.",
+    title: "Tinggal sambung ke iklan lokal",
+    description: "Kalau mau pasang iklan Facebook atau Instagram, halamannya sudah siap menampung klik.",
   },
   {
     icon: Rocket,
-    title: "Fokus pada lead",
-    description: "Struktur halaman diarahkan ke satu tujuan: chat dari calon pelanggan.",
+    title: "Hemat waktu balas pertanyaan dasar",
+    description: "Daftar jasa, kisaran biaya, dan area jangkauan sudah tertulis jelas sejak awal.",
   },
 ];
 
 const FLOW_STEPS = [
-  { icon: Users, label: "Pengunjung", note: "Dari Google, media sosial, atau iklan" },
-  { icon: MonitorSmartphone, label: "Website Profesional", note: "Melihat layanan Anda dengan tampilan rapi" },
-  { icon: null, label: "Klik WhatsApp", note: "Menekan CTA yang mudah ditemukan", isWhatsApp: true },
-  { icon: MessagesSquare, label: "Konsultasi", note: "Ngobrol langsung tentang kebutuhan" },
-  { icon: UserCheck, label: "Potensi Pelanggan", note: "Siap dijadwalkan untuk servis" },
+  { icon: Users, label: "Warga Cari Jasa AC", note: "Lewat Google, kiriman link, atau iklan lokal" },
+  { icon: MonitorSmartphone, label: "Buka Website Usaha Anda", note: "Cek layanan, kisaran biaya, & area kerja" },
+  { icon: null, label: "Klik Tombol WhatsApp", note: "Pesan otomatis terisi sesuai kebutuhan servis", isWhatsApp: true },
+  { icon: MessagesSquare, label: "Cocokkan Jadwal", note: "Tinggal pastikan alamat rumah dan jam kedatangan" },
+  { icon: UserCheck, label: "Berangkat Kerjakan Order", note: "Pelanggan baru masuk tanpa ribet tanya dari nol" },
 ];
 
 export default function SolutionSection() {
@@ -75,14 +75,14 @@ export default function SolutionSection() {
       <div className="section-wrap relative">
         <SectionHeader
           index="02"
-          eyebrow="Solusi"
+          eyebrow="Cara Kerjanya"
           title={
             <>
-              Satu Website yang <span className="text-accent">Bekerja Menjemput</span> Calon
-              Pelanggan.
+              Punya Halaman Resmi Sendiri yang <span className="text-accent">Bantu Jualan</span>{" "}
+              24 Jam.
             </>
           }
-          description="NanangDigital merancang website khusus niche service AC yang siap pakai: bukan sekadar bagus dilihat, tapi mengalirkan pengunjung sampai menjadi chat WhatsApp."
+          description="Saat Anda fokus mengerjakan unit di lapangan, website ini yang bertugas menjelaskan layanan usaha Anda ke calon pelanggan sampai mereka klik chat WhatsApp."
         />
 
         <div className="mt-16 grid gap-12 lg:grid-cols-2 lg:gap-16">
@@ -116,11 +116,11 @@ export default function SolutionSection() {
                 aria-hidden="true"
                 className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-3xl"
               />
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-                Alur yang dirancang
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                Alur Pelanggan Memesan
               </p>
               <h3 className="mt-3 font-display text-xl font-bold tracking-tight md:text-2xl">
-                Dari klik pertama sampai chat masuk.
+                Dari lihat halaman sampai jadi jadwal servis.
               </h3>
 
               <ol className="relative mt-8 space-y-0">

@@ -12,10 +12,10 @@ export default function LayananSection() {
           eyebrow="Layanan"
           title={
             <>
-              Empat Layanan, Satu Tujuan: <span className="text-accent">Calon Pelanggan</span>.
+              Apa Saja yang Bisa Saya <span className="text-accent">Bantu Bereskan</span>?
             </>
           }
-          description="Semua layanan dirancang khusus untuk kebutuhan bisnis service AC — dari halaman bisnis sampai materi promosinya."
+          description="Mulai dari pembuatan halaman resmi usaha AC Anda sampai penyiapan materi iklan supaya warga sekitar tahu jasa Anda."
         />
 
         <div className="mt-14 grid gap-5 md:grid-cols-2">
@@ -51,12 +51,12 @@ export default function LayananSection() {
 
         <Reveal delay={0.2}>
           <p className="mt-10 flex flex-wrap items-center gap-2 text-sm text-mist">
-            Butuh kombinasi lain di luar empat layanan ini?
+            Bingung mau ambil website saja dulu atau sekalian iklan?
             <a
               href="#paket"
               className="group inline-flex items-center gap-1.5 font-semibold text-accent transition-colors hover:text-white"
             >
-              Lihat paket atau konsultasikan kebutuhan Anda
+              Cek perbandingan paketnya di bawah
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 aria-hidden="true"

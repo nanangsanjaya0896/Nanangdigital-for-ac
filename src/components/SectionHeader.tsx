@@ -2,9 +2,7 @@ import type { ReactNode } from "react";
 import Reveal from "./Reveal";
 
 interface SectionHeaderProps {
-  /** Nomor urut editorial, mis. "01". */
   index: string;
-  /** Label kecil uppercase, mis. "MASALAH". */
   eyebrow: string;
   title: ReactNode;
   description?: string;
@@ -32,16 +30,15 @@ export default function SectionHeader({
       </span>
 
       <p
-        className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent ${
-          centered ? "justify-center" : ""
+        className={`inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/[0.06] px-3.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-accent ${
+          centered ? "mx-auto" : ""
         }`}
       >
-        <span className="h-px w-8 bg-accent/70" aria-hidden="true" />
+        <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
         {eyebrow}
-        {centered && <span className="h-px w-8 bg-accent/70" aria-hidden="true" />}
       </p>
 
-      <h2 className="mt-5 font-display text-3xl font-bold leading-[1.12] tracking-tight sm:text-4xl lg:text-5xl">
+      <h2 className="mt-5 font-display text-3xl font-bold leading-[1.14] tracking-tight sm:text-4xl lg:text-5xl">
         {title}
       </h2>
 
