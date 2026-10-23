@@ -30,6 +30,85 @@ export interface SubmitPreWaLeadParams {
 
 const STORAGE_FBC_KEY = "nd_meta_fbc";
 const STORAGE_FBP_KEY = "nd_meta_fbp";
+const STORAGE_SOURCE_LABEL_KEY = "nd_traffic_origin_v1";
+
+export interface TrafficOriginInfo {
+  channel: string;
+  campaign: string;
+}
+
+/**
+ * Deteksi & simpan asal kedatangan pengunjung sejak klik pertama
+ * agar pemilik bisnis tahu persis di chat WA apakah klien datang dari
+ * Iklan Meta Ads, Iklan Google Ads, atau Pencarian Organik Google (SEO).
+ */
+export function captureTrafficOrigin(): TrafficOriginInfo {
+  if (typeof window === "undefined") {
+    return { channel: "Website Langsung", campaign: "" };
+  }
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fbclid = params.get("fbclid");
+    const gclid = params.get("gclid");
+    const utmSource = (params.get("utm_source") || "").trim().toLowerCase();
+    const utmMedium = (params.get("utm_medium") || "").trim().toLowerCase();
+    const utmCampaign = (params.get("utm_campaign") || "").trim();
+    const ref = (document.referrer || "").toLowerCase();
+
+    let detected: TrafficOriginInfo | null = null;
+
+    if (
+      fbclid ||
+      utmSource.includes("meta") ||
+      utmSource.includes("fb") ||
+      utmSource.includes("facebook") ||
+      utmSource.includes("ig") ||
+      utmSource.includes("instagram")
+    ) {
+      detected = { channel: "Iklan Meta Ads (FB/IG)", campaign: utmCampaign };
+    } else if (gclid || (utmSource.includes("google") && /cpc|ppc|paid|ads/.test(utmMedium))) {
+      detected = { channel: "Iklan Google Ads", campaign: utmCampaign };
+    } else if (utmSource) {
+      detected = {
+        channel: utmMedium ? `${utmSource} (${utmMedium})` : utmSource,
+        campaign: utmCampaign,
+      };
+    } else if (ref && !ref.includes(window.location.hostname)) {
+      if (ref.includes("google.")) {
+        detected = { channel: "Pencarian Organik Google", campaign: "" };
+      } else if (ref.includes("bing.") || ref.includes("yahoo.") || ref.includes("duckduckgo.")) {
+        detected = { channel: "Mesin Pencari Organik", campaign: "" };
+      } else if (
+        ref.includes("instagram.com") ||
+        ref.includes("facebook.com") ||
+        ref.includes("tiktok.com")
+      ) {
+        detected = { channel: "Sosial Media Organik", campaign: "" };
+      }
+    }
+
+    if (detected) {
+      localStorage.setItem(STORAGE_SOURCE_LABEL_KEY, JSON.stringify(detected));
+      return detected;
+    }
+
+    const savedRaw = localStorage.getItem(STORAGE_SOURCE_LABEL_KEY);
+    if (savedRaw) {
+      const parsed = JSON.parse(savedRaw) as Partial<TrafficOriginInfo>;
+      if (parsed.channel) {
+        return {
+          channel: parsed.channel,
+          campaign: typeof parsed.campaign === "string" ? parsed.campaign : "",
+        };
+      }
+    }
+  } catch {
+    // Abaikan bila mode privat memblokir akses penyimpanan
+  }
+
+  return { channel: "Website Langsung", campaign: "" };
+}
 
 function extractGaMeasurementId(raw: string | undefined): string {
   if (!raw) return "";
@@ -143,6 +222,7 @@ export function initMarketingTracking(): void {
 
   window.dataLayer = window.dataLayer || [];
   const { fbc, fbp } = captureClickIdentifiers();
+  captureTrafficOrigin();
 
   const startThirdPartyScripts = () => {
     const metaPixelId = (import.meta.env.VITE_META_PIXEL_ID as string | undefined)?.trim();
@@ -308,10 +388,13 @@ export function trackPreWaLeadSubmitted({
     lead_city: user.city.trim(),
   });
 
+  const originInfo = captureTrafficOrigin();
+
   if (typeof window.gtag === "function") {
     window.gtag("event", "generate_lead", {
       currency: "IDR",
       lead_source: source,
+      traffic_channel: originInfo.channel,
       cta_topic: topicLabel,
       lead_city: user.city.trim(),
       event_category: "whatsapp_pre_form",
