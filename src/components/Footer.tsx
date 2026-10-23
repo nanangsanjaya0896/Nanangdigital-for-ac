@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowUp } from "lucide-react";
 import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
@@ -19,6 +20,8 @@ const FOOT_NAV_RIGHT = [
 ] as const;
 
 export default function Footer() {
+  const [logoFailed, setLogoFailed] = useState(false);
+
   return (
     <footer className="relative overflow-hidden border-t border-line bg-[#0b0f13]">
       <span
@@ -30,9 +33,25 @@ export default function Footer() {
 
       <div className="section-wrap relative pb-10 pt-16 md:pt-24">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_1.45fr] lg:gap-10">
-          {/* Kolom kiri */}
+          {/* Kolom kiri: Logo resmi NanangDigital + deskripsi + kontak */}
           <div>
-            <a href="#beranda" aria-label="NanangDigital, kembali ke atas">
+            <a
+              href="#beranda"
+              aria-label="NanangDigital, kembali ke atas"
+              className="inline-flex items-center gap-3.5"
+            >
+              {!logoFailed && (
+                <img
+                  src={BUSINESS.logoUrl}
+                  alt={`Logo ${BUSINESS.brand}`}
+                  width={56}
+                  height={56}
+                  loading="lazy"
+                  decoding="async"
+                  onError={() => setLogoFailed(true)}
+                  className="h-12 w-auto max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.03] object-contain shadow-[0_8px_24px_rgba(0,0,0,0.45)] md:h-14"
+                />
+              )}
               <Logo className="text-2xl md:text-3xl" />
             </a>
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-mist md:text-base">

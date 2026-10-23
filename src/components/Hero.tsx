@@ -18,13 +18,15 @@ export default function Hero() {
   const reduced = useReducedMotion();
   const [photoFailed, setPhotoFailed] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const [dragging, setDragging] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(
     null
   );
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (reduced || typeof window === "undefined" || window.innerWidth < 1024) return;
+    if (reduced) return;
     if ((e.target as HTMLElement).closest("a, button")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setDragging(true);
@@ -37,17 +39,44 @@ export default function Hero() {
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragStartRef.current) return;
-    const dx = Math.max(-50, Math.min(50, dragStartRef.current.origX + (e.clientX - dragStartRef.current.startX)));
-    const dy = Math.max(-50, Math.min(50, dragStartRef.current.origY + (e.clientY - dragStartRef.current.startY)));
-    setOffset({ x: dx, y: dy });
+    if (dragStartRef.current) {
+      const dx = Math.max(
+        -55,
+        Math.min(55, dragStartRef.current.origX + (e.clientX - dragStartRef.current.startX))
+      );
+      const dy = Math.max(
+        -45,
+        Math.min(55, dragStartRef.current.origY + (e.clientY - dragStartRef.current.startY))
+      );
+      setOffset({ x: dx, y: dy });
+      setTilt({ rx: -dy * 0.14, ry: dx * 0.22 });
+      return;
+    }
+
+    if (reduced || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const normX = (e.clientX - rect.left) / rect.width - 0.5;
+    const normY = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({
+      rx: -normY * 10,
+      ry: normX * 12,
+    });
   };
 
   const onPointerUp = () => {
     dragStartRef.current = null;
     setDragging(false);
     setOffset({ x: 0, y: 0 });
+    setTilt({ rx: 0, ry: 0 });
   };
+
+  const onPointerLeave = () => {
+    if (!dragStartRef.current) {
+      setTilt({ rx: 0, ry: 0 });
+    }
+  };
+
+  const dynamicRotation = offset.x * 0.12;
 
   return (
     <section id="beranda" aria-label="Beranda" className="relative overflow-hidden">
@@ -67,7 +96,7 @@ export default function Hero() {
         DIGITAL
       </span>
 
-      <div className="section-wrap relative grid min-h-screen items-center gap-14 pb-28 pt-36 lg:grid-cols-[1.12fr_0.88fr] lg:gap-10 lg:pb-24 lg:pt-28">
+      <div className="section-wrap relative grid min-h-screen items-center gap-12 pb-28 pt-32 lg:grid-cols-[1.12fr_0.88fr] lg:gap-10 lg:pb-24 lg:pt-28">
         {/* Kolom kiri */}
         <div className="max-w-2xl">
           <p className="hero-in hero-d1 inline-flex items-center gap-3 rounded-full border border-accent/30 bg-accent/[0.07] px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-accent sm:text-xs">
@@ -129,39 +158,76 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Kolom kanan: kartu ID founder */}
+        {/* Kolom kanan: kartu ID founder dengan tali lanyard jelas dari atas ke bawah & animasi ayun */}
         <div className="relative mx-auto w-full max-w-[21rem] lg:max-w-[23rem]">
           <span
             aria-hidden="true"
-            className="absolute -right-4 -top-12 z-30 hidden items-center gap-2 rounded-full border border-line bg-surface/90 px-3.5 py-2 text-[0.7rem] font-medium text-mist backdrop-blur lg:inline-flex"
+            className="absolute -right-3 top-24 z-30 hidden items-center gap-2 rounded-full border border-accent/35 bg-surface/95 px-3.5 py-2 text-[0.7rem] font-medium text-mist shadow-lg backdrop-blur lg:top-6 lg:inline-flex"
           >
             <Move className="h-3.5 w-3.5 text-accent" />
-            Kartu bisa digeser
+            Tarik & goyangkan kartu
           </span>
 
           <div className={reduced ? "" : "hero-card-float"}>
             <div
+              ref={cardRef}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
               onPointerCancel={onPointerUp}
+              onPointerLeave={onPointerLeave}
               style={{
-                transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${dragging ? 1.02 : 1})`,
-                transition: dragging ? "none" : "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+                transform: `perspective(950px) translate3d(${offset.x}px, ${offset.y}px, 0) rotateZ(${dynamicRotation}deg) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) scale(${dragging ? 1.025 : 1})`,
+                transition: dragging ? "none" : "transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
-              className="lg:cursor-grab lg:active:cursor-grabbing"
+              className="cursor-grab touch-pan-y select-none active:cursor-grabbing"
             >
-              {/* Tali lanyard */}
-              <div aria-hidden="true" className="relative mx-auto flex w-full flex-col items-center">
-                <div className="h-10 w-[3px] rounded-full bg-gradient-to-b from-accent/20 via-accent/60 to-accent/90" />
-                <div className="relative z-10 -mb-[3px] h-3.5 w-9 rounded-t-md border border-accent/50 bg-ink shadow-[0_0_16px_rgba(0,223,143,0.35)]" />
+              {/* Tali lanyard jelas memanjang dari atas lurus ke pengait kartu */}
+              <div
+                aria-hidden="true"
+                className="relative mx-auto flex w-full flex-col items-center lg:-mt-[17rem]"
+              >
+                {/* Dudukan gantungan atas */}
+                <div className="flex h-3 w-12 items-center justify-center rounded-full border border-accent/60 bg-[#0d1518] shadow-[0_0_20px_rgba(0,223,143,0.45)]">
+                  <span className="h-1 w-6 rounded-full bg-accent" />
+                </div>
+
+                {/* Pita tali lanyard anyaman kontras dari atas ke bawah */}
+                <div className="lanyard-strap relative flex h-24 w-5 flex-col items-center justify-center overflow-hidden border-x-2 border-accent/80 shadow-[0_0_28px_rgba(0,223,143,0.3)] sm:h-28 lg:h-[21rem]">
+                  <span className="h-full w-[2px] bg-gradient-to-b from-accent via-accent/90 to-accent shadow-[0_0_10px_rgba(0,223,143,0.9)]" />
+                </div>
+
+                {/* Jepitan & ring pengait metalik ke lubang kartu */}
+                <div className="relative z-20 flex flex-col items-center">
+                  <div className="h-3.5 w-8 rounded-md border border-accent/70 bg-gradient-to-b from-[#26323d] to-[#11171e] shadow-[0_4px_14px_rgba(0,0,0,0.75)]" />
+                  <div className="-mt-1 h-3.5 w-3.5 rounded-full border-2 border-accent bg-ink shadow-[0_0_14px_rgba(0,223,143,0.65)]" />
+                  <div className="-mb-2.5 -mt-1 flex h-4 w-12 items-center justify-center rounded-t-xl border border-accent/60 bg-[#121922] shadow-[0_0_18px_rgba(0,223,143,0.35)]">
+                    <span className="h-1.5 w-6 rounded-full bg-accent/80" />
+                  </div>
+                </div>
               </div>
 
               {/* Kartu ID */}
-              <div className="relative overflow-hidden rounded-[1.75rem] border border-line bg-surface/90 p-6 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:p-7">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-accent/30 bg-surface/95 p-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8),0_0_40px_-18px_rgba(0,223,143,0.28)] backdrop-blur-xl sm:p-7">
+                {/* Lubang slot gantungan di bibir atas kartu */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/[0.09] via-transparent to-transparent"
+                  className="mx-auto mb-4 flex h-2.5 w-14 items-center justify-center rounded-full border border-white/15 bg-ink shadow-inner"
+                >
+                  <span className="h-1 w-8 rounded-full bg-accent/40" />
+                </div>
+
+                {/* Efek kilau cahaya kaca bergerak halus melintasi kartu */}
+                {!reduced && (
+                  <div
+                    aria-hidden="true"
+                    className="hero-card-sheen pointer-events-none absolute -inset-y-10 left-0 w-1/2 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent"
+                  />
+                )}
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/[0.1] via-transparent to-transparent"
                 />
 
                 <div className="relative flex items-center justify-between">
@@ -180,7 +246,7 @@ export default function Hero() {
                 </div>
 
                 {/* Foto founder resmi */}
-                <div className="relative mt-6 aspect-[4/3.5] overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] via-[#131c26] to-[#0d1a15]">
+                <div className="relative mt-5 aspect-[4/3.5] overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] via-[#131c26] to-[#0d1a15]">
                   {!photoFailed ? (
                     <>
                       <img
