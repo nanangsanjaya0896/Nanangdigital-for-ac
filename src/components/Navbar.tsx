@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ArrowUpRight, Phone } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
-import WhatsAppIcon from "./WhatsAppIcon";
-import { WA_LINK_GENERAL } from "../data/business";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
@@ -66,7 +64,7 @@ export default function Navbar() {
             <Logo className="text-xl md:text-2xl" />
           </a>
 
-          {/* Menu desktop */}
+          {/* Menu desktop tanpa tombol CTA */}
           <nav aria-label="Navigasi utama" className="hidden lg:block">
             <ul className="flex items-center gap-8">
               {NAV_LINKS.map((link) => {
@@ -91,34 +89,21 @@ export default function Navbar() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <a
-              href={WA_LINK_GENERAL}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-track-source="navbar_desktop_cta"
-              className="btn-primary hidden !px-6 !py-3 text-sm lg:inline-flex"
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-              Konsultasi Gratis
-            </a>
-
-            <button
-              ref={hamburgerRef}
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              aria-expanded={menuOpen}
-              aria-controls="menu-seluler"
-              aria-label="Buka menu navigasi"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent lg:hidden"
-            >
-              <Menu className="h-5 w-5" aria-hidden="true" />
-            </button>
-          </div>
+          <button
+            ref={hamburgerRef}
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-expanded={menuOpen}
+            aria-controls="menu-seluler"
+            aria-label="Buka menu navigasi"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent lg:hidden"
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </button>
         </div>
       </header>
 
-      {/* Menu seluler fullscreen */}
+      {/* Menu seluler fullscreen tanpa tombol CTA */}
       {menuOpen && (
         <div
           ref={menuRef}
@@ -147,7 +132,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          <nav aria-label="Navigasi seluler" className="relative flex-1 overflow-y-auto px-6 sm:px-8">
+          <nav aria-label="Navigasi seluler" className="relative flex-1 overflow-y-auto px-6 pb-10 sm:px-8">
             <ul className="flex flex-col gap-1 pt-6">
               {[...NAV_LINKS, ...MOBILE_EXTRA_LINKS].map((link, i) => (
                 <li key={link.id}>
@@ -174,23 +159,6 @@ export default function Navbar() {
                 </li>
               ))}
             </ul>
-
-            <div className="pb-10 pt-8">
-              <a
-                href={WA_LINK_GENERAL}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-source="navbar_mobile_cta"
-                onClick={() => setMenuOpen(false)}
-                className="btn-primary w-full"
-              >
-                <Phone className="h-4 w-4" aria-hidden="true" />
-                Konsultasi Gratis via WhatsApp
-              </a>
-              <p className="mt-4 text-center text-xs text-mist">
-                Tanya dulu santai di WA, gratis tanpa ikatan
-              </p>
-            </div>
           </nav>
         </div>
       )}

@@ -9,7 +9,7 @@ export default function PricingSection() {
   return (
     <section
       id="paket"
-      aria-label="Paket dan harga"
+      aria-label="Paket jasa pembuatan website"
       className="relative overflow-hidden py-24 md:py-32"
     >
       <div
@@ -20,14 +20,14 @@ export default function PricingSection() {
       <div className="section-wrap relative">
         <SectionHeader
           index="07"
-          eyebrow="Pilihan Paket"
+          eyebrow="Paket Jasa Pembuatan Website"
           align="center"
           title={
             <>
               Biaya Jelas di Awal, <span className="text-accent">Tinggal Terima Beres</span>.
             </>
           }
-          description="Pilih paket sesuai kebutuhan usaha AC Anda saat ini. Semuanya sudah termasuk domain serta hosting tahun pertama."
+          description="Pilih paket pembuatan website sesuai kebutuhan usaha AC Anda saat ini. Semuanya sudah termasuk domain, hosting 1 tahun, SSL, Live Chat AI, dan Google Maps."
         />
 
         {/* Banner Jaminan Pembayaran Aman */}
@@ -77,7 +77,7 @@ export default function PricingSection() {
                   </span>
                 )}
 
-                <h3 className="font-display text-lg font-bold uppercase tracking-[0.2em] text-white">
+                <h3 className="font-display text-lg font-bold uppercase tracking-[0.14em] text-white">
                   {plan.name}
                 </h3>
                 <p className="mt-2 min-h-[2.5rem] text-sm leading-snug text-mist">{plan.tagline}</p>
@@ -89,21 +89,13 @@ export default function PricingSection() {
                   <p
                     className={`mt-2 font-display font-bold tracking-tight ${
                       plan.price === "Custom"
-                        ? "text-4xl text-accent md:text-5xl"
+                        ? "text-3xl text-accent md:text-4xl"
                         : "text-4xl md:text-[2.6rem]"
                     }`}
                   >
-                    {plan.price}
+                    {plan.price === "Custom" ? "Sesuai Permintaan" : plan.price}
                   </p>
-                  {plan.price === "Custom" ? (
-                    <p className="mt-2 text-xs leading-relaxed text-mist">
-                      Menyesuaikan jumlah halaman dan kampanye iklan yang dibutuhkan.
-                    </p>
-                  ) : (
-                    <p className="mt-2 text-xs leading-relaxed text-mist">
-                      Sudah termasuk domain .com/.id dan hosting tahun pertama.
-                    </p>
-                  )}
+                  <p className="mt-2 text-xs leading-relaxed text-mist">{plan.priceNote}</p>
                 </div>
 
                 {plan.leadIn && (
@@ -112,7 +104,7 @@ export default function PricingSection() {
                   </p>
                 )}
 
-                <ul className={`${plan.leadIn ? "mt-3.5" : "mt-7"} flex-1 space-y-3.5`}>
+                <ul className={`${plan.leadIn ? "mt-3.5" : "mt-7"} flex-1 space-y-3`}>
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex gap-3 text-sm leading-relaxed text-white/90">
                       <span

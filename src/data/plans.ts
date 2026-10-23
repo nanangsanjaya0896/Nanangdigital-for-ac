@@ -1,10 +1,11 @@
 /**
- * Data tiga paket penawaran NanangDigital.
+ * Data tiga paket jasa pembuatan website NanangDigital.
  */
 export interface Plan {
   id: "basic" | "growth" | "premium";
   name: string;
   price: string;
+  priceNote: string;
   tagline: string;
   popular: boolean;
   leadIn?: string;
@@ -16,17 +17,24 @@ export interface Plan {
 export const PLANS: Plan[] = [
   {
     id: "basic",
-    name: "Basic",
+    name: "Paket Basic",
     price: "Rp1.500.000",
-    tagline: "Cocok buat teknisi atau usaha AC yang baru mau punya halaman resmi sendiri.",
+    priceNote: "Sudah termasuk domain & hosting tahun pertama, SSL HTTPS, dan akun Google Maps.",
+    tagline: "Cocok buat teknisi atau usaha AC yang mau punya website resmi siap terima order.",
     popular: false,
+    leadIn: "Fasilitas yang didapat:",
     features: [
-      "1 halaman website profil & daftar layanan AC",
-      "Penulisan teks layanan yang rapi dan gampang dipahami pelanggan",
-      "Tombol chat WhatsApp otomatis terisi format pesan",
-      "Tampilan ringan di HP Android maupun iPhone",
-      "Sudah termasuk domain .com / .id & hosting 1 tahun",
-      "1x revisi ringan dan panduan pakai",
+      "1 landing page / website portfolio",
+      "CTA Form WhatsApp",
+      "Desain responsif (HP, tablet, desktop)",
+      "Copywriting High Convert",
+      "3x revisi ringan",
+      "No Artikel",
+      "Free SSL Certificate (HTTPS)",
+      "Live Chat AI",
+      "Gratis domain & hosting 1 tahun",
+      "Akun Google My Business (Google Maps)",
+      "Gratis Meta Ads",
     ],
     cta: "Ambil Paket Basic",
     waMessage:
@@ -34,46 +42,71 @@ export const PLANS: Plan[] = [
   },
   {
     id: "growth",
-    name: "Growth",
+    name: "Paket Growth",
     price: "Rp2.000.000",
-    tagline: "Paling pas kalau sekalian mau langsung pasang iklan cari pelanggan di sekitar lokasi.",
+    priceNote: "Lengkap dengan setup Meta Ads, Google Search Console, & Google Analytics.",
+    tagline: "Paling pas kalau sekalian mau langsung kejar pelanggan dari iklan lokal & Google.",
     popular: true,
-    leadIn: "Dapat semua isi Paket Basic, ditambah:",
+    leadIn: "Fasilitas lengkap yang didapat:",
     features: [
-      "Setup 1 campaign iklan Facebook & Instagram (Meta Ads)",
-      "2 sampai 3 variasi teks iklan siap tayang",
-      "Setting target lokasi khusus kecamatan / kota area kerja Anda",
-      "Pemasangan Meta Pixel supaya klik WA dari iklan tercatat",
-      "Sudah termasuk domain .com / .id & hosting 1 tahun",
-      "1x revisi ringan",
+      "Website portfolio profesional",
+      "Setup Meta Ads (1 campaign)",
+      "2-3 copy iklan kreatif",
+      "Targeting audience lokal",
+      "Basic pixel & tracking setup",
+      "5x revisi ringan",
+      "CTA Form WhatsApp",
+      "Desain responsif (HP, tablet, desktop)",
+      "Copywriting High Convert",
+      "No Artikel",
+      "Free SSL Certificate (HTTPS)",
+      "Live Chat AI",
+      "Gratis domain & hosting 1 tahun",
+      "Akun Google My Business (Google Maps)",
+      "Gratis Meta Ads",
+      "Gratis Setup Google Search Console",
+      "Gratis Setup Google Analytics",
     ],
     cta: "Ambil Paket Growth",
     waMessage:
-      "Halo Mas Nanang, saya tertarik Paket Growth (Rp2.000.000) yang sudah sekalian setup iklan Meta Ads. Boleh info detailnya?",
+      "Halo Mas Nanang, saya tertarik Paket Growth (Rp2.000.000) yang sudah lengkap sama Meta Ads & Google setup. Boleh info detailnya?",
   },
   {
     id: "premium",
-    name: "Premium",
+    name: "Paket Premium Custom",
     price: "Custom",
-    tagline: "Buat usaha AC yang layanannya banyak, punya beberapa tim, atau mau kejar order lebih kencang.",
+    priceNote: "Untuk harga bisa disesuaikan permintaan & kebutuhan usaha Anda.",
+    tagline: "Buat usaha AC yang layanannya banyak, punya beberapa tim, dan mau kampanye lebih matang.",
     popular: false,
-    leadIn: "Cakupan disesuaikan dengan kebutuhan usaha:",
+    leadIn: "Seluruh fasilitas unggulan:",
     features: [
-      "Website lebih lengkap untuk banyak jenis layanan & area",
-      "Penulisan materi halaman dan penawaran lebih mendalam",
-      "Tombol WhatsApp + formulir jadwal panggilan servis",
-      "Setup 2 campaign iklan dengan sudut penawaran berbeda",
-      "Pendampingan optimasi awal iklan setelah tayang",
-      "2x revisi + gratis domain .com / .id & hosting 1 tahun",
+      "Website portfolio lebih rapi & lengkap",
+      "Setup Meta Ads (2 campaign angle)",
+      "Optimasi awal kampanye iklan",
+      "2-3 copy iklan kreatif",
+      "Targeting audience lokal",
+      "Basic pixel & tracking setup",
+      "Copywriting High Convert lebih kuat & persuasif",
+      "CTA Form WhatsApp + form lead",
+      "10x revisi",
+      "Desain responsif (HP, tablet, desktop)",
+      "No Artikel",
+      "Free SSL Certificate (HTTPS)",
+      "Live Chat AI",
+      "Gratis domain & hosting 1 tahun",
+      "Akun Google My Business (Google Maps)",
+      "Gratis Meta Ads",
+      "Gratis Setup Google Search Console",
+      "Gratis Setup Google Analytics",
     ],
     cta: "Diskusikan Paket Premium",
     waMessage:
-      "Halo Mas Nanang, saya mau ngobrol dulu soal Paket Premium untuk usaha service AC saya.",
+      "Halo Mas Nanang, saya mau tanya dan sesuaikan kebutuhan untuk Paket Premium Custom usaha service AC saya.",
   },
 ];
 
 export const PRICING_NOTES = [
-  "Gratis domain .com / .id dan hosting tahun pertama di semua paket.",
-  "Sudah termasuk 3 bonus tambahan untuk bantu promosi awal.",
-  "Bisa bayar lewat transfer bank, QRIS, atau e-wallet.",
+  "Gratis domain & hosting 1 tahun, Free SSL HTTPS, dan Live Chat AI di semua paket.",
+  "Termasuk pembuatan Akun Google My Business (Google Maps) & Gratis Meta Ads.",
+  "Bisa bayar lewat transfer bank, QRIS, atau e-wallet (DP 50%, lunas setelah jadi).",
 ];
