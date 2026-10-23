@@ -1,47 +1,39 @@
-# Panduan Pasang Meta Pixel + Conversions API (CAPI) di Vercel
+# Panduan Aktivasi Meta Pixel (`2971268586402489`) + Conversions API (CAPI) di Vercel
 
-Seluruh kode **Meta Pixel (Browser) + Meta Conversions API / CAPI (Server) + Form Singkat Pra-WhatsApp** sudah terpasang otomatis di project ini khusus untuk Landing Page **NanangDigital**.
+Nomor **Meta Pixel / Dataset ID (`2971268586402489`)** sudah **ditanamkan langsung secara otomatis** di kode Browser (`src/utils/tracking.ts` & `index.html`) maupun di kode Server (`api/meta-capi.js`).
 
-Kamu **tidak perlu ubah kode apa pun lagi**. Saat siap menjalankan iklan Meta Ads, cukup ikuti 4 langkah singkat berikut:
-
----
-
-## Langkah 1: Ambil Pixel ID & Access Token di Meta Events Manager
-1. Buka **[business.facebook.com](https://business.facebook.com)** lalu masuk ke menu **Events Manager (Pengelola Peristiwa)**.
-2. Pilih menu **Data Sources (Sumber Data)** lalu klik Dataset / Pixel milik NanangDigital (atau klik **Connect Data > Web** jika baru pertama kali membuat).
-3. Masuk ke tab **Settings (Pengaturan)**:
-   - Salin **Dataset ID / Pixel ID** (angka 15 sampai 16 digit).
-   - Scroll ke bawah ke bagian **Conversions API > Set up direct integration**, klik **Generate access token**, lalu salin token panjang yang muncul (dimulai dengan huruf `EAA...`).
+Artinya, untuk menyalakan **Meta Pixel + Meta CAPI** secara penuh 100%, Anda hanya tinggal menempel **1 baris token rahasia (`META_CAPI_ACCESS_TOKEN`)** di dashboard Vercel!
 
 ---
 
-## Langkah 2: Deploy Project ke Vercel & Isi Environment Variables
-1. Login ke **[vercel.com](https://vercel.com)** menggunakan akun GitHub kamu, lalu pilih repository **`Nanangdigital-for-ac`**.
-2. Sebelum klik **Deploy** (atau lewat menu **Project Settings > Environment Variables**), tambahkan 3 variabel ini:
-
-| Nama Variabel | Isi dengan |
-| :--- | :--- |
-| `VITE_META_PIXEL_ID` | Angka Dataset / Pixel ID 15-16 digit kamu |
-| `META_PIXEL_ID` | Angka Dataset / Pixel ID yang sama |
-| `META_CAPI_ACCESS_TOKEN` | Token rahasia `EAA...` dari Langkah 1 |
-
-*(Opsional saat ngetes pertama kali)*:
-- Buka tab **Test Events** di Meta Events Manager, salin kode tes (contoh: `TEST51829`), lalu isi sementara ke variabel `META_TEST_EVENT_CODE` di Vercel dan klik **Redeploy**.
+## Langkah 1: Tempel Token CAPI di Dashboard Vercel (1 Menit)
+1. Buka dashboard project **`nanangdigital-navy`** di **[vercel.com](https://vercel.com)** -> klik tab **Settings** -> menu **Environment Variables**.
+2. Tambahkan **1 variabel ini saja**:
+   * **Key:** `META_CAPI_ACCESS_TOKEN`
+   * **Value:** *(Tempel kode panjang `EAA...` dari Meta Events Manager > Settings > Conversions API > Generate access token)*
+   * Klik **Save**.
+3. *(Opsional jika ingin tes live di tab Test Events dulu)*:
+   * Tambahkan sementara **Key:** `META_TEST_EVENT_CODE` dengan **Value** kode tes dari tab *Test Events* Meta (contoh: `TEST51829`) -> klik **Save**.
+4. Masuk ke tab **Deployments** di Vercel -> klik titik tiga (`...`) pada deployment paling atas -> pilih **Redeploy** -> klik **Redeploy**.
 
 ---
 
-## Langkah 3: Cek Apakah Deduplication Sudah Jalan (5 Menit)
-1. Buka tab **Test Events** di Meta Events Manager.
-2. Buka link website Vercel kamu di HP atau laptop:
-   - Akan muncul **`PageView`** dari Browser & Server yang otomatis digabung menjadi **Deduplicated**.
-3. Klik salah satu tombol WhatsApp di website, isi **Nama**, **Nomor WA**, dan **Kota**, lalu klik **Lanjut Chat ke WhatsApp**:
-   - Akan muncul **`Lead`** dengan status **Deduplicated** lengkap dengan data terenkripsi SHA-256 (`Phone`, `First Name`, `City`, `Country`, `IP`, `User Agent`, `fbp`, `fbc`).
-4. Kalau sudah muncul rapi, **hapus nilai `META_TEST_EVENT_CODE`** di Vercel lalu **Redeploy** sekali lagi supaya siap dipakai kampanye iklan asli.
+## Langkah 2: Cara Cek 1 Detik Apakah Server CAPI Sudah Aktif!
+Begitu status deploy di Vercel bertuliskan **Ready**, cukup buka alamat ini di browser HP atau laptop Anda:
+```text
+https://nanangdigital-navy.vercel.app/api/meta-capi
+```
+Jika pemasangan token berhasil, layar akan menampilkan status aman berikut (tanpa membocorkan isi token Anda):
+```json
+{
+  "ok": true,
+  "service": "NanangDigital Meta Conversions API",
+  "dataset_id": "2971268586402489",
+  "capi_token_configured": true,
+  "test_event_mode": false,
+  "ready_for_live_capi": true
+}
+```
+Kalau tertulis `"ready_for_live_capi": true`, berarti **Meta Pixel Browser + Server CAPI Anda sudah 100% menyala penuh!**
 
----
-
-## Langkah 4: Setting Kampanye di Meta Ads Manager
-- Saat membuat kampanye iklan di Meta Ads Manager:
-  - Pilih objektif **Leads (Prospek)**.
-  - Pilih lokasi konversi **Website**.
-  - Pilih Dataset / Pixel NanangDigital dan set **Performance Goal: Maximize number of conversions** dengan Conversion Event: **`Lead`**.
+*(Catatan penting: Jika tadi Anda sempat mengisi `META_TEST_EVENT_CODE` untuk ngetes di tab Test Events, jangan lupa hapus variabel `META_TEST_EVENT_CODE` dan Redeploy sekali lagi sebelum menyalakan kampanye iklan sungguhan).*
