@@ -29,7 +29,7 @@ function detectTopicLabel(source: string, message: string): string {
     return "Paket Growth (Rp2.000.000)";
   }
   if (source === "pricing_premium" || message.includes("Paket Premium")) {
-    return "Paket Premium";
+    return "Paket Premium Custom";
   }
   if (source === "bonus_cta" || message.includes("bonus")) {
     return "Tanya Bonus Tambahan";
