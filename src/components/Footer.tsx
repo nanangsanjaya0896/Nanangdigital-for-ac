@@ -51,8 +51,6 @@ export default function Footer() {
   const footNavRight = FOOT_NAV_RIGHT_BY_LANG[lang];
   const articles = SEO_ARTICLES_BY_LANG[lang];
   const waLink = getGeneralWaLink(lang);
-  const phoneDisplay =
-    lang === "id" ? BUSINESS.whatsapp.display : BUSINESS.whatsapp.displayIntl;
 
   return (
     <footer className="relative overflow-hidden border-t border-line bg-[#0b0f13]">
@@ -107,16 +105,6 @@ export default function Footer() {
               >
                 <WhatsAppIcon className="h-4 w-4" />
                 {lang === "id" ? "Chat di WhatsApp" : "Chat on WhatsApp"}
-              </a>
-              <a
-                href={BUSINESS.whatsapp.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-source="footer_phone"
-                className="font-mono text-sm tracking-wide text-mist transition-colors hover:text-accent"
-                aria-label={`WhatsApp ${phoneDisplay}`}
-              >
-                {phoneDisplay}
               </a>
             </div>
           </div>
