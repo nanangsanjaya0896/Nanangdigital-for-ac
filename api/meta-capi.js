@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 const GRAPH_API_VERSION = "v21.0";
+export const DEFAULT_META_DATASET_ID = "2971268586402489";
 const ALLOWED_EVENTS = new Set(["PageView", "Lead", "Contact", "ViewContent"]);
 
 /**
@@ -23,6 +24,29 @@ export function normalizeIndonesianPhone(rawPhone) {
   if (digits.startsWith("0")) return `62${digits.slice(1)}`;
   if (digits.startsWith("8")) return `62${digits}`;
   return digits;
+}
+
+/**
+ * Cek status kesiapan endpoint CAPI tanpa pernah membocorkan isi token rahasia.
+ * @param {Record<string, string | undefined>} [env]
+ */
+export function getMetaCapiHealth(env = process.env) {
+  const datasetId = (
+    env.META_PIXEL_ID ||
+    env.VITE_META_PIXEL_ID ||
+    DEFAULT_META_DATASET_ID
+  ).trim();
+  const tokenConfigured = Boolean((env.META_CAPI_ACCESS_TOKEN || "").trim());
+  const testModeActive = Boolean((env.META_TEST_EVENT_CODE || "").trim());
+
+  return {
+    ok: true,
+    service: "NanangDigital Meta Conversions API",
+    dataset_id: datasetId,
+    capi_token_configured: tokenConfigured,
+    test_event_mode: testModeActive,
+    ready_for_live_capi: Boolean(datasetId && tokenConfigured),
+  };
 }
 
 /**
@@ -106,7 +130,11 @@ export async function processMetaCapiEvent({ body, clientIp = "", userAgent = ""
     custom_data: body?.custom_data && typeof body.custom_data === "object" ? body.custom_data : undefined,
   };
 
-  const datasetId = (env.META_PIXEL_ID || env.VITE_META_PIXEL_ID || "").trim();
+  const datasetId = (
+    env.META_PIXEL_ID ||
+    env.VITE_META_PIXEL_ID ||
+    DEFAULT_META_DATASET_ID
+  ).trim();
   const accessToken = (env.META_CAPI_ACCESS_TOKEN || "").trim();
   const testEventCode = (env.META_TEST_EVENT_CODE || "").trim();
 
@@ -118,14 +146,15 @@ export async function processMetaCapiEvent({ body, clientIp = "", userAgent = ""
     graphBody.test_event_code = testEventCode;
   }
 
-  // Mode simulasi aman bila token CAPI belum diisi di Environment Variables
+  // Mode simulasi aman bila token CAPI belum diisi di Environment Variables Vercel
   if (!datasetId || !accessToken) {
     return {
       status: 200,
       payload: {
         ok: true,
         dry_run: true,
-        message: "META_PIXEL_ID atau META_CAPI_ACCESS_TOKEN belum diisi, event divalidasi lokal.",
+        dataset_id: datasetId,
+        message: "META_CAPI_ACCESS_TOKEN belum diisi di Vercel, event divalidasi lokal.",
         event_name: eventName,
         deduplication_event_id: eventId,
         matched_fields: Object.keys(userData),
@@ -158,6 +187,7 @@ export async function processMetaCapiEvent({ body, clientIp = "", userAgent = ""
       payload: {
         ok: true,
         dry_run: false,
+        dataset_id: datasetId,
         deduplication_event_id: eventId,
         meta_response: result,
       },
@@ -177,8 +207,12 @@ export async function processMetaCapiEvent({ body, clientIp = "", userAgent = ""
  * Handler resmi Vercel Serverless Function (/api/meta-capi).
  */
 export default async function handler(req, res) {
+  if (req.method === "GET") {
+    return res.status(200).json(getMetaCapiHealth(process.env));
+  }
+
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
+    res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ ok: false, error: "Method Not Allowed" });
   }
 

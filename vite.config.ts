@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import type { Plugin } from "vite";
 // @ts-expect-error modul ESM serverless Vercel dipakai juga oleh dev server lokal
-import { processMetaCapiEvent } from "./api/meta-capi.js";
+import { getMetaCapiHealth, processMetaCapiEvent } from "./api/meta-capi.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +16,13 @@ function metaCapiDevPlugin(): Plugin {
     name: "meta-capi-dev-endpoint",
     configureServer(server) {
       server.middlewares.use("/api/meta-capi", (req, res) => {
+        if (req.method === "GET") {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(getMetaCapiHealth(process.env)));
+          return;
+        }
+
         if (req.method !== "POST") {
           res.statusCode = 405;
           res.setHeader("Content-Type", "application/json");
