@@ -73,7 +73,7 @@ export default function App({ initialPath, initialLang }: AppProps = {}) {
     <LanguageProvider initialLang={resolvedInitialLang} pathname={currentPath}>
       <MotionConfig reducedMotion="user">
         {route.isPanduan ? (
-          <PanduanPage article={matchedArticle} />
+          <PanduanPage article={matchedArticle} slug={route.slug} />
         ) : (
           <>
             <Navbar />
