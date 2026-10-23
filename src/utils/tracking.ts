@@ -184,9 +184,9 @@ export function initMarketingTracking(): void {
       fbp,
     });
 
-    const gaMeasurementId = extractGaMeasurementId(
-      import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined
-    );
+    const gaMeasurementId =
+      extractGaMeasurementId(import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined) ||
+      "G-JY9N81NCQE";
     if (gaMeasurementId && !window.gtag) {
       window.gtag = function () {
         // Wajib memakai objek arguments asli sesuai spesifikasi resmi Google gtag.js
