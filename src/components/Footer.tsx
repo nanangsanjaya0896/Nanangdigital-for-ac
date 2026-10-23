@@ -2,6 +2,7 @@ import { ArrowUp } from "lucide-react";
 import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
+import { SEO_ARTICLES } from "../data/articles";
 
 const FOOT_NAV_LEFT = [
   { id: "beranda", label: "Beranda" },
@@ -28,7 +29,7 @@ export default function Footer() {
       </span>
 
       <div className="section-wrap relative pb-10 pt-16 md:pt-24">
-        <div className="grid gap-12 md:grid-cols-2 md:gap-8">
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_1.45fr] lg:gap-10">
           {/* Kolom kiri */}
           <div>
             <a href="#beranda" aria-label="NanangDigital, kembali ke atas">
@@ -62,8 +63,11 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Kolom kanan: navigasi */}
-          <nav aria-label="Navigasi footer" className="grid grid-cols-2 gap-8 md:justify-items-end">
+          {/* Kolom kanan: navigasi + panduan SEO usaha AC */}
+          <nav
+            aria-label="Navigasi footer"
+            className="grid grid-cols-2 gap-8 sm:grid-cols-[0.8fr_0.8fr_1.4fr]"
+          >
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
                 Halaman
@@ -81,6 +85,7 @@ export default function Footer() {
                 ))}
               </ul>
             </div>
+
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
                 Info Paket
@@ -93,6 +98,26 @@ export default function Footer() {
                       className="inline-block py-1.5 text-sm text-mist transition-colors hover:text-white"
                     >
                       {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+                <a href="/panduan/" className="hover:underline">
+                  Panduan Usaha AC
+                </a>
+              </h3>
+              <ul className="mt-5 space-y-2">
+                {SEO_ARTICLES.map((article) => (
+                  <li key={article.slug}>
+                    <a
+                      href={`/panduan/${article.slug}/`}
+                      className="inline-block py-1.5 text-sm leading-snug text-mist transition-colors hover:text-white"
+                    >
+                      {article.title}
                     </a>
                   </li>
                 ))}

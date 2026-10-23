@@ -17,9 +17,27 @@ import FinalCTASection from "./components/FinalCTASection";
 import Footer from "./components/Footer";
 import StickyWhatsApp from "./components/StickyWhatsApp";
 import PreWhatsAppModal from "./components/PreWhatsAppModal";
+import PanduanPage from "./components/PanduanPage";
 import type { PreWaModalContext } from "./components/PreWhatsAppModal";
 import { WA_MESSAGE_GENERAL } from "./data/business";
+import { findArticleBySlug } from "./data/articles";
 import { initMarketingTracking, trackPreWaModalOpened } from "./utils/tracking";
+
+export interface AppProps {
+  initialPath?: string;
+}
+
+function resolveRoute(pathname: string): { isPanduan: boolean; slug?: string } {
+  const clean = pathname.replace(/\/+$/, "");
+  if (clean === "/panduan") {
+    return { isPanduan: true };
+  }
+  const match = clean.match(/^\/panduan\/([^/]+)$/);
+  if (match) {
+    return { isPanduan: true, slug: decodeURIComponent(match[1]) };
+  }
+  return { isPanduan: false };
+}
 
 function detectTopicLabel(source: string, message: string): string {
   if (source === "pricing_basic" || message.includes("Paket Basic")) {
@@ -30,6 +48,9 @@ function detectTopicLabel(source: string, message: string): string {
   }
   if (source === "pricing_premium" || message.includes("Paket Premium")) {
     return "Paket Premium Custom";
+  }
+  if (source.startsWith("seo_article_") || source === "panduan_hub_cta") {
+    return "Konsultasi dari Panduan AC";
   }
   if (source === "bonus_cta" || message.includes("bonus")) {
     return "Tanya Bonus Tambahan";
@@ -43,11 +64,12 @@ function detectTopicLabel(source: string, message: string): string {
   return "Konsultasi Gratis";
 }
 
-/**
- * NanangDigital, single-page landing page.
- * Seluruh konten berada dalam halaman "/" dengan navigasi anchor.
- */
-export default function App() {
+export default function App({ initialPath }: AppProps = {}) {
+  const currentPath =
+    initialPath ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+  const route = resolveRoute(currentPath);
+  const matchedArticle = route.slug ? findArticleBySlug(route.slug) : undefined;
+
   const [preWaContext, setPreWaContext] = useState<PreWaModalContext | null>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
 
@@ -55,7 +77,7 @@ export default function App() {
     initMarketingTracking();
   }, []);
 
-  // Tangkap klik semua tombol WhatsApp di halaman untuk membuka Form Singkat Pra-WA
+  // Tangkap klik semua tombol WhatsApp di halaman utama maupun halaman panduan SEO
   useEffect(() => {
     const onDocumentClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0) return;
@@ -109,8 +131,6 @@ export default function App() {
     window.requestAnimationFrame(() => lastTriggerRef.current?.focus());
   };
 
-  // Deep-link: saat halaman dibuka dengan hash (mis. /#paket),
-  // scroll ke section target setelah layout stabil.
   useEffect(() => {
     const { hash } = window.location;
     if (!hash || hash.length < 2) return;
@@ -126,23 +146,30 @@ export default function App() {
 
   return (
     <>
-      <Navbar />
-      <main id="konten" tabIndex={-1}>
-        <Hero />
-        <ProblemSection />
-        <SolutionSection />
-        <FounderSection />
-        <WorksSection />
-        <LayananSection />
-        <FeaturesSection />
-        <PricingSection />
-        <ProcessSection />
-        <BonusSection />
-        <TrustSection />
-        <FAQSection />
-        <FinalCTASection />
-      </main>
-      <Footer />
+      {route.isPanduan ? (
+        <PanduanPage article={matchedArticle} />
+      ) : (
+        <>
+          <Navbar />
+          <main id="konten" tabIndex={-1}>
+            <Hero />
+            <ProblemSection />
+            <SolutionSection />
+            <FounderSection />
+            <WorksSection />
+            <LayananSection />
+            <FeaturesSection />
+            <PricingSection />
+            <ProcessSection />
+            <BonusSection />
+            <TrustSection />
+            <FAQSection />
+            <FinalCTASection />
+          </main>
+          <Footer />
+        </>
+      )}
+
       <StickyWhatsApp />
 
       <AnimatePresence>
