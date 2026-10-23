@@ -251,7 +251,18 @@ export default function PanduanPage({ article }: PanduanPageProps) {
 
       <footer className="border-t border-line bg-[#0b0f13] py-10">
         <div className="section-wrap flex flex-col items-center justify-between gap-4 text-xs text-mist sm:flex-row">
-          <p>© 2026 {BUSINESS.brand}. Jasa Website & Meta Ads Khusus Usaha Service AC.</p>
+          <div className="flex items-center gap-3">
+            <img
+              src={BUSINESS.logoUrl}
+              alt={`Logo ${BUSINESS.brand}`}
+              width={40}
+              height={40}
+              loading="lazy"
+              decoding="async"
+              className="h-9 w-auto rounded-lg border border-white/10 object-contain"
+            />
+            <p>© 2026 {BUSINESS.brand}. Jasa Website & Meta Ads Khusus Usaha Service AC.</p>
+          </div>
           <div className="flex items-center gap-6">
             <a href="/" className="py-1.5 hover:text-white">
               Beranda

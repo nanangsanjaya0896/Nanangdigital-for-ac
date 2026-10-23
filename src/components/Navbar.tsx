@@ -59,13 +59,18 @@ export default function Navbar() {
             : "border-transparent bg-[#0f1115]/40 backdrop-blur-md"
         }`}
       >
-        <div className="section-wrap flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
-          <a href="#beranda" aria-label="NanangDigital, kembali ke beranda" className="shrink-0 py-2">
+        {/* Grid 3 kolom seimbang kiri & kanan pada layar desktop */}
+        <div className="section-wrap flex h-20 items-center justify-between gap-6 lg:grid lg:h-[5.5rem] lg:grid-cols-[1fr_auto_1fr]">
+          <a
+            href="#beranda"
+            aria-label="NanangDigital, kembali ke beranda"
+            className="shrink-0 py-2 lg:justify-self-start"
+          >
             <Logo className="text-xl md:text-2xl" />
           </a>
 
-          {/* Menu desktop tanpa tombol CTA */}
-          <nav aria-label="Navigasi utama" className="hidden lg:block">
+          {/* Menu desktop rata tengah sehingga kiri & kanan seimbang */}
+          <nav aria-label="Navigasi utama" className="hidden lg:block lg:justify-self-center">
             <ul className="flex items-center gap-8">
               {NAV_LINKS.map((link) => {
                 const isActive = active === link.id;
@@ -89,17 +94,20 @@ export default function Navbar() {
             </ul>
           </nav>
 
-          <button
-            ref={hamburgerRef}
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-expanded={menuOpen}
-            aria-controls="menu-seluler"
-            aria-label="Buka menu navigasi"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent lg:hidden"
-          >
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          </button>
+          {/* Kolom penyeimbang kanan di desktop + tombol menu di HP */}
+          <div className="flex items-center lg:justify-self-end">
+            <button
+              ref={hamburgerRef}
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-expanded={menuOpen}
+              aria-controls="menu-seluler"
+              aria-label="Buka menu navigasi"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent lg:hidden"
+            >
+              <Menu className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </header>
 

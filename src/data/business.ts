@@ -15,6 +15,7 @@ export const BUSINESS = {
       "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/photo1",
     alt: "Foto Nanang Sanjaya, Founder NanangDigital",
   },
+  logoUrl: "https://res.cloudinary.com/col2kwnv/image/upload/f_auto/q_auto/Logo_Nanang_Digital.jpg",
   whatsapp: {
     intl: "6285972577637",
     display: "0859-7257-7637",
