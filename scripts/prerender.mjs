@@ -21,9 +21,12 @@ function normalizeGscVerificationToken(raw) {
   if (!raw) return "";
   const trimmed = String(raw).trim();
   const contentAttrMatch = trimmed.match(/content=["']([^"']+)["']/i);
-  const token = (contentAttrMatch ? contentAttrMatch[1] : trimmed).trim();
+  const unwrapped = (contentAttrMatch ? contentAttrMatch[1] : trimmed)
+    .trim()
+    .replace(/^google-site-verification=/i, "")
+    .trim();
   // Hanya izinkan karakter aman untuk atribut HTML
-  return token.replace(/["'<>]/g, "");
+  return unwrapped.replace(/["'<>]/g, "");
 }
 
 async function runPrerender() {
@@ -52,8 +55,8 @@ async function runPrerender() {
   const indexPath = path.join(distDir, "index.html");
   let html = fs.readFileSync(indexPath, "utf8");
 
-  // Suntikkan meta tag verifikasi Google Search Console langsung ke HTML statis bila diisi
-  if (gscToken && !html.includes('name="google-site-verification"')) {
+  // Suntikkan meta tag verifikasi tambahan Google Search Console bila diisi lewat env dan belum ada di HTML
+  if (gscToken && !html.includes(`content="${gscToken}"`)) {
     html = html.replace(
       '<meta name="robots" content="index, follow" />',
       `<meta name="robots" content="index, follow" />\n    <meta name="google-site-verification" content="${gscToken}" />`
