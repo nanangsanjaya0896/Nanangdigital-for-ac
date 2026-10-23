@@ -3,124 +3,97 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import WhatsAppIcon from "./WhatsAppIcon";
-import { FAQ_ITEMS } from "../data/faq";
-import { waUrl } from "../data/business";
+import { FAQ_BY_LANG } from "../data/faq";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function FAQSection() {
-  const [openIds, setOpenIds] = useState<ReadonlySet<string>>(
-    () => new Set(FAQ_ITEMS[0] ? [FAQ_ITEMS[0].id] : [])
-  );
-
-  const toggle = (id: string) => {
-    setOpenIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+  const { lang } = useLanguage();
+  const faqItems = FAQ_BY_LANG[lang];
+  const [openId, setOpenId] = useState<string | null>(faqItems[0]?.id ?? null);
 
   return (
-    <section id="faq" aria-label="Pertanyaan yang sering diajukan" className="relative py-24 md:py-32">
-      <div className="section-wrap grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        <div>
-          <SectionHeader
-            index="11"
-            eyebrow="Tanya Jawab"
-            title={
-              <>
-                Hal yang Paling Sering <span className="text-accent">Ditanyakan</span>.
-              </>
-            }
-            description="Soal waktu pengerjaan, biaya domain tahun depan, cara bayar, sampai revisi sudah saya rangkum jujur di sini."
-          />
+    <section
+      id="faq"
+      aria-label={lang === "id" ? "Pertanyaan yang sering diajukan" : "Frequently asked questions"}
+      className="relative py-24 md:py-32"
+    >
+      <div className="section-wrap">
+        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <SectionHeader
+              index="11"
+              eyebrow={lang === "id" ? "Tanya Jawab" : "FAQ"}
+              title={
+                lang === "id" ? (
+                  <>
+                    Hal yang Paling Sering <span className="text-accent">Ditanyakan</span>.
+                  </>
+                ) : (
+                  <>
+                    Common <span className="text-accent">Questions</span> Answered Straight.
+                  </>
+                )
+              }
+              description={
+                lang === "id"
+                  ? "Masih ada yang belum terjawab di sini? Langsung lempar pertanyaan di chat WhatsApp saja, santai."
+                  : "Have another question about your market or custom requirements? Send a quick message on WhatsApp anytime."
+              }
+            />
+          </div>
 
-          <Reveal delay={0.2}>
-            <div className="mt-10 rounded-3xl border border-line bg-surface p-7">
-              <h3 className="font-display text-lg font-semibold tracking-tight">
-                Ada hal lain yang mau ditanyakan dulu?
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-mist">
-                Langsung chat saja di WhatsApp. Mau baru sekadar tanya-tanya atau cek kecocokan
-                paket dulu tetap saya balas santai.
-              </p>
-              <a
-                href={waUrl(
-                  "Halo Mas Nanang, saya baru baca tanya-jawab di website dan mau tanya sedikit soal pembuatan website AC."
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-source="faq_cta"
-                className="btn-primary mt-6 w-full text-sm"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Tanya Langsung di WA
-              </a>
-            </div>
-          </Reveal>
-        </div>
-
-        <div className="space-y-3">
-          {FAQ_ITEMS.map((item, i) => {
-            const isOpen = openIds.has(item.id);
-            return (
-              <Reveal key={item.id} delay={i * 0.05}>
-                <div
-                  className={`overflow-hidden rounded-2xl border transition-colors duration-300 ${
-                    isOpen ? "border-accent/40 bg-surface" : "border-line bg-surface/60"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggle(item.id)}
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-panel-${item.id}`}
-                    id={`faq-trigger-${item.id}`}
-                    className="flex w-full items-center gap-4 p-5 text-left transition-colors hover:bg-white/[0.02] md:p-6"
-                  >
-                    <span className="font-mono text-xs text-accent">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex-1 font-display text-base font-semibold tracking-tight md:text-lg">
-                      {item.question}
-                    </span>
-                    <motion.span
-                      animate={{ rotate: isOpen ? 45 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors ${
-                        isOpen
-                          ? "border-accent bg-accent/15 text-accent"
-                          : "border-line text-mist"
-                      }`}
+          <div className="divide-y divide-line border-y border-line">
+            {faqItems.map((item, i) => {
+              const isOpen = openId === item.id;
+              return (
+                <Reveal key={item.id} delay={i * 0.05}>
+                  <div>
+                    <button
+                      type="button"
+                      id={`faq-btn-${item.id}`}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-panel-${item.id}`}
+                      onClick={() => setOpenId(isOpen ? null : item.id)}
+                      className="flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:text-accent md:py-7"
                     >
-                      <Plus className="h-4 w-4" aria-hidden="true" />
-                    </motion.span>
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        key="panel"
-                        id={`faq-panel-${item.id}`}
-                        role="region"
-                        aria-labelledby={`faq-trigger-${item.id}`}
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-                        className="overflow-hidden"
+                      <span className="font-display text-base font-semibold tracking-tight sm:text-lg md:text-xl">
+                        {item.question}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                          isOpen
+                            ? "rotate-45 border-accent bg-accent text-[#04140c]"
+                            : "border-line text-mist"
+                        }`}
                       >
-                        <p className="border-t border-white/5 px-5 pb-6 pl-14 pt-4 text-sm leading-relaxed text-mist md:px-6 md:pl-[4.25rem] md:text-base">
-                          {item.answer}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </Reveal>
-            );
-          })}
+                        <Plus className="h-4 w-4" />
+                      </span>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          id={`faq-panel-${item.id}`}
+                          role="region"
+                          aria-labelledby={`faq-btn-${item.id}`}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <p className="pb-7 pr-4 text-sm leading-relaxed text-mist sm:pr-12 md:text-base">
+                            {item.answer}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

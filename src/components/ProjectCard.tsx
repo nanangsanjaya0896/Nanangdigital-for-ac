@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "../data/projects";
-import { PROJECT_TYPE_LABEL } from "../data/projects";
+import { PROJECT_TYPE_LABEL_BY_LANG } from "../data/projects";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface ProjectCardProps {
   project: Project;
@@ -9,12 +10,19 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
+  const { lang } = useLanguage();
+  const typeLabel = PROJECT_TYPE_LABEL_BY_LANG[lang][project.type];
+
   return (
     <motion.button
       type="button"
       layout
       onClick={(event) => onOpen(project, event.currentTarget)}
-      aria-label={`Lihat detail karya ${project.title}`}
+      aria-label={
+        lang === "id"
+          ? `Lihat detail karya ${project.title}`
+          : `View sample details for ${project.title}`
+      }
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 12 }}
@@ -40,7 +48,7 @@ export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
                 : "border-accent/50 bg-black/55 text-accent"
           }`}
         >
-          {PROJECT_TYPE_LABEL[project.type]}
+          {typeLabel}
         </span>
       </div>
 
@@ -56,7 +64,10 @@ export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
         </span>
 
         <div className="mt-auto flex items-center justify-between gap-4 pt-5">
-          <ul className="flex flex-wrap gap-1.5" aria-label="Tag karya">
+          <ul
+            className="flex flex-wrap gap-1.5"
+            aria-label={lang === "id" ? "Tag karya" : "Sample tags"}
+          >
             {project.tags.slice(0, 2).map((tag) => (
               <li
                 key={tag}
@@ -67,7 +78,7 @@ export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
             ))}
           </ul>
           <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-accent">
-            Detail
+            {lang === "id" ? "Detail" : "Preview"}
             <ArrowUpRight
               className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
               aria-hidden="true"

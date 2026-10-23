@@ -1,82 +1,105 @@
-import { MessagesSquare, LayoutTemplate, MapPin, Gift } from "lucide-react";
+import { Gift, Lightbulb, Share2, MessageSquareText } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import { waUrl } from "../data/business";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Locale } from "../i18n/LanguageContext";
 
 interface Bonus {
   icon: LucideIcon;
   title: string;
   description: string;
-  badge: string;
 }
 
-const BONUSES: Bonus[] = [
-  {
-    icon: MessagesSquare,
-    title: "Sesi Diskusi Strategi Iklan Lokal",
-    description:
-      "Kita bahas cara pasang iklan yang hemat budget khusus area sekitar bengkel Anda, mulai dari penentuan radius lokasi sampai kalimat pembukanya.",
-    badge: "Senilai Rp300.000",
-  },
-  {
-    icon: LayoutTemplate,
-    title: "5 Contekan Caption Siap Posting",
-    description:
-      "Teks promosi cuci dan perbaikan AC yang tinggal ganti nama usaha lalu pasang di Status WhatsApp, Instagram, atau grup Facebook warga.",
-    badge: "Bonus Gratis #2",
-  },
-  {
-    icon: MapPin,
-    title: "Panduan Merapikan Google Maps Bisnis",
-    description:
-      "Langkah demi langkah supaya titik lokasi usaha AC Anda gampang nongol waktu orang sekitar mengetik 'tukang service AC terdekat' di HP.",
-    badge: "Bonus Gratis #3",
-  },
-];
+const BONUSES_BY_LANG: Record<Locale, Bonus[]> = {
+  id: [
+    {
+      icon: MessageSquareText,
+      title: "Template Balas Chat Pelanggan",
+      description:
+        "Contoh kalimat siap salin waktu balas chat tanya harga, konfirmasi jam kedatangan teknisi, sampai minta ulasan.",
+    },
+    {
+      icon: Lightbulb,
+      title: "Diskusi Arah Promosi Area Lokal",
+      description:
+        "Obrolan santai membahas cara paling masuk akal mendatangkan orderan rutin di kecamatan atau kota tempat Anda buka jasa.",
+    },
+    {
+      icon: Share2,
+      title: "Perapian Profil Bio Medsos",
+      description:
+        "Saran kalimat singkat untuk bio Instagram, Facebook, dan info bisnis WhatsApp supaya seragam mengarah ke website baru.",
+    },
+  ],
+  en: [
+    {
+      icon: MessageSquareText,
+      title: "Ready-to-Send Dispatch Reply Scripts",
+      description:
+        "Proven copy-paste WhatsApp & SMS scripts for quoting jobs, confirming technician arrival windows, and collecting 5-star reviews.",
+    },
+    {
+      icon: Lightbulb,
+      title: "1-on-1 Local Lead Generation Strategy",
+      description:
+        "Actionable advice on mapping your highest-profit neighborhoods and getting steady calls during both peak summer and shoulder seasons.",
+    },
+    {
+      icon: Share2,
+      title: "Social & WhatsApp Business Bio Makeover",
+      description:
+        "Clean bio copy for your Instagram, Facebook Page, and WhatsApp Business profile aligned seamlessly with your new website.",
+    },
+  ],
+};
 
 export default function BonusSection() {
+  const { lang } = useLanguage();
+  const bonuses = BONUSES_BY_LANG[lang];
+
   return (
-    <section id="bonus" aria-label="Bonus tambahan" className="relative overflow-hidden py-24 md:py-32">
-      <div
-        aria-hidden="true"
-        className="glow-orb absolute -left-52 top-1/2 h-[32rem] w-[32rem] -translate-y-1/2 rounded-full opacity-50"
-      />
-      <div className="section-wrap relative">
+    <section
+      id="bonus"
+      aria-label={lang === "id" ? "Bonus tambahan" : "Included bonuses"}
+      className="relative py-24 md:py-32"
+    >
+      <div className="section-wrap">
         <SectionHeader
           index="09"
-          eyebrow="Bonus Tambahan"
+          eyebrow={lang === "id" ? "Bonus Gratis" : "Complimentary Bonuses"}
           title={
-            <>
-              Dapat Sekalian <span className="text-accent">3 Bekal Promosi</span> Ini.
-            </>
+            lang === "id" ? (
+              <>
+                Bonus Tambahan di <span className="text-accent">Semua Paket</span>, Tanpa Biaya
+                Ekstra.
+              </>
+            ) : (
+              <>
+                Included Free With <span className="text-accent">Every Package</span> at Zero Extra
+                Cost.
+              </>
+            )
           }
-          description="Begitu website selesai, Anda juga saya bekali tiga materi praktis ini supaya usaha makin cepat dikenal warga sekitar."
+          description={
+            lang === "id"
+              ? "Biar begitu website beres, Anda juga punya bekal praktis buat meladeni chat pelanggan dan memajang link di medsos."
+              : "Extra practical tools so the moment your HVAC website launches, closing incoming inquiries feels effortless."
+          }
         />
 
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {BONUSES.map((bonus, i) => (
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {bonuses.map((bonus, i) => (
             <Reveal key={bonus.title} delay={i * 0.1}>
-              <article
-                className={`group relative flex h-full flex-col rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-1 md:p-8 ${
-                  i === 0
-                    ? "border-accent/50 bg-gradient-to-b from-accent/[0.1] to-surface"
-                    : "border-line bg-surface hover:border-accent/35"
-                }`}
-              >
-                <span
-                  className={`absolute -top-3.5 left-7 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-[0.68rem] font-bold tracking-wide ${
-                    i === 0
-                      ? "bg-gradient-to-r from-accent to-accent-deep text-[#04140c]"
-                      : "border border-accent/40 bg-ink text-accent"
-                  }`}
-                >
-                  <Gift className="h-3 w-3" aria-hidden="true" />
-                  {bonus.badge}
-                </span>
-
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-line bg-white/[0.03] text-accent">
-                  <bonus.icon className="h-5 w-5" strokeWidth={1.85} aria-hidden="true" />
+              <article className="relative h-full overflow-hidden rounded-2xl border border-accent/25 bg-gradient-to-b from-accent/[0.06] to-surface p-7 transition-all duration-300 hover:-translate-y-1 hover:border-accent/55">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
+                    <bonus.icon className="h-5 w-5" strokeWidth={1.9} aria-hidden="true" />
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-accent">
+                    <Gift className="h-3 w-3" aria-hidden="true" />
+                    {lang === "id" ? "Gratis" : "Free Bonus"}
+                  </span>
                 </div>
                 <h3 className="mt-6 font-display text-lg font-bold tracking-tight md:text-xl">
                   {bonus.title}
@@ -86,24 +109,6 @@ export default function BonusSection() {
             </Reveal>
           ))}
         </div>
-
-        <Reveal delay={0.3}>
-          <p className="mt-10 text-center text-sm text-mist">
-            Mau tanya detail bonus ini untuk paket yang Anda incar?{" "}
-            <a
-              href={waUrl(
-                "Halo Mas Nanang, saya mau tanya soal bonus tambahan kalau bikin website service AC di NanangDigital."
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-track-source="bonus_cta"
-              className="font-semibold text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-white"
-            >
-              Chat langsung di WhatsApp
-            </a>
-            .
-          </p>
-        </Reveal>
       </div>
     </section>
   );

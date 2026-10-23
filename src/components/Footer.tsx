@@ -1,165 +1,140 @@
-import { useState } from "react";
-import { ArrowUp } from "lucide-react";
-import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
-import { SEO_ARTICLES } from "../data/articles";
+import { BUSINESS, getGeneralWaLink } from "../data/business";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Locale } from "../i18n/LanguageContext";
 
-const FOOT_NAV_LEFT = [
-  { id: "beranda", label: "Beranda" },
-  { id: "tentang", label: "Tentang" },
-  { id: "karya", label: "Contoh Desain" },
-  { id: "layanan", label: "Layanan" },
-] as const;
-
-const FOOT_NAV_RIGHT = [
-  { id: "paket", label: "Pilihan Paket" },
-  { id: "proses", label: "Alur Kerja" },
-  { id: "faq", label: "Tanya Jawab" },
-  { id: "kontak", label: "Kontak" },
-] as const;
+const FOOTER_LINKS_BY_LANG: Record<
+  Locale,
+  readonly { readonly href: string; readonly label: string }[]
+> = {
+  id: [
+    { href: "#beranda", label: "Beranda" },
+    { href: "#tentang", label: "Tentang" },
+    { href: "#karya", label: "Karya" },
+    { href: "#layanan", label: "Layanan" },
+    { href: "#paket", label: "Paket Harga" },
+    { href: "#proses", label: "Proses" },
+    { href: "#faq", label: "FAQ" },
+    { href: "/panduan/", label: "Panduan Usaha AC" },
+    { href: "/en/", label: "English Version ($ USD)" },
+  ],
+  en: [
+    { href: "#beranda", label: "Home" },
+    { href: "#tentang", label: "About" },
+    { href: "#karya", label: "Work" },
+    { href: "#layanan", label: "Services" },
+    { href: "#paket", label: "Pricing" },
+    { href: "#proses", label: "Process" },
+    { href: "#faq", label: "FAQ" },
+    { href: "/panduan/", label: "HVAC Growth Guides (ID)" },
+    { href: "/", label: "Bahasa Indonesia (IDR)" },
+  ],
+};
 
 export default function Footer() {
-  const [logoFailed, setLogoFailed] = useState(false);
+  const { lang, setLang } = useLanguage();
+  const year = new Date().getFullYear();
+  const footerLinks = FOOTER_LINKS_BY_LANG[lang];
+  const phoneDisplay =
+    lang === "id" ? BUSINESS.whatsapp.display : BUSINESS.whatsapp.displayIntl;
 
   return (
-    <footer className="relative overflow-hidden border-t border-line bg-[#0b0f13]">
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-4 left-1/2 -translate-x-1/2 select-none font-display text-[22vw] font-bold leading-none text-white/[0.025] lg:text-[16rem]"
-      >
-        KONTAK
-      </span>
-
-      <div className="section-wrap relative pb-10 pt-16 md:pt-24">
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_1.45fr] lg:gap-10">
-          {/* Kolom kiri: Logo resmi NanangDigital + deskripsi + kontak */}
-          <div>
+    <footer className="relative border-t border-line bg-ink-soft">
+      <div className="section-wrap py-16 md:py-20">
+        <div className="grid gap-12 md:grid-cols-[1.2fr_0.9fr_0.9fr]">
+          {/* Identitas brand dengan logo resmi NanangDigital */}
+          <div className="max-w-sm">
             <a
               href="#beranda"
-              aria-label="NanangDigital, kembali ke atas"
-              className="inline-flex items-center gap-3.5"
+              aria-label={
+                lang === "id"
+                  ? "NanangDigital, kembali ke atas halaman"
+                  : "NanangDigital, back to top"
+              }
+              className="inline-block overflow-hidden rounded-xl border border-line bg-white p-2 shadow-sm transition-transform duration-300 hover:scale-[1.02]"
             >
-              {!logoFailed && (
-                <img
-                  src={BUSINESS.logoUrl}
-                  alt={`Logo ${BUSINESS.brand}`}
-                  width={56}
-                  height={56}
-                  loading="lazy"
-                  decoding="async"
-                  onError={() => setLogoFailed(true)}
-                  className="h-12 w-auto max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.03] object-contain shadow-[0_8px_24px_rgba(0,0,0,0.45)] md:h-14"
-                />
-              )}
-              <Logo className="text-2xl md:text-3xl" />
+              <img
+                src={BUSINESS.logoUrl}
+                alt="Logo NanangDigital"
+                width={176}
+                height={52}
+                loading="lazy"
+                decoding="async"
+                className="h-11 w-auto object-contain"
+              />
             </a>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-mist md:text-base">
-              Jasa pembuatan website dan setting iklan Meta Ads khusus {BUSINESS.niche}. Dikerjakan
-              langsung sampai siap dipakai menerima panggilan pelanggan.
+            <p className="mt-5 text-sm leading-relaxed text-mist">
+              {lang === "id"
+                ? "Jasa pembuatan website resmi dan setup iklan Facebook & Instagram khusus teknisi maupun bengkel usaha service AC."
+                : "Conversion-focused websites, Google Business setup, and local Meta lead campaigns built exclusively for HVAC & air conditioning businesses worldwide."}
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-              <a
-                href={WA_LINK_GENERAL}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-source="footer_cta"
-                className="btn-primary text-sm"
-              >
-                <WhatsAppIcon className="h-4 w-4" />
-                Chat di WhatsApp
-              </a>
-              <a
-                href={BUSINESS.whatsapp.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-track-source="footer_phone"
-                className="font-mono text-sm tracking-wide text-mist transition-colors hover:text-accent"
-                aria-label={`Nomor WhatsApp ${BUSINESS.whatsapp.display}`}
-              >
-                {BUSINESS.whatsapp.display}
-              </a>
-            </div>
           </div>
 
-          {/* Kolom kanan: navigasi + panduan SEO usaha AC */}
-          <nav
-            aria-label="Navigasi footer"
-            className="grid grid-cols-2 gap-8 sm:grid-cols-[0.8fr_0.8fr_1.4fr]"
-          >
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-                Halaman
-              </h3>
-              <ul className="mt-5 space-y-2">
-                {FOOT_NAV_LEFT.map((link) => (
-                  <li key={link.id}>
-                    <a
-                      href={`#${link.id}`}
-                      className="inline-block py-1.5 text-sm text-mist transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-                Info Paket
-              </h3>
-              <ul className="mt-5 space-y-2">
-                {FOOT_NAV_RIGHT.map((link) => (
-                  <li key={link.id}>
-                    <a
-                      href={`#${link.id}`}
-                      className="inline-block py-1.5 text-sm text-mist transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="col-span-2 sm:col-span-1">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
-                <a href="/panduan/" className="hover:underline">
-                  Panduan Usaha AC
-                </a>
-              </h3>
-              <ul className="mt-5 space-y-2">
-                {SEO_ARTICLES.map((article) => (
-                  <li key={article.slug}>
-                    <a
-                      href={`/panduan/${article.slug}/`}
-                      className="inline-block py-1.5 text-sm leading-snug text-mist transition-colors hover:text-white"
-                    >
-                      {article.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* Navigasi */}
+          <nav aria-label={lang === "id" ? "Navigasi footer" : "Footer navigation"}>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-mist">
+              {lang === "id" ? "Navigasi" : "Navigation"}
+            </h2>
+            <ul className="mt-5 grid grid-cols-2 gap-y-2.5 text-sm">
+              {footerLinks.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => {
+                      if (link.href === "/en/") {
+                        e.preventDefault();
+                        setLang("en");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      } else if (link.href === "/") {
+                        e.preventDefault();
+                        setLang("id");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="inline-block py-1 text-white/80 transition-colors hover:text-accent"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </nav>
+
+          {/* Kontak */}
+          <div>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.25em] text-mist">
+              {lang === "id" ? "Kontak" : "Direct Contact"}
+            </h2>
+            <a
+              href={getGeneralWaLink(lang)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track-source="footer_whatsapp"
+              className="mt-5 inline-flex items-center gap-3 py-1 font-mono text-sm text-white transition-colors hover:text-accent"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-accent/40 bg-accent/10 text-accent">
+                <WhatsAppIcon className="h-4 w-4" />
+              </span>
+              {phoneDisplay}
+            </a>
+            <p className="mt-4 text-xs leading-relaxed text-mist">
+              {lang === "id"
+                ? `Dikerjakan langsung oleh ${BUSINESS.founder}. Kirim pesan kapan saja, pasti dibalas satu per satu.`
+                : `Built 1-on-1 by ${BUSINESS.founder}. Serving HVAC & AC contractors globally via WhatsApp.`}
+            </p>
+          </div>
         </div>
 
-        {/* Bar bawah */}
-        <div className="mt-14 flex flex-col items-center justify-between gap-5 border-t border-line pt-8 sm:flex-row">
-          <p className="text-xs text-mist">
-            © 2026 {BUSINESS.brand}. Seluruh hak cipta dilindungi.
+        <div className="mt-14 flex flex-col gap-3 border-t border-line pt-8 text-xs text-mist sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {BUSINESS.brand}.{" "}
+            {lang === "id" ? "Seluruh hak cipta dilindungi." : "All rights reserved."}
           </p>
-          <p className="text-xs text-mist">
-            {BUSINESS.founder}, {BUSINESS.role}
+          <p>
+            {lang === "id"
+              ? "Fokus membantu usaha service AC tampil rapi & mudah dihubungi."
+              : "Helping HVAC & air conditioning businesses win more local service calls."}
           </p>
-          <a
-            href="#beranda"
-            aria-label="Kembali ke atas"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-mist transition-all hover:border-accent/60 hover:text-accent"
-          >
-            <ArrowUp className="h-4 w-4" aria-hidden="true" />
-          </a>
         </div>
       </div>
     </footer>

@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, MousePointerClick } from "lucide-react";
 import type { Project } from "../data/projects";
-import { PROJECT_TYPE_LABEL } from "../data/projects";
+import { PROJECT_TYPE_LABEL_BY_LANG } from "../data/projects";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface ProjectStackProps {
   projects: Project[];
@@ -14,13 +15,6 @@ interface ProjectStackProps {
 
 const MAX_VISIBLE = 3;
 
-/**
- * Stack kartu 3 dimensi.
- * - Klik kartu depan: putar ke karya berikutnya.
- * - Klik kartu belakang: pilih karya tersebut.
- * - Dot dan tombol prev/next ramah keyboard.
- * - diff = (index - activeIdx + n) % n sesuai spesifikasi.
- */
 export default function ProjectStack({
   projects,
   activeIdx,
@@ -28,8 +22,10 @@ export default function ProjectStack({
   onNext,
   onPrev,
 }: ProjectStackProps) {
+  const { lang } = useLanguage();
   const reduced = useReducedMotion();
   const count = projects.length;
+  const typeLabels = PROJECT_TYPE_LABEL_BY_LANG[lang];
 
   if (count === 0) return null;
 
@@ -57,8 +53,12 @@ export default function ProjectStack({
                 onClick={() => (isFront ? onNext() : onSelect(index))}
                 aria-label={
                   isFront && count > 1
-                    ? `${project.title}, klik untuk melihat contoh berikutnya`
-                    : `Pilih contoh ${project.title}`
+                    ? lang === "id"
+                      ? `${project.title}, klik untuk melihat contoh berikutnya`
+                      : `${project.title}, click to view next sample`
+                    : lang === "id"
+                      ? `Pilih contoh ${project.title}`
+                      : `Select sample ${project.title}`
                 }
                 className="absolute inset-x-0 top-0 mx-auto w-full max-w-[33rem] cursor-pointer overflow-hidden rounded-3xl border border-line bg-surface text-left shadow-[0_40px_90px_-30px_rgba(0,0,0,0.85)]"
                 style={{ transformOrigin: "center bottom", transformStyle: "preserve-3d" }}
@@ -92,7 +92,7 @@ export default function ProjectStack({
                           : "border-accent/50 bg-black/50 text-accent"
                     }`}
                   >
-                    {PROJECT_TYPE_LABEL[project.type]}
+                    {typeLabels[project.type]}
                   </span>
                   {isFront && count > 1 && !reduced && (
                     <span
@@ -100,7 +100,7 @@ export default function ProjectStack({
                       className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[0.65rem] font-semibold text-white/90 backdrop-blur"
                     >
                       <MousePointerClick className="h-3 w-3" />
-                      Geser contoh
+                      {lang === "id" ? "Geser contoh" : "Tap next"}
                     </span>
                   )}
                 </div>
@@ -114,10 +114,7 @@ export default function ProjectStack({
                       {project.title}
                     </span>
                   </div>
-                  <span
-                    aria-hidden="true"
-                    className="font-mono text-xs text-mist/60"
-                  >
+                  <span aria-hidden="true" className="font-mono text-xs text-mist/60">
                     {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                   </span>
                 </div>
@@ -139,13 +136,17 @@ export default function ProjectStack({
           <button
             type="button"
             onClick={onPrev}
-            aria-label="Karya sebelumnya"
+            aria-label={lang === "id" ? "Karya sebelumnya" : "Previous sample"}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-mist transition-all hover:border-accent/60 hover:text-accent active:scale-95"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
           </button>
 
-          <div className="flex items-center gap-0.5" role="group" aria-label="Pilih karya langsung">
+          <div
+            className="flex items-center gap-0.5"
+            role="group"
+            aria-label={lang === "id" ? "Pilih karya langsung" : "Select sample directly"}
+          >
             {projects.map((project, i) => {
               const isActive = i === activeIdx;
               return (
@@ -154,7 +155,11 @@ export default function ProjectStack({
                   type="button"
                   onClick={() => onSelect(i)}
                   aria-current={isActive ? "true" : undefined}
-                  aria-label={`Karya ${i + 1}: ${project.title}`}
+                  aria-label={
+                    lang === "id"
+                      ? `Karya ${i + 1}: ${project.title}`
+                      : `Sample ${i + 1}: ${project.title}`
+                  }
                   className="group inline-flex h-11 w-9 items-center justify-center"
                 >
                   <span
@@ -173,7 +178,7 @@ export default function ProjectStack({
           <button
             type="button"
             onClick={onNext}
-            aria-label="Karya berikutnya"
+            aria-label={lang === "id" ? "Karya berikutnya" : "Next sample"}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-mist transition-all hover:border-accent/60 hover:text-accent active:scale-95"
           >
             <ChevronRight className="h-5 w-5" aria-hidden="true" />

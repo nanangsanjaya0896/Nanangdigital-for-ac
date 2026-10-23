@@ -1,421 +1,259 @@
-/// <reference types="vite/client" />
-
 /**
- * Sistem Tracking Terpadu LP NanangDigital:
- * Duet Meta Pixel (Browser) + Meta Conversions API / CAPI (/api/meta-capi)
- * dengan Deduplication otomatis berbasis event_id kembar + Advanced Matching + GA4.
+ * Utilitas pelacakan konversi terpusat NanangDigital:
+ * 1. Google Analytics 4 (`G-JY9N81NCQE`)
+ * 2. Meta Pixel Browser + Server Conversions API (`2971268586402489`) dengan deduplikasi `event_id` identik
+ * 3. Penyimpanan `fbclid` -> cookie `_fbc` & pembacaan `_fbp` untuk Event Match Quality (EMQ) tinggi (ID & Global USD)
  */
+
+export const GA4_MEASUREMENT_ID = "G-JY9N81NCQE";
+export const META_PIXEL_ID = "2971268586402489";
 
 declare global {
   interface Window {
-    dataLayer?: Array<Record<string, unknown>>;
-    fbq?: (...args: unknown[]) => void;
-    _fbq?: unknown;
+    dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
+    fbq?: ((...args: unknown[]) => void) & {
+      callMethod?: (...args: unknown[]) => void;
+      queue?: unknown[];
+      loaded?: boolean;
+      version?: string;
+      push?: (...args: unknown[]) => void;
+    };
+    _fbq?: unknown;
   }
 }
 
-export interface LeadUserDetails {
-  name: string;
-  phone: string;
-  city: string;
+export interface LeadUserData {
+  fullName?: string;
+  phone?: string;
+  city?: string;
+  email?: string;
+  /** Kode negara ISO 2 huruf huruf kecil bila diketahui pasti (contoh: 'id'), kosongkan untuk trafik global */
+  countryCode?: string;
 }
 
-export interface SubmitPreWaLeadParams {
-  source: string;
-  topicLabel: string;
-  user: LeadUserDetails;
-  destination: string;
+export interface TrackEventOptions {
+  eventId?: string;
+  currency?: string;
+  value?: number;
+  contentName?: string;
+  leadSource?: string;
+  userData?: LeadUserData;
+  extraParams?: Record<string, string | number | boolean>;
 }
 
-export const DEFAULT_META_PIXEL_ID = "2971268586402489";
-export const DEFAULT_GA_MEASUREMENT_ID = "G-JY9N81NCQE";
-
-const STORAGE_FBC_KEY = "nd_meta_fbc";
-const STORAGE_FBP_KEY = "nd_meta_fbp";
-const STORAGE_SOURCE_LABEL_KEY = "nd_traffic_origin_v1";
-
-export interface TrafficOriginInfo {
-  channel: string;
-  campaign: string;
-}
-
-/**
- * Deteksi & simpan asal kedatangan pengunjung sejak klik pertama
- * agar pemilik bisnis tahu persis di chat WA apakah klien datang dari
- * Iklan Meta Ads (FB/IG) atau gratis dari Pencarian Organik Google (SEO).
- */
-export function captureTrafficOrigin(): TrafficOriginInfo {
-  if (typeof window === "undefined") {
-    return { channel: "Website Langsung", campaign: "" };
-  }
-
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const fbclid = params.get("fbclid");
-    const utmSource = (params.get("utm_source") || "").trim().toLowerCase();
-    const utmMedium = (params.get("utm_medium") || "").trim().toLowerCase();
-    const utmCampaign = (params.get("utm_campaign") || "").trim();
-    const ref = (document.referrer || "").toLowerCase();
-
-    let detected: TrafficOriginInfo | null = null;
-
-    if (
-      fbclid ||
-      utmSource.includes("meta") ||
-      utmSource.includes("fb") ||
-      utmSource.includes("facebook") ||
-      utmSource.includes("ig") ||
-      utmSource.includes("instagram")
-    ) {
-      detected = { channel: "Iklan Meta Ads (FB/IG)", campaign: utmCampaign };
-    } else if (utmSource) {
-      detected = {
-        channel: utmMedium ? `${utmSource} (${utmMedium})` : utmSource,
-        campaign: utmCampaign,
-      };
-    } else if (ref && !ref.includes(window.location.hostname)) {
-      if (ref.includes("google.")) {
-        detected = { channel: "Pencarian Organik Google (SEO)", campaign: "" };
-      } else if (ref.includes("bing.") || ref.includes("yahoo.") || ref.includes("duckduckgo.")) {
-        detected = { channel: "Mesin Pencari Organik (SEO)", campaign: "" };
-      } else if (
-        ref.includes("instagram.com") ||
-        ref.includes("facebook.com") ||
-        ref.includes("tiktok.com")
-      ) {
-        detected = { channel: "Sosial Media Organik", campaign: "" };
-      }
-    }
-
-    if (detected) {
-      localStorage.setItem(STORAGE_SOURCE_LABEL_KEY, JSON.stringify(detected));
-      return detected;
-    }
-
-    const savedRaw = localStorage.getItem(STORAGE_SOURCE_LABEL_KEY);
-    if (savedRaw) {
-      const parsed = JSON.parse(savedRaw) as Partial<TrafficOriginInfo>;
-      if (parsed.channel) {
-        return {
-          channel: parsed.channel,
-          campaign: typeof parsed.campaign === "string" ? parsed.campaign : "",
-        };
-      }
-    }
-  } catch {
-    // Abaikan bila mode privat memblokir akses penyimpanan
-  }
-
-  return { channel: "Website Langsung", campaign: "" };
-}
-
-function resolveMetaPixelId(): string {
-  const fromEnv = (import.meta.env.VITE_META_PIXEL_ID as string | undefined)?.trim();
-  const digits = fromEnv ? fromEnv.replace(/\D/g, "") : "";
-  return digits || DEFAULT_META_PIXEL_ID;
-}
-
-function extractGaMeasurementId(raw: string | undefined): string {
-  if (!raw) return "";
-  const match = raw.trim().match(/G-[A-Z0-9]+/i);
-  return match ? match[0].toUpperCase() : "";
-}
-
-let initialized = false;
-let scriptsStarted = false;
-
-/** Buat event_id unik untuk pencocokan (deduplication) Browser Pixel <-> Server CAPI. */
-export function createEventId(prefix: string): string {
+/** Buat UUID unik untuk deduplikasi 1:1 antara Meta Pixel Browser dan Server CAPI */
+export function generateEventId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return `${prefix}_${crypto.randomUUID()}`;
+    return crypto.randomUUID();
   }
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return `nd-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
-function readCookie(name: string): string {
-  if (typeof document === "undefined") return "";
+function getCookie(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined;
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${escaped}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : "";
+  return match ? decodeURIComponent(match[1]) : undefined;
 }
 
-function writeFirstPartyCookie(name: string, value: string, days = 90): void {
+function setCookie(name: string, value: string, days = 90): void {
   if (typeof document === "undefined") return;
   const maxAge = days * 24 * 60 * 60;
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax`;
 }
 
-/** Normalisasi nomor WA ke format 628... untuk Advanced Matching Meta Pixel. */
-export function normalizeWaPhone(raw: string): string {
-  const digits = raw.replace(/\D/g, "");
-  if (!digits) return "";
-  if (digits.startsWith("62")) return digits;
-  if (digits.startsWith("0")) return `62${digits.slice(1)}`;
-  if (digits.startsWith("8")) return `62${digits}`;
-  return digits;
-}
-
 /**
- * Tangkap dan simpan parameter klik iklan ?fbclid= sejak detik pertama landing
- * agar tetap terselamatkan ke CAPI walau browser pengguna memakai AdBlocker.
+ * Tangkap parameter URL `?fbclid=...` sejak pendaratan pertama dan simpan ke cookie `_fbc`
+ * sesuai format resmi Meta: `fb.1.<timestamp_ms>.<fbclid>` (tanpa mengubah huruf besar/kecil fbclid).
  */
-function captureClickIdentifiers(): { fbc: string; fbp: string } {
-  if (typeof window === "undefined") return { fbc: "", fbp: "" };
+export function captureFbClickId(): { fbc?: string; fbp?: string } {
+  if (typeof window === "undefined") return {};
 
-  let fbc = readCookie("_fbc");
+  let fbc = getCookie("_fbc");
+  const fbp = getCookie("_fbp");
+
   try {
     const params = new URLSearchParams(window.location.search);
     const fbclid = params.get("fbclid");
-    // PENTING: fbclid bersifat case-sensitive, jangan pernah di-lowercase!
-    if (fbclid && fbclid.trim().length > 0) {
-      fbc = `fb.1.${Date.now()}.${fbclid.trim()}`;
-      writeFirstPartyCookie("_fbc", fbc);
-      localStorage.setItem(STORAGE_FBC_KEY, fbc);
-    } else if (!fbc) {
-      fbc = localStorage.getItem(STORAGE_FBC_KEY) || "";
-    } else {
-      localStorage.setItem(STORAGE_FBC_KEY, fbc);
+    if (fbclid) {
+      fbc = `fb.1.${Date.now()}.${fbclid}`;
+      setCookie("_fbc", fbc, 90);
     }
   } catch {
-    // Abaikan bila mode privat memblokir storage
-  }
-
-  let fbp = readCookie("_fbp");
-  try {
-    if (!fbp) {
-      fbp = localStorage.getItem(STORAGE_FBP_KEY) || "";
-    }
-    if (!fbp) {
-      const randomPart = Math.floor(1_000_000_000 + Math.random() * 9_000_000_000);
-      fbp = `fb.1.${Date.now()}.${randomPart}`;
-      writeFirstPartyCookie("_fbp", fbp);
-    }
-    localStorage.setItem(STORAGE_FBP_KEY, fbp);
-  } catch {
-    // Abaikan bila storage dibatasi
+    // Abaikan bila URLSearchParams gagal
   }
 
   return { fbc, fbp };
 }
 
-/** Kirim event ke endpoint server CAPI (/api/meta-capi) tanpa menahan pembukaan aplikasi WhatsApp. */
-function sendServerCapiEvent(payload: Record<string, unknown>): void {
-  if (typeof window === "undefined") return;
+/** SHA-256 hex lowercase untuk hashing PII sebelum keluar dari browser (dan diverifikasi ulang di server) */
+export async function sha256Hex(input: string): Promise<string> {
+  if (typeof crypto !== "undefined" && crypto.subtle) {
+    const encoded = new TextEncoder().encode(input);
+    const digest = await crypto.subtle.digest("SHA-256", encoded);
+    return Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  }
+  return "";
+}
 
-  const body = JSON.stringify(payload);
-  try {
-    void fetch("/api/meta-capi", {
+/**
+ * Normalisasi nomor WhatsApp/telepon ke format digit E.164 murni:
+ * - Untuk `id`: `0859...` / `859...` -> `62859...`
+ * - Untuk `en` (Global): pertahankan kode negara internasional (`+1...`, `+61...`, `+44...`, `+65...`),
+ *   dan bila pengguna AS/Kanada mengetik 10 digit lokal tanpa kode negara, tambahkan `1`.
+ */
+export function normalizePhoneForCapi(
+  rawPhone: string,
+  locale: "id" | "en" = "id"
+): string {
+  const hasExplicitPlus = rawPhone.trim().startsWith("+");
+  let digits = rawPhone.replace(/\D/g, "");
+  if (!digits) return "";
+
+  if (locale === "id" && !hasExplicitPlus) {
+    if (digits.startsWith("0")) {
+      digits = `62${digits.slice(1)}`;
+    } else if (digits.startsWith("8")) {
+      digits = `62${digits}`;
+    }
+  } else if (locale === "en" && !hasExplicitPlus && digits.length === 10) {
+    digits = `1${digits}`;
+  }
+
+  return digits;
+}
+
+/** Normalisasi nama depan & nama belakang sesuai aturan Meta CAPI (lowercase, tanpa spasi berlebih) */
+export function splitNormalizedName(fullName: string): { fn?: string; ln?: string } {
+  const cleaned = fullName.trim().toLowerCase().replace(/\s+/g, " ");
+  if (!cleaned) return {};
+  const parts = cleaned.split(" ");
+  const fn = parts[0]?.replace(/[^a-z]/g, "") || undefined;
+  const ln =
+    parts.length > 1
+      ? parts.slice(1).join("").replace(/[^a-z]/g, "") || undefined
+      : undefined;
+  return { fn, ln };
+}
+
+/** Normalisasi nama kota sesuai aturan Meta CAPI (`lowercase`, hanya huruf `a-z` tanpa spasi) */
+export function normalizeCityForCapi(rawCity: string): string {
+  return rawCity.trim().toLowerCase().replace(/[^a-z]/g, "");
+}
+
+/** Kirim event ke Google Analytics 4 */
+export function trackGaEvent(
+  eventName: string,
+  params?: Record<string, string | number | boolean>
+): void {
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("event", eventName, params);
+  }
+}
+
+/**
+ * Kirim event konversi Meta secara sinkron antara:
+ * 1) Browser Meta Pixel (`fbq('track', eventName, customData, { eventID })`)
+ * 2) Server Vercel Function (`/api/meta-capi`) dengan `event_id` yang SAMA PERSIS untuk deduplikasi
+ */
+export async function trackMetaConversion(
+  eventName: "Contact" | "Lead" | "ViewContent",
+  options: TrackEventOptions = {}
+): Promise<string> {
+  const eventId = options.eventId || generateEventId();
+  const currency = options.currency || "IDR";
+  const value = options.value ?? (currency === "USD" ? 299 : 1500000);
+  const { fbc, fbp } = captureFbClickId();
+
+  const customData: Record<string, unknown> = {
+    currency,
+    value,
+  };
+  if (options.contentName) {
+    customData.content_name = options.contentName;
+  }
+  if (options.leadSource) {
+    customData.lead_source = options.leadSource;
+  }
+  if (options.extraParams) {
+    Object.assign(customData, options.extraParams);
+  }
+
+  // 1. Browser Meta Pixel (dengan eventID untuk deduplikasi Meta)
+  if (typeof window !== "undefined" && typeof window.fbq === "function") {
+    window.fbq("track", eventName, customData, { eventID: eventId });
+  }
+
+  // 2. Hash PII di sisi klien sebelum dikirim ke endpoint Serverless CAPI
+  const hashedUserData: Record<string, string> = {};
+  const ud = options.userData;
+  const targetLocale: "id" | "en" = currency === "USD" ? "en" : "id";
+
+  if (ud?.phone) {
+    const normPhone = normalizePhoneForCapi(ud.phone, targetLocale);
+    if (normPhone) {
+      const hashed = await sha256Hex(normPhone);
+      if (hashed) hashedUserData.ph = hashed;
+    }
+  }
+  if (ud?.fullName) {
+    const { fn, ln } = splitNormalizedName(ud.fullName);
+    if (fn) {
+      const hFn = await sha256Hex(fn);
+      if (hFn) hashedUserData.fn = hFn;
+    }
+    if (ln) {
+      const hLn = await sha256Hex(ln);
+      if (hLn) hashedUserData.ln = hLn;
+    }
+  }
+  if (ud?.city) {
+    const normCity = normalizeCityForCapi(ud.city);
+    if (normCity) {
+      const hCt = await sha256Hex(normCity);
+      if (hCt) hashedUserData.ct = hCt;
+    }
+  }
+  if (ud?.email) {
+    const normEmail = ud.email.trim().toLowerCase();
+    if (normEmail) {
+      const hEm = await sha256Hex(normEmail);
+      if (hEm) hashedUserData.em = hEm;
+    }
+  }
+  if (ud?.countryCode) {
+    const hCountry = await sha256Hex(ud.countryCode.trim().toLowerCase());
+    if (hCountry) hashedUserData.country = hCountry;
+  }
+
+  const payload = {
+    event_name: eventName,
+    event_id: eventId,
+    event_time: Math.floor(Date.now() / 1000),
+    event_source_url: typeof window !== "undefined" ? window.location.href : "",
+    user_data: {
+      ...hashedUserData,
+      ...(fbc ? { fbc } : {}),
+      ...(fbp ? { fbp } : {}),
+    },
+    custom_data: customData,
+  };
+
+  // Kirim via keepalive fetch agar tetap terkirim walaupun pengguna berpindah ke aplikasi WhatsApp
+  if (typeof window !== "undefined" && typeof fetch === "function") {
+    const body = JSON.stringify(payload);
+    fetch("/api/meta-capi", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body,
       keepalive: true,
     }).catch(() => {
-      // Jangan pernah mengganggu alur pengguna bila koneksi lambat
-    });
-  } catch {
-    // Fallback sendBeacon untuk browser seluler lama
-    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      const blob = new Blob([body], { type: "application/json" });
-      navigator.sendBeacon("/api/meta-capi", blob);
-    }
-  }
-}
-
-function startThirdPartyScripts(): void {
-  if (typeof window === "undefined" || scriptsStarted) return;
-  scriptsStarted = true;
-
-  const { fbc, fbp } = captureClickIdentifiers();
-  const metaPixelId = resolveMetaPixelId();
-  const pageViewEventId = createEventId("pv");
-
-  if (metaPixelId && !window.fbq) {
-    const n: (...args: unknown[]) => void = function (...args: unknown[]) {
-      // @ts-expect-error properti internal snippet resmi Meta Pixel
-      if (n.callMethod) n.callMethod(...args);
-      // @ts-expect-error properti internal snippet resmi Meta Pixel
-      else n.queue.push(args);
-    };
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.push = n;
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.loaded = true;
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.version = "2.0";
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.queue = [];
-    window.fbq = n;
-    window._fbq = n;
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
-
-    window.fbq("init", metaPixelId);
-    window.fbq("track", "PageView", {}, { eventID: pageViewEventId });
-  }
-
-  // Kirim PageView pasangan ke CAPI dengan event_id yang persis sama
-  sendServerCapiEvent({
-    event_name: "PageView",
-    event_id: pageViewEventId,
-    event_source_url: window.location.href,
-    fbc,
-    fbp,
-  });
-
-  const gaMeasurementId =
-    extractGaMeasurementId(import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined) ||
-    DEFAULT_GA_MEASUREMENT_ID;
-  if (gaMeasurementId && !window.gtag) {
-    window.gtag = function () {
-      // Wajib memakai objek arguments asli sesuai spesifikasi resmi Google gtag.js
-      // eslint-disable-next-line prefer-rest-params
-      window.dataLayer?.push(arguments as unknown as Record<string, unknown>);
-    };
-    window.gtag("js", new Date());
-    window.gtag("config", gaMeasurementId);
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
-    document.head.appendChild(script);
-  }
-}
-
-/** Inisialisasi Meta Pixel + PageView CAPI (ter-deduplikasi lewat event_id kembar). */
-export function initMarketingTracking(): void {
-  if (typeof window === "undefined" || initialized) return;
-  initialized = true;
-
-  window.dataLayer = window.dataLayer || [];
-  captureClickIdentifiers();
-  captureTrafficOrigin();
-
-  // Tunda muatan script pihak ketiga sampai browser selesai merender tampilan awal agar skor PageSpeed tetap hijau
-  const scheduleIdle = () => {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(() => startThirdPartyScripts(), { timeout: 2000 });
-    } else {
-      globalThis.setTimeout(startThirdPartyScripts, 1200);
-    }
-  };
-
-  if (document.readyState === "complete") {
-    scheduleIdle();
-  } else {
-    window.addEventListener("load", scheduleIdle, { once: true });
-  }
-}
-
-/** Catat interaksi pembukaan form pra-WA & pastikan Pixel sudah siap sebelum submit. */
-export function trackPreWaModalOpened(source: string, topicLabel: string): void {
-  if (typeof window === "undefined") return;
-  startThirdPartyScripts();
-
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "whatsapp_modal_opened",
-    cta_source: source,
-    cta_topic: topicLabel,
-  });
-
-  if (typeof window.gtag === "function") {
-    window.gtag("event", "whatsapp_modal_opened", {
-      cta_source: source,
-      cta_topic: topicLabel,
-    });
-  }
-}
-
-/**
- * Konversi Utama (Lead): dipanggil HANYA setelah calon klien mengisi Nama, No. WA, & Kota
- * lalu menekan tombol lanjut ke WhatsApp.
- *
- * Mengirim event "Lead" serentak melalui:
- * 1) Browser Meta Pixel (2971268586402489) + Advanced Matching
- * 2) Server Meta CAPI (/api/meta-capi) dengan SHA-256 hashing + event_id kembar (Deduplicated)
- * 3) Google Tag Manager dataLayer & GA4 (G-JY9N81NCQE)
- */
-export function trackPreWaLeadSubmitted({
-  source,
-  topicLabel,
-  user,
-  destination,
-}: SubmitPreWaLeadParams): string {
-  const leadEventId = createEventId("lead");
-  if (typeof window === "undefined") return leadEventId;
-
-  startThirdPartyScripts();
-
-  const { fbc, fbp } = captureClickIdentifiers();
-  const normalizedPhone = normalizeWaPhone(user.phone);
-  const nameParts = user.name.trim().toLowerCase().split(/\s+/);
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ");
-  const cleanCity = user.city.trim().toLowerCase().replace(/[^a-z]/g, "");
-
-  const customData = {
-    content_name: topicLabel,
-    content_category: "Website Service AC Consultation",
-    lead_source: source,
-  };
-
-  const metaPixelId = resolveMetaPixelId();
-  if (typeof window.fbq === "function") {
-    if (metaPixelId) {
-      // Perbarui Advanced Matching di sisi browser agar Event Match Quality (EMQ) tinggi
-      window.fbq("init", metaPixelId, {
-        ph: normalizedPhone,
-        fn: firstName,
-        ln: lastName || undefined,
-        ct: cleanCity || undefined,
-        country: "id",
-      });
-    }
-    window.fbq("track", "Lead", customData, { eventID: leadEventId });
-  }
-
-  // Kirim pasangan event Server CAPI memakai event_id kembar
-  sendServerCapiEvent({
-    event_name: "Lead",
-    event_id: leadEventId,
-    event_source_url: window.location.href,
-    fbc,
-    fbp,
-    user: {
-      name: user.name,
-      phone: user.phone,
-      city: user.city,
-    },
-    custom_data: customData,
-  });
-
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "whatsapp_lead_submitted",
-    event_id: leadEventId,
-    cta_source: source,
-    cta_topic: topicLabel,
-    cta_destination: destination,
-    lead_city: user.city.trim(),
-  });
-
-  const originInfo = captureTrafficOrigin();
-
-  if (typeof window.gtag === "function") {
-    window.gtag("event", "generate_lead", {
-      currency: "IDR",
-      lead_source: source,
-      traffic_channel: originInfo.channel,
-      cta_topic: topicLabel,
-      lead_city: user.city.trim(),
-      event_category: "whatsapp_pre_form",
-      event_label: `${source}:${topicLabel}`,
+      // Abaikan kegagalan jaringan di browser agar UX pengguna tidak pernah terganggu
     });
   }
 
-  return leadEventId;
+  return eventId;
 }
