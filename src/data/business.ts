@@ -7,7 +7,12 @@ export const BUSINESS = {
   role: "Founder & Web Strategist",
   niche: "usaha service AC dan cuci AC rumahan",
   founderPhoto: {
-    url: "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto/photo1",
+    url: "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1",
+    srcSet:
+      "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_360,c_limit/photo1 360w, https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1 560w, https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_760,c_limit/photo1 760w",
+    sizes: "(max-width: 640px) 300px, 340px",
+    avatarUrl:
+      "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_160,h_160,c_fill,g_face/photo1",
     alt: "Foto Nanang Sanjaya, Founder NanangDigital",
   },
   whatsapp: {

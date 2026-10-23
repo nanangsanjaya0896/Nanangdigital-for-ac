@@ -117,8 +117,8 @@ export default function ProcessSection() {
 
           <ol className="relative grid gap-10 lg:grid-cols-4 lg:gap-6">
             {STEPS.map((step, i) => (
-              <Reveal key={step.title} delay={i * 0.1}>
-                <li className="relative flex gap-6 lg:block">
+              <li key={step.title}>
+                <Reveal delay={i * 0.1} className="relative flex gap-6 lg:block">
                   <div className="relative z-10 flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center rounded-full border border-accent/40 bg-ink shadow-[0_0_30px_rgba(0,223,143,0.2)]">
                     <step.icon className="h-5 w-5 text-accent" strokeWidth={1.9} aria-hidden="true" />
                     <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-accent px-2 py-0.5 font-mono text-[0.6rem] font-bold text-[#04140c]">
@@ -131,8 +131,8 @@ export default function ProcessSection() {
                     </h3>
                     <p className="mt-2.5 text-sm leading-relaxed text-mist">{step.description}</p>
                   </div>
-                </li>
-              </Reveal>
+                </Reveal>
+              </li>
             ))}
           </ol>
         </div>
@@ -164,7 +164,7 @@ export default function ProcessSection() {
                       id={`metodologi-trigger-${item.id}`}
                       className="flex w-full items-center gap-4 p-5 text-left transition-colors hover:bg-white/[0.02]"
                     >
-                      <span className="font-mono text-xs text-accent/70">
+                      <span className="font-mono text-xs text-accent">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="flex-1 font-display text-base font-semibold tracking-tight md:text-lg">

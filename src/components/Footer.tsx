@@ -68,12 +68,12 @@ export default function Footer() {
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
                 Halaman
               </h3>
-              <ul className="mt-5 space-y-3">
+              <ul className="mt-5 space-y-2">
                 {FOOT_NAV_LEFT.map((link) => (
                   <li key={link.id}>
                     <a
                       href={`#${link.id}`}
-                      className="text-sm text-mist transition-colors hover:text-white"
+                      className="inline-block py-1.5 text-sm text-mist transition-colors hover:text-white"
                     >
                       {link.label}
                     </a>
@@ -85,12 +85,12 @@ export default function Footer() {
               <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
                 Info Paket
               </h3>
-              <ul className="mt-5 space-y-3">
+              <ul className="mt-5 space-y-2">
                 {FOOT_NAV_RIGHT.map((link) => (
                   <li key={link.id}>
                     <a
                       href={`#${link.id}`}
-                      className="text-sm text-mist transition-colors hover:text-white"
+                      className="inline-block py-1.5 text-sm text-mist transition-colors hover:text-white"
                     >
                       {link.label}
                     </a>

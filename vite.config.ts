@@ -4,7 +4,6 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import type { Plugin } from "vite";
-import { viteSingleFile } from "vite-plugin-singlefile";
 // @ts-expect-error modul ESM serverless Vercel dipakai juga oleh dev server lokal
 import { processMetaCapiEvent } from "./api/meta-capi.js";
 
@@ -63,12 +62,26 @@ function metaCapiDevPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), viteSingleFile(), metaCapiDevPlugin()],
+  plugins: [react(), tailwindcss(), metaCapiDevPlugin()],
   server: {
     host: "0.0.0.0",
     port: 5173,
     strictPort: true,
     allowedHosts: true,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/framer-motion")) {
+            return "vendor-motion";
+          }
+          if (id.includes("node_modules/react") || id.includes("node_modules/scheduler")) {
+            return "vendor-react";
+          }
+        },
+      },
+    },
   },
   resolve: {
     alias: {

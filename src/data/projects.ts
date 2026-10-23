@@ -34,7 +34,7 @@ export const PROJECTS: Project[] = [
     description:
       "Contoh tampilan bertema gelap untuk jasa panggilan perbaikan dan cuci AC dengan daftar layanan rapi serta tombol WhatsApp yang langsung kelihatan.",
     tags: ["Nyaman di HP", "Tombol WhatsApp", "Profil Teknisi"],
-    image: "/images/karya-bintang-jaya.jpg",
+    image: "/images/karya-bintang-jaya.webp",
     alt: "Mockup website Bintang Jaya Teknik bernuansa navy dengan hero teknisi service AC",
     overview:
       "Contoh ini memperlihatkan tampilan untuk bengkel atau teknisi AC panggilan yang ingin terlihat rapi dan niat sejak pertama kali dibuka pelanggan. Nama usaha, warna, foto pengerjaan, dan daftar tarifnya nanti disesuaikan penuh dengan milik Anda.",
@@ -54,7 +54,7 @@ export const PROJECTS: Project[] = [
     description:
       "Contoh tampilan cerah warna putih-biru untuk jasa cuci AC rumahan, cocok bagi usaha yang ingin menonjolkan daftar paket cuci rutin.",
     tags: ["Tema Terang", "Daftar Tarif Jelas", "Cuci AC Rumah"],
-    image: "/images/karya-coolmaster.jpg",
+    image: "/images/karya-coolmaster.webp",
     alt: "Mockup website CoolMaster AC bernuansa putih turquoise dengan kartu paket layanan",
     overview:
       "Banyak pemilik rumah suka membandingkan harga cuci 1 unit vs borongan beberapa unit sekaligus. Desain terang seperti ini membantu pelanggan membaca rincian tarif dalam hitungan detik lalu tinggal klik pesan.",
@@ -74,7 +74,7 @@ export const PROJECTS: Project[] = [
     description:
       "Contoh halaman khusus promo musiman cuci AC yang dibuat ringkas untuk menampung klik dari iklan Facebook dan Instagram.",
     tags: ["Halaman Promo", "Tujuan Klik Iklan", "Order Cepat"],
-    image: "/images/karya-sinar-dingin.jpg",
+    image: "/images/karya-sinar-dingin.webp",
     alt: "Mockup landing page promo Sinar Dingin dengan gradasi biru teal dan kartu promo",
     overview:
       "Kalau Anda sedang bikin promo diskon cuci minimal 2 unit saat cuaca panas, halaman pendek seperti ini bekerja jauh lebih efektif daripada mengarahkan orang ke beranda medsos biasa.",
@@ -94,7 +94,7 @@ export const PROJECTS: Project[] = [
     description:
       "Gambaran bentuk gambar dan teks iklan Facebook/Instagram untuk menjangkau warga di sekitar lokasi bengkel AC Anda.",
     tags: ["Meta Ads", "Target Area Lokal", "Gambar & Teks Iklan"],
-    image: "/images/karya-arctic-prima.jpg",
+    image: "/images/karya-arctic-prima.webp",
     alt: "Mockup konsep iklan media sosial Arctic Prima pada layar ponsel dengan aksen neon",
     overview:
       "Pada paket Growth dan Premium, Anda juga dibuatkan materi iklan seperti contoh ini. Fokusnya sederhana: masalah yang sering dialami warga (AC kurang dingin, netes air, atau berdebu) dan ajakan panggil teknisi terdekat.",
@@ -114,7 +114,7 @@ export const PROJECTS: Project[] = [
     description:
       "Konsep website profil usaha AC yang ingin menampilkan dokumentasi foto kerja lapangan untuk proyek rumah tinggal, kantor, maupun ruko.",
     tags: ["Profil Usaha", "Galeri Kerja", "Kantor & Ruko"],
-    image: "/images/karya-karyaku.jpg",
+    image: "/images/karya-karyaku.webp",
     alt: "Mockup konsep website portfolio KaryaKu Teknik bernuansa gelap editorial",
     overview:
       "Cocok untuk usaha AC yang sudah punya banyak foto hasil pemasangan atau perawatan rutin di kantor, sekolah, maupun ruko, sehingga calon klien korporat makin yakin saat mengecek profil usaha Anda.",
@@ -134,7 +134,7 @@ export const PROJECTS: Project[] = [
     description:
       "Contoh halaman khusus panggilan perbaikan AC mendadak (AC mati total, bocor netes di kamar, atau tidak dingin) yang fokus dibuka dari HP.",
     tags: ["Panggilan Cepat", "Fokus Layar HP", "Langsung Chat WA"],
-    image: "/images/karya-dingin-plus.jpg",
+    image: "/images/karya-dingin-plus.webp",
     alt: "Mockup landing page mobile Dingin Plus dengan aksen kuning dan tombol WhatsApp",
     overview:
       "Orang yang AC kamarnya tiba-tiba bocor atau panas di malam hari biasanya buru-buru cari tukang dari HP. Halaman ini memangkas basa-basi supaya mereka langsung lihat area layanan dan klik tombol panggil.",

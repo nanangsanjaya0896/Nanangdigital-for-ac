@@ -70,12 +70,14 @@ export default function FounderSection() {
                 <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] to-[#0d1a15]">
                   {!photoFailed ? (
                     <img
-                      src={BUSINESS.founderPhoto.url}
+                      src={BUSINESS.founderPhoto.avatarUrl}
                       alt={BUSINESS.founderPhoto.alt}
+                      width={80}
+                      height={80}
                       loading="lazy"
                       decoding="async"
                       onError={() => setPhotoFailed(true)}
-                      className="h-full w-full object-cover object-[50%_22%]"
+                      className="h-full w-full object-cover object-center"
                     />
                   ) : (
                     <span className="font-display text-3xl font-bold tracking-tight text-transparent [background:linear-gradient(135deg,#00df8f,#00b373)] [background-clip:text]">
@@ -137,24 +139,29 @@ export default function FounderSection() {
 
             <ol className="mt-10 space-y-1">
               {APPROACHES.map((approach, i) => (
-                <Reveal key={approach.title} delay={0.15 + i * 0.08}>
-                  <li className="group flex gap-5 border-b border-line py-5 transition-colors first:border-t hover:bg-white/[0.02]">
-                    <span className="font-mono text-xs text-accent/70">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-white/[0.03] text-mist transition-colors group-hover:border-accent/40 group-hover:text-accent">
-                      <approach.icon className="h-[1.125rem] w-[1.125rem]" strokeWidth={1.9} aria-hidden="true" />
-                    </span>
-                    <div>
-                      <h3 className="font-display text-base font-semibold tracking-tight md:text-lg">
-                        {approach.title}
-                      </h3>
-                      <p className="mt-1 text-sm leading-relaxed text-mist">
-                        {approach.description}
-                      </p>
+                <li
+                  key={approach.title}
+                  className="border-b border-line first:border-t"
+                >
+                  <Reveal delay={0.15 + i * 0.08}>
+                    <div className="group flex gap-5 py-5 transition-colors hover:bg-white/[0.02]">
+                      <span className="font-mono text-xs text-accent">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-white/[0.03] text-mist transition-colors group-hover:border-accent/40 group-hover:text-accent">
+                        <approach.icon className="h-[1.125rem] w-[1.125rem]" strokeWidth={1.9} aria-hidden="true" />
+                      </span>
+                      <div>
+                        <h3 className="font-display text-base font-semibold tracking-tight md:text-lg">
+                          {approach.title}
+                        </h3>
+                        <p className="mt-1 text-sm leading-relaxed text-mist">
+                          {approach.description}
+                        </p>
+                      </div>
                     </div>
-                  </li>
-                </Reveal>
+                  </Reveal>
+                </li>
               ))}
             </ol>
 
