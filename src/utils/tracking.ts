@@ -40,7 +40,7 @@ export interface TrafficOriginInfo {
 /**
  * Deteksi & simpan asal kedatangan pengunjung sejak klik pertama
  * agar pemilik bisnis tahu persis di chat WA apakah klien datang dari
- * Iklan Meta Ads, Iklan Google Ads, atau Pencarian Organik Google (SEO).
+ * Iklan Meta Ads (FB/IG) atau gratis dari Pencarian Organik Google (SEO).
  */
 export function captureTrafficOrigin(): TrafficOriginInfo {
   if (typeof window === "undefined") {
@@ -50,7 +50,6 @@ export function captureTrafficOrigin(): TrafficOriginInfo {
   try {
     const params = new URLSearchParams(window.location.search);
     const fbclid = params.get("fbclid");
-    const gclid = params.get("gclid");
     const utmSource = (params.get("utm_source") || "").trim().toLowerCase();
     const utmMedium = (params.get("utm_medium") || "").trim().toLowerCase();
     const utmCampaign = (params.get("utm_campaign") || "").trim();
@@ -67,8 +66,6 @@ export function captureTrafficOrigin(): TrafficOriginInfo {
       utmSource.includes("instagram")
     ) {
       detected = { channel: "Iklan Meta Ads (FB/IG)", campaign: utmCampaign };
-    } else if (gclid || (utmSource.includes("google") && /cpc|ppc|paid|ads/.test(utmMedium))) {
-      detected = { channel: "Iklan Google Ads", campaign: utmCampaign };
     } else if (utmSource) {
       detected = {
         channel: utmMedium ? `${utmSource} (${utmMedium})` : utmSource,
@@ -76,9 +73,9 @@ export function captureTrafficOrigin(): TrafficOriginInfo {
       };
     } else if (ref && !ref.includes(window.location.hostname)) {
       if (ref.includes("google.")) {
-        detected = { channel: "Pencarian Organik Google", campaign: "" };
+        detected = { channel: "Pencarian Organik Google (SEO)", campaign: "" };
       } else if (ref.includes("bing.") || ref.includes("yahoo.") || ref.includes("duckduckgo.")) {
-        detected = { channel: "Mesin Pencari Organik", campaign: "" };
+        detected = { channel: "Mesin Pencari Organik (SEO)", campaign: "" };
       } else if (
         ref.includes("instagram.com") ||
         ref.includes("facebook.com") ||
