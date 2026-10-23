@@ -1,10 +1,13 @@
-# NanangDigital | Landing Page & Meta CAPI
+# NanangDigital | Landing Page, SEO, GA4 & Meta CAPI
 
 Landing page resmi **NanangDigital** (jasa pembuatan website & setup Meta Ads khusus usaha service AC dan cuci AC panggilan).
 
 ## Fitur Utama
-- **Landing Page Konversi Tinggi:** Copywriting natural berbahasa Indonesia, responsif mobile-first, dan navigasi lengkap.
+- **Performa PageSpeed Hijau:** Build-time HTML prerendering, inlined critical CSS, aset WebP ringan, dan animasi GPU murni.
 - **Form Singkat Pra-WhatsApp (`src/components/PreWhatsAppModal.tsx`):** Menyaring prospek serius (Nama, Nomor WA, Kota/Kecamatan) sebelum mengarahkan otomatis ke chat WhatsApp.
+- **Google Search Console & Google Analytics 4 (`src/utils/tracking.ts` + `scripts/prerender.mjs`):**
+  - Injeksi otomatis meta tag verifikasi Google Search Console lewat `VITE_GSC_VERIFICATION`.
+  - Pelacakan otomatis funnel konversi GA4 (`page_view`, `whatsapp_modal_opened`, `generate_lead`) lewat `VITE_GA_MEASUREMENT_ID` tanpa memperlambat loading halaman.
 - **Meta Pixel + Conversions API / CAPI (`api/meta-capi.js` + `src/utils/tracking.ts`):**
   - Enkripsi SHA-256 otomatis untuk Nomor WA (`628...`), Nama, Kota, dan Negara.
   - Pencocokan otomatis `event_id` kembar (*Deduplicated* antara Browser Pixel & Server CAPI).
@@ -17,5 +20,6 @@ npm install
 npm run dev
 ```
 
-## Deploy ke Vercel & Aktivasi Meta Pixel + CAPI
-Lihat panduan lengkap langkah demi langkah di **[PANDUAN-META-PIXEL-CAPI.md](./PANDUAN-META-PIXEL-CAPI.md)**.
+## Panduan Aktivasi Produksi di Vercel
+- **Google Search Console & Google Analytics 4:** Lihat **[PANDUAN-GSC-DAN-GA4.md](./PANDUAN-GSC-DAN-GA4.md)**.
+- **Meta Pixel + Conversions API (CAPI):** Lihat **[PANDUAN-META-PIXEL-CAPI.md](./PANDUAN-META-PIXEL-CAPI.md)**.

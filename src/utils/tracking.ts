@@ -31,6 +31,12 @@ export interface SubmitPreWaLeadParams {
 const STORAGE_FBC_KEY = "nd_meta_fbc";
 const STORAGE_FBP_KEY = "nd_meta_fbp";
 
+function extractGaMeasurementId(raw: string | undefined): string {
+  if (!raw) return "";
+  const match = raw.trim().match(/G-[A-Z0-9]+/i);
+  return match ? match[0].toUpperCase() : "";
+}
+
 let initialized = false;
 
 /** Buat event_id unik untuk pencocokan (deduplication) Browser Pixel <-> Server CAPI. */
@@ -178,18 +184,22 @@ export function initMarketingTracking(): void {
       fbp,
     });
 
-    const gaMeasurementId = (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim();
+    const gaMeasurementId = extractGaMeasurementId(
+      import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined
+    );
     if (gaMeasurementId && !window.gtag) {
+      window.gtag = function () {
+        // Wajib memakai objek arguments asli sesuai spesifikasi resmi Google gtag.js
+        // eslint-disable-next-line prefer-rest-params
+        window.dataLayer?.push(arguments as unknown as Record<string, unknown>);
+      };
+      window.gtag("js", new Date());
+      window.gtag("config", gaMeasurementId);
+
       const script = document.createElement("script");
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
       document.head.appendChild(script);
-
-      window.gtag = function (...args: unknown[]) {
-        window.dataLayer?.push(args as unknown as Record<string, unknown>);
-      };
-      window.gtag("js", new Date());
-      window.gtag("config", gaMeasurementId);
     }
   };
 
@@ -209,7 +219,7 @@ export function initMarketingTracking(): void {
   }
 }
 
-/** Catat interaksi pembukaan form pra-WA di GTM dataLayer (tanpa menghitungnya sebagai Lead palsu). */
+/** Catat interaksi pembukaan form pra-WA di GTM dataLayer & GA4 (tanpa menghitungnya sebagai Lead palsu). */
 export function trackPreWaModalOpened(source: string, topicLabel: string): void {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
@@ -218,6 +228,13 @@ export function trackPreWaModalOpened(source: string, topicLabel: string): void 
     cta_source: source,
     cta_topic: topicLabel,
   });
+
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "whatsapp_modal_opened", {
+      cta_source: source,
+      cta_topic: topicLabel,
+    });
+  }
 }
 
 /**
@@ -293,6 +310,10 @@ export function trackPreWaLeadSubmitted({
 
   if (typeof window.gtag === "function") {
     window.gtag("event", "generate_lead", {
+      currency: "IDR",
+      lead_source: source,
+      cta_topic: topicLabel,
+      lead_city: user.city.trim(),
       event_category: "whatsapp_pre_form",
       event_label: `${source}:${topicLabel}`,
     });
