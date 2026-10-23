@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { CheckCircle2, ExternalLink, Lock, MapPin, Phone, User, X } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS } from "../data/business";
-import { normalizeWaPhone, trackPreWaLeadSubmitted } from "../utils/tracking";
+import {
+  captureTrafficOrigin,
+  normalizeWaPhone,
+  trackPreWaLeadSubmitted,
+} from "../utils/tracking";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 
@@ -81,12 +85,18 @@ export default function PreWhatsAppModal({ context, onClose }: PreWhatsAppModalP
       // Abaikan bila browser membatasi penyimpanan lokal
     }
 
+    const origin = captureTrafficOrigin();
+    const originLine = origin.campaign
+      ? `${origin.channel} (${origin.campaign})`
+      : origin.channel;
+
     const composedMessage = [
       context.presetMessage,
       "",
       `Nama / Usaha: ${cleanName}`,
       `Domisili / Area Kerja: ${cleanCity}`,
       `No. WhatsApp: ${phone.trim()}`,
+      `Info dari: ${originLine}`,
     ].join("\n");
 
     const waHref = `${BUSINESS.whatsapp.url}?text=${encodeURIComponent(composedMessage)}`;
