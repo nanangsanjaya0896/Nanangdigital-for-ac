@@ -138,57 +138,74 @@ export function initMarketingTracking(): void {
   window.dataLayer = window.dataLayer || [];
   const { fbc, fbp } = captureClickIdentifiers();
 
-  const metaPixelId = (import.meta.env.VITE_META_PIXEL_ID as string | undefined)?.trim();
-  const pageViewEventId = createEventId("pv");
+  const startThirdPartyScripts = () => {
+    const metaPixelId = (import.meta.env.VITE_META_PIXEL_ID as string | undefined)?.trim();
+    const pageViewEventId = createEventId("pv");
 
-  if (metaPixelId && !window.fbq) {
-    const n: (...args: unknown[]) => void = function (...args: unknown[]) {
+    if (metaPixelId && !window.fbq) {
+      const n: (...args: unknown[]) => void = function (...args: unknown[]) {
+        // @ts-expect-error properti internal snippet resmi Meta Pixel
+        if (n.callMethod) n.callMethod(...args);
+        // @ts-expect-error properti internal snippet resmi Meta Pixel
+        else n.queue.push(args);
+      };
       // @ts-expect-error properti internal snippet resmi Meta Pixel
-      if (n.callMethod) n.callMethod(...args);
+      n.push = n;
       // @ts-expect-error properti internal snippet resmi Meta Pixel
-      else n.queue.push(args);
-    };
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.push = n;
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.loaded = true;
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.version = "2.0";
-    // @ts-expect-error properti internal snippet resmi Meta Pixel
-    n.queue = [];
-    window.fbq = n;
-    window._fbq = n;
+      n.loaded = true;
+      // @ts-expect-error properti internal snippet resmi Meta Pixel
+      n.version = "2.0";
+      // @ts-expect-error properti internal snippet resmi Meta Pixel
+      n.queue = [];
+      window.fbq = n;
+      window._fbq = n;
 
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = "https://connect.facebook.net/en_US/fbevents.js";
-    document.head.appendChild(script);
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "https://connect.facebook.net/en_US/fbevents.js";
+      document.head.appendChild(script);
 
-    window.fbq("init", metaPixelId);
-    window.fbq("track", "PageView", {}, { eventID: pageViewEventId });
-  }
+      window.fbq("init", metaPixelId);
+      window.fbq("track", "PageView", {}, { eventID: pageViewEventId });
+    }
 
-  // Kirim PageView pasangan ke CAPI dengan event_id yang persis sama
-  sendServerCapiEvent({
-    event_name: "PageView",
-    event_id: pageViewEventId,
-    event_source_url: window.location.href,
-    fbc,
-    fbp,
-  });
+    // Kirim PageView pasangan ke CAPI dengan event_id yang persis sama
+    sendServerCapiEvent({
+      event_name: "PageView",
+      event_id: pageViewEventId,
+      event_source_url: window.location.href,
+      fbc,
+      fbp,
+    });
 
-  const gaMeasurementId = (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim();
-  if (gaMeasurementId && !window.gtag) {
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
-    document.head.appendChild(script);
+    const gaMeasurementId = (import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined)?.trim();
+    if (gaMeasurementId && !window.gtag) {
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
+      document.head.appendChild(script);
 
-    window.gtag = function (...args: unknown[]) {
-      window.dataLayer?.push(args as unknown as Record<string, unknown>);
-    };
-    window.gtag("js", new Date());
-    window.gtag("config", gaMeasurementId);
+      window.gtag = function (...args: unknown[]) {
+        window.dataLayer?.push(args as unknown as Record<string, unknown>);
+      };
+      window.gtag("js", new Date());
+      window.gtag("config", gaMeasurementId);
+    }
+  };
+
+  // Tunda muatan script pihak ketiga sampai browser selesai merender tampilan awal agar skor PageSpeed maksimal
+  const scheduleIdle = () => {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(() => startThirdPartyScripts(), { timeout: 2000 });
+    } else {
+      globalThis.setTimeout(startThirdPartyScripts, 1200);
+    }
+  };
+
+  if (document.readyState === "complete") {
+    scheduleIdle();
+  } else {
+    window.addEventListener("load", scheduleIdle, { once: true });
   }
 }
 

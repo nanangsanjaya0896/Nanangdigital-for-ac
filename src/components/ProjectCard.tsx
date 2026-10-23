@@ -25,7 +25,10 @@ export default function ProjectCard({ project, onOpen }: ProjectCardProps) {
         <img
           src={project.image}
           alt={project.alt}
+          width={800}
+          height={500}
           loading="lazy"
+          decoding="async"
           className="aspect-[16/10] w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <span

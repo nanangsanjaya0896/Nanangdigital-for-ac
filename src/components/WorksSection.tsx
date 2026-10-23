@@ -163,7 +163,7 @@ export default function WorksSection() {
                     >
                       Lihat Detail Contoh
                     </button>
-                    <p className="mt-4 font-mono text-xs text-mist/60">
+                    <p className="mt-4 font-mono text-xs text-mist">
                       Contoh {String(activeIdx + 1).padStart(2, "0")} dari{" "}
                       {String(filtered.length).padStart(2, "0")}
                     </p>
@@ -216,7 +216,7 @@ export default function WorksSection() {
                       }`}
                     >
                       {category}
-                      <span className="ml-1.5 opacity-60">{count}</span>
+                      <span className="ml-1.5">{count}</span>
                     </button>
                   );
                 })}

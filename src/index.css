@@ -7,8 +7,8 @@
   --color-panel: #171d27;
   --color-accent: #00df8f;
   --color-accent-deep: #00b373;
-  --color-mist: #9ca3af;
-  --color-line: rgb(255 255 255 / 0.1);
+  --color-mist: #a9b4c4;
+  --color-line: rgb(255 255 255 / 0.12);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
   --shadow-glow: 0 0 60px rgb(0 223 143 / 0.14);
@@ -30,17 +30,6 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-
-/* Film grain overlay */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 300;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
@@ -124,8 +113,6 @@ footer[id] {
   background-size: 40px 40px;
 }
 
-/* Fallback aman: jika browser tidak mendukung text-stroke,
-   teks tetap tampil solid berwarna aksen (tidak pernah hilang). */
 .text-outline {
   color: var(--color-accent);
 }
@@ -137,44 +124,50 @@ footer[id] {
   }
 }
 
-/* ---------- Entrance hero berbasis CSS murni ----------
-   Keterlihatan headline tidak bergantung pada JS animasi;
-   pada reduced-motion durasi dipaksa 0.01ms sehingga konten
-   langsung tampil pada keadaan akhir (opacity: 1). */
+/* ---------- Entrance hero cepat tanpa menahan cat pertama (LCP instan) ---------- */
 @keyframes hero-in {
   from {
-    opacity: 0;
-    transform: translateY(28px);
+    transform: translateY(10px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
 
 .hero-in {
-  opacity: 0;
-  animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: opacity, transform;
+  animation: hero-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-d1 {
-  animation-delay: 0.08s;
+  animation-delay: 0s;
 }
 .hero-d2 {
-  animation-delay: 0.2s;
+  animation-delay: 0.04s;
 }
 .hero-d3 {
-  animation-delay: 0.32s;
+  animation-delay: 0.08s;
 }
 .hero-d4 {
-  animation-delay: 0.44s;
+  animation-delay: 0.12s;
 }
 .hero-d5 {
-  animation-delay: 0.56s;
+  animation-delay: 0.16s;
 }
-.hero-d6 {
-  animation-delay: 0.68s;
+
+/* Float kartu founder berjalan murni di GPU compositor tanpa membebani main thread */
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-0.8deg);
+  }
+  50% {
+    transform: translate3d(0, -12px, 0) rotate(0.8deg);
+  }
+}
+
+.hero-card-float {
+  animation: hero-float 6s ease-in-out infinite;
+  will-change: transform;
 }
 
 .glow-orb {
@@ -250,7 +243,8 @@ footer[id] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track {
+  .marquee-track,
+  .hero-card-float {
     animation: none;
   }
 }

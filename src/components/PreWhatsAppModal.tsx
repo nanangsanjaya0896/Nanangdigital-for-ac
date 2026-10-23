@@ -150,7 +150,7 @@ export default function PreWhatsAppModal({ context, onClose }: PreWhatsAppModalP
               type="button"
               onClick={onClose}
               aria-label="Tutup jendela"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-mist transition-colors hover:border-accent/60 hover:text-white"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-mist transition-colors hover:border-accent/60 hover:text-white"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -259,7 +259,7 @@ export default function PreWhatsAppModal({ context, onClose }: PreWhatsAppModalP
                 Lanjut Chat ke WhatsApp
               </button>
 
-              <p className="mt-3.5 flex items-center justify-center gap-1.5 text-center text-[0.7rem] text-mist/80">
+              <p className="mt-3.5 flex items-center justify-center gap-1.5 text-center text-[0.7rem] text-mist">
                 <Lock className="h-3 w-3 shrink-0 text-accent" aria-hidden="true" />
                 Data aman, hanya dipakai untuk membalas konsultasi Anda.
               </p>

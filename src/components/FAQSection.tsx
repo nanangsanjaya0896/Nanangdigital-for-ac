@@ -79,7 +79,7 @@ export default function FAQSection() {
                     id={`faq-trigger-${item.id}`}
                     className="flex w-full items-center gap-4 p-5 text-left transition-colors hover:bg-white/[0.02] md:p-6"
                   >
-                    <span className="font-mono text-xs text-accent/70">
+                    <span className="font-mono text-xs text-accent">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span className="flex-1 font-display text-base font-semibold tracking-tight md:text-lg">

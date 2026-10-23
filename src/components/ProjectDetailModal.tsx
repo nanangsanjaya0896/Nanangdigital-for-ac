@@ -54,6 +54,9 @@ export default function ProjectDetailModal({ project, onClose }: ProjectDetailMo
             <img
               src={project.image}
               alt={project.alt}
+              width={800}
+              height={500}
+              decoding="async"
               className="h-52 w-full object-cover md:h-72"
             />
             <div

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowRight, Move } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
@@ -16,19 +16,38 @@ const MARQUEE_ITEMS = [
 
 export default function Hero() {
   const reduced = useReducedMotion();
-  const [isDesktop, setIsDesktop] = useState(false);
   const [photoFailed, setPhotoFailed] = useState(false);
-  const dragAreaRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragStartRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(
+    null
+  );
 
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 1024px)");
-    setIsDesktop(media.matches);
-    const onChange = () => setIsDesktop(media.matches);
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, []);
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (reduced || typeof window === "undefined" || window.innerWidth < 1024) return;
+    if ((e.target as HTMLElement).closest("a, button")) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(true);
+    dragStartRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: offset.x,
+      origY: offset.y,
+    };
+  };
 
-  const canDrag = isDesktop && !reduced;
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!dragStartRef.current) return;
+    const dx = Math.max(-50, Math.min(50, dragStartRef.current.origX + (e.clientX - dragStartRef.current.startX)));
+    const dy = Math.max(-50, Math.min(50, dragStartRef.current.origY + (e.clientY - dragStartRef.current.startY)));
+    setOffset({ x: dx, y: dy });
+  };
+
+  const onPointerUp = () => {
+    dragStartRef.current = null;
+    setDragging(false);
+    setOffset({ x: 0, y: 0 });
+  };
 
   return (
     <section id="beranda" aria-label="Beranda" className="relative overflow-hidden">
@@ -93,10 +112,10 @@ export default function Hero() {
             </a>
           </div>
 
-          <div className="hero-in hero-d5 mt-7">
+          <div className="hero-in hero-d5 mt-6">
             <a
               href="#karya"
-              className="group inline-flex items-center gap-2 text-sm font-medium text-mist transition-colors hover:text-accent"
+              className="group inline-flex items-center gap-2 py-2 text-sm font-medium text-mist transition-colors hover:text-accent"
             >
               Intip contoh tampilan website AC
               <ArrowRight
@@ -104,43 +123,33 @@ export default function Hero() {
                 aria-hidden="true"
               />
             </a>
-            <p className="mt-4 text-xs tracking-wide text-mist/80">
+            <p className="mt-3 text-xs tracking-wide text-mist">
               Boleh tanya-tanya dulu santai di WA. Pelunasan 50% baru dibayar setelah website jadi.
             </p>
           </div>
         </div>
 
         {/* Kolom kanan: kartu ID founder */}
-        <motion.div
-          ref={dragAreaRef}
-          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 48, rotate: 2 }}
-          animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, rotate: 0 }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-[21rem] lg:max-w-[23rem]"
-        >
-          {canDrag && (
-            <span
-              aria-hidden="true"
-              className="absolute -right-4 -top-12 z-30 hidden items-center gap-2 rounded-full border border-line bg-surface/90 px-3.5 py-2 text-[0.7rem] font-medium text-mist backdrop-blur lg:inline-flex"
-            >
-              <Move className="h-3.5 w-3.5 text-accent" />
-              Kartu bisa digeser
-            </span>
-          )}
-
-          {/* Pembungkus float loop */}
-          <motion.div
-            animate={reduced ? undefined : { y: [0, -15, 0], rotateZ: [-1, 1, -1] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        <div className="relative mx-auto w-full max-w-[21rem] lg:max-w-[23rem]">
+          <span
+            aria-hidden="true"
+            className="absolute -right-4 -top-12 z-30 hidden items-center gap-2 rounded-full border border-line bg-surface/90 px-3.5 py-2 text-[0.7rem] font-medium text-mist backdrop-blur lg:inline-flex"
           >
-            {/* Pembungkus drag terpisah */}
-            <motion.div
-              drag={canDrag}
-              dragConstraints={{ top: -50, bottom: 50, left: -50, right: 50 }}
-              dragElastic={0.2}
-              dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
-              whileDrag={{ scale: 1.02, cursor: "grabbing" }}
-              className={canDrag ? "cursor-grab" : ""}
+            <Move className="h-3.5 w-3.5 text-accent" />
+            Kartu bisa digeser
+          </span>
+
+          <div className={reduced ? "" : "hero-card-float"}>
+            <div
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              style={{
+                transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${dragging ? 1.02 : 1})`,
+                transition: dragging ? "none" : "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+              }}
+              className="lg:cursor-grab lg:active:cursor-grabbing"
             >
               {/* Tali lanyard */}
               <div aria-hidden="true" className="relative mx-auto flex w-full flex-col items-center">
@@ -176,7 +185,11 @@ export default function Hero() {
                     <>
                       <img
                         src={BUSINESS.founderPhoto.url}
+                        srcSet={BUSINESS.founderPhoto.srcSet}
+                        sizes={BUSINESS.founderPhoto.sizes}
                         alt={BUSINESS.founderPhoto.alt}
+                        width={400}
+                        height={350}
                         fetchPriority="high"
                         decoding="async"
                         onError={() => setPhotoFailed(true)}
@@ -233,9 +246,9 @@ export default function Hero() {
                   NGOBROL DI WHATSAPP
                 </a>
               </div>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Marquee layanan */}
@@ -247,7 +260,7 @@ export default function Hero() {
                 {MARQUEE_ITEMS.map((text) => (
                   <span
                     key={text}
-                    className="flex items-center gap-10 whitespace-nowrap text-sm font-medium uppercase tracking-[0.2em] text-mist/80"
+                    className="flex items-center gap-10 whitespace-nowrap text-sm font-medium uppercase tracking-[0.2em] text-mist"
                   >
                     {text}
                     <span className="inline-block h-1.5 w-1.5 rotate-45 bg-accent/70" />

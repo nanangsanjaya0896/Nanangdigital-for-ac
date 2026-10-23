@@ -76,7 +76,10 @@ export default function ProjectStack({
                   <img
                     src={project.image}
                     alt={project.alt}
+                    width={800}
+                    height={500}
                     loading="lazy"
+                    decoding="async"
                     draggable={false}
                     className="h-40 w-full object-cover md:h-56"
                   />
@@ -142,7 +145,7 @@ export default function ProjectStack({
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
           </button>
 
-          <div className="flex items-center gap-2.5" role="group" aria-label="Pilih karya langsung">
+          <div className="flex items-center gap-0.5" role="group" aria-label="Pilih karya langsung">
             {projects.map((project, i) => {
               const isActive = i === activeIdx;
               return (
@@ -150,14 +153,19 @@ export default function ProjectStack({
                   key={project.id}
                   type="button"
                   onClick={() => onSelect(i)}
-                  aria-current={isActive}
+                  aria-current={isActive ? "true" : undefined}
                   aria-label={`Karya ${i + 1}: ${project.title}`}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    isActive
-                      ? "w-8 bg-accent shadow-[0_0_10px_rgba(0,223,143,0.6)]"
-                      : "w-2.5 bg-white/20 hover:bg-white/40"
-                  }`}
-                />
+                  className="group inline-flex h-11 w-9 items-center justify-center"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`block h-2.5 rounded-full transition-all duration-300 ${
+                      isActive
+                        ? "w-7 bg-accent shadow-[0_0_10px_rgba(0,223,143,0.6)]"
+                        : "w-2.5 bg-white/25 group-hover:bg-white/50"
+                    }`}
+                  />
+                </button>
               );
             })}
           </div>

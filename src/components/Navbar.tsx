@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ArrowUpRight, Phone } from "lucide-react";
 import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
@@ -63,7 +62,7 @@ export default function Navbar() {
         }`}
       >
         <div className="section-wrap flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
-          <a href="#beranda" aria-label="NanangDigital, kembali ke beranda" className="shrink-0">
+          <a href="#beranda" aria-label="NanangDigital, kembali ke beranda" className="shrink-0 py-2">
             <Logo className="text-xl md:text-2xl" />
           </a>
 
@@ -77,17 +76,13 @@ export default function Navbar() {
                     <a
                       href={`#${link.id}`}
                       aria-current={isActive ? "true" : undefined}
-                      className={`relative py-2 text-sm font-medium transition-colors duration-300 ${
+                      className={`relative inline-block py-2.5 text-sm font-medium transition-colors duration-300 ${
                         isActive ? "text-white" : "text-mist hover:text-white"
                       }`}
                     >
                       {link.label}
                       {isActive && (
-                        <motion.span
-                          layoutId="nav-active"
-                          className="absolute -bottom-0.5 left-0 right-0 h-0.5 rounded-full bg-accent shadow-[0_0_12px_rgba(0,223,143,0.7)]"
-                          transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                        />
+                        <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 rounded-full bg-accent shadow-[0_0_12px_rgba(0,223,143,0.7)]" />
                       )}
                     </a>
                   </li>
@@ -124,98 +119,81 @@ export default function Navbar() {
       </header>
 
       {/* Menu seluler fullscreen */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            ref={menuRef}
-            id="menu-seluler"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu navigasi"
-            className="fixed inset-0 z-[70] flex flex-col lg:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="absolute inset-0 bg-[#0d1116]/92 backdrop-blur-2xl" aria-hidden="true" />
-            <div
-              className="bg-grid absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_75%)]"
-              aria-hidden="true"
-            />
+      {menuOpen && (
+        <div
+          ref={menuRef}
+          id="menu-seluler"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu navigasi"
+          className="fixed inset-0 z-[70] flex flex-col lg:hidden"
+        >
+          <div className="absolute inset-0 bg-[#0d1116]/95 backdrop-blur-2xl" aria-hidden="true" />
+          <div
+            className="bg-grid absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_75%)]"
+            aria-hidden="true"
+          />
 
-            <div className="relative flex h-20 items-center justify-between px-4 sm:px-6">
-              <Logo className="text-xl" />
-              <button
-                type="button"
-                onClick={() => closeMenu(true)}
-                aria-label="Tutup menu"
-                data-autofocus
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent"
-              >
-                <X className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
+          <div className="relative flex h-20 items-center justify-between px-4 sm:px-6">
+            <Logo className="text-xl" />
+            <button
+              type="button"
+              onClick={() => closeMenu(true)}
+              aria-label="Tutup menu"
+              data-autofocus
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent"
+            >
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
 
-            <nav aria-label="Navigasi seluler" className="relative flex-1 overflow-y-auto px-6 sm:px-8">
-              <ul className="flex flex-col gap-1 pt-6">
-                {[...NAV_LINKS, ...MOBILE_EXTRA_LINKS].map((link, i) => (
-                  <motion.li
-                    key={link.id}
-                    initial={{ opacity: 0, x: 32 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 16 }}
-                    transition={{ duration: 0.45, delay: 0.06 + i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+          <nav aria-label="Navigasi seluler" className="relative flex-1 overflow-y-auto px-6 sm:px-8">
+            <ul className="flex flex-col gap-1 pt-6">
+              {[...NAV_LINKS, ...MOBILE_EXTRA_LINKS].map((link, i) => (
+                <li key={link.id}>
+                  <a
+                    href={`#${link.id}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="group flex items-baseline gap-4 border-b border-white/5 py-4"
                   >
-                    <a
-                      href={`#${link.id}`}
-                      onClick={() => setMenuOpen(false)}
-                      className="group flex items-baseline gap-4 border-b border-white/5 py-4"
+                    <span className="font-mono text-xs text-accent">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={`font-display text-3xl font-semibold tracking-tight transition-colors sm:text-4xl ${
+                        active === link.id ? "text-accent" : "text-white group-hover:text-accent"
+                      }`}
                     >
-                      <span className="font-mono text-xs text-accent/70">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span
-                        className={`font-display text-3xl font-semibold tracking-tight transition-colors sm:text-4xl ${
-                          active === link.id ? "text-accent" : "text-white group-hover:text-accent"
-                        }`}
-                      >
-                        {link.label}
-                      </span>
-                      <ArrowUpRight
-                        className="ml-auto h-5 w-5 self-center text-mist opacity-0 transition-all group-hover:translate-x-1 group-hover:text-accent group-hover:opacity-100"
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
+                      {link.label}
+                    </span>
+                    <ArrowUpRight
+                      className="ml-auto h-5 w-5 self-center text-mist opacity-0 transition-all group-hover:translate-x-1 group-hover:text-accent group-hover:opacity-100"
+                      aria-hidden="true"
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="pb-10 pt-8"
+            <div className="pb-10 pt-8">
+              <a
+                href={WA_LINK_GENERAL}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-track-source="navbar_mobile_cta"
+                onClick={() => setMenuOpen(false)}
+                className="btn-primary w-full"
               >
-                <a
-                  href={WA_LINK_GENERAL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMenuOpen(false)}
-                  className="btn-primary w-full"
-                >
-                  <Phone className="h-4 w-4" aria-hidden="true" />
-                  Konsultasi Gratis via WhatsApp
-                </a>
-                <p className="mt-4 text-center text-xs text-mist">
-                  Tanya dulu santai di WA, gratis tanpa ikatan
-                </p>
-              </motion.div>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <Phone className="h-4 w-4" aria-hidden="true" />
+                Konsultasi Gratis via WhatsApp
+              </a>
+              <p className="mt-4 text-center text-xs text-mist">
+                Tanya dulu santai di WA, gratis tanpa ikatan
+              </p>
+            </div>
+          </nav>
+        </div>
+      )}
     </>
   );
 }
