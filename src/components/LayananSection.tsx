@@ -1,69 +1,87 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import { SERVICES } from "../data/services";
+import { SERVICES_BY_LANG } from "../data/services";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function LayananSection() {
+  const { lang } = useLanguage();
+  const services = SERVICES_BY_LANG[lang];
+
   return (
-    <section id="layanan" aria-label="Layanan NanangDigital" className="relative py-24 md:py-32">
+    <section
+      id="layanan"
+      aria-label={lang === "id" ? "Layanan NanangDigital" : "NanangDigital services"}
+      className="relative py-24 md:py-32"
+    >
       <div className="section-wrap">
         <SectionHeader
           index="05"
-          eyebrow="Layanan"
+          eyebrow={lang === "id" ? "Cakupan Pengerjaan" : "What We Deliver"}
           title={
-            <>
-              Apa Saja yang Bisa Saya <span className="text-accent">Bantu Bereskan</span>?
-            </>
+            lang === "id" ? (
+              <>
+                Dari Halaman Website Sampai <span className="text-accent">Setting Iklan Lokal</span>,
+                Bisa Sekalian.
+              </>
+            ) : (
+              <>
+                From High-Speed Websites to <span className="text-accent">Local Lead Ads</span>,
+                Handled End-to-End.
+              </>
+            )
           }
-          description="Mulai dari pembuatan halaman resmi usaha AC Anda sampai penyiapan materi iklan supaya warga sekitar tahu jasa Anda."
+          description={
+            lang === "id"
+              ? "Mau mulai dari punya website dulu boleh, mau langsung sekalian dipasangin iklan Facebook & Instagram juga siap."
+              : "Start with a conversion-ready HVAC website alone, or bundle it with local Facebook & Instagram lead ads right out of the gate."
+          }
         />
 
-        <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {SERVICES.map((service, i) => (
+        <div className="mt-14 divide-y divide-line border-y border-line">
+          {services.map((service, i) => (
             <Reveal key={service.number} delay={i * 0.08}>
-              <article className="group relative h-full overflow-hidden rounded-3xl border border-line bg-surface p-7 transition-all duration-300 hover:-translate-y-1 hover:border-accent/45 hover:shadow-[0_24px_70px_-28px_rgba(0,223,143,0.35)] md:p-9">
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -right-3 -top-6 select-none font-display text-[5.5rem] font-bold leading-none text-white/[0.04] transition-colors duration-300 group-hover:text-accent/[0.07]"
-                >
-                  {service.number}
-                </span>
-
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-white/[0.03] text-accent transition-colors duration-300 group-hover:border-accent/50">
-                  <service.icon className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
+              <article className="group grid items-start gap-5 py-8 transition-colors duration-300 hover:bg-white/[0.015] md:grid-cols-[5rem_1fr_1.15fr_auto] md:items-center md:gap-10 md:px-4 md:py-10">
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-sm font-medium text-accent">
+                    {service.number}
+                  </span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface text-mist transition-colors duration-300 group-hover:border-accent/40 group-hover:text-accent md:hidden">
+                    <service.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </span>
                 </div>
 
-                <h3 className="mt-7 font-display text-xl font-bold tracking-tight md:text-2xl">
-                  {service.title}
-                </h3>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-mist md:text-base">
+                <div className="flex items-center gap-4">
+                  <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-mist transition-colors duration-300 group-hover:border-accent/40 group-hover:text-accent md:flex">
+                    <service.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+                  </span>
+                  <h3 className="font-display text-xl font-bold tracking-tight transition-colors duration-300 group-hover:text-accent md:text-2xl">
+                    {service.title}
+                  </h3>
+                </div>
+
+                <p className="text-sm leading-relaxed text-mist md:text-base">
                   {service.description}
                 </p>
 
-                <span
-                  aria-hidden="true"
-                  className="absolute bottom-0 left-0 h-[3px] w-0 bg-gradient-to-r from-accent to-accent-deep transition-all duration-500 group-hover:w-full"
-                />
+                <a
+                  href="#paket"
+                  aria-label={
+                    lang === "id"
+                      ? `Lihat paket untuk ${service.title}`
+                      : `View packages for ${service.title}`
+                  }
+                  className="inline-flex h-11 w-11 items-center justify-center justify-self-start rounded-full border border-line text-mist transition-all duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-[#04140c] md:justify-self-end"
+                >
+                  <ArrowUpRight
+                    className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </a>
               </article>
             </Reveal>
           ))}
         </div>
-
-        <Reveal delay={0.2}>
-          <p className="mt-10 flex flex-wrap items-center gap-2 text-sm text-mist">
-            Bingung mau ambil website saja dulu atau sekalian iklan?
-            <a
-              href="#paket"
-              className="group inline-flex items-center gap-1.5 font-semibold text-accent transition-colors hover:text-white"
-            >
-              Cek perbandingan paketnya di bawah
-              <ArrowRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                aria-hidden="true"
-              />
-            </a>
-          </p>
-        </Reveal>
       </div>
     </section>
   );

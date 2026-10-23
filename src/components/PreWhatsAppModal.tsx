@@ -1,311 +1,455 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { motion } from "framer-motion";
-import { CheckCircle2, ExternalLink, Lock, MapPin, Phone, User, X } from "lucide-react";
+import { X, ArrowUpRight, ShieldCheck } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS } from "../data/business";
-import {
-  captureTrafficOrigin,
-  normalizeWaPhone,
-  trackPreWaLeadSubmitted,
-} from "../utils/tracking";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Locale } from "../i18n/LanguageContext";
+import {
+  generateEventId,
+  trackGaEvent,
+  trackMetaConversion,
+} from "../utils/tracking";
 
-export interface PreWaModalContext {
-  source: string;
-  topicLabel: string;
-  presetMessage: string;
+const STORAGE_KEY = "nd_lead_profile_v1";
+
+interface SavedLeadProfile {
+  fullName: string;
+  phone: string;
+  city: string;
+  planInterest: string;
 }
 
-interface PreWhatsAppModalProps {
-  context: PreWaModalContext;
-  onClose: () => void;
+interface PlanOption {
+  label: string;
+  value: number;
 }
 
-const LEAD_DRAFT_STORAGE_KEY = "nd_lead_profile_v1";
+const PLAN_OPTIONS_BY_LANG: Record<Locale, PlanOption[]> = {
+  id: [
+    { label: "Paket Basic (Rp1.500.000)", value: 1500000 },
+    { label: "Paket Growth (Rp2.000.000)", value: 2000000 },
+    { label: "Paket Premium Custom", value: 3000000 },
+    { label: "Tanya & Konsultasi Dulu", value: 1500000 },
+  ],
+  en: [
+    { label: "Basic Package ($299 USD)", value: 299 },
+    { label: "Growth Package ($449 USD)", value: 449 },
+    { label: "Premium Custom Package", value: 799 },
+    { label: "Free Discovery Chat First", value: 299 },
+  ],
+};
 
-function loadSavedDraft(): { name: string; phone: string; city: string } {
-  if (typeof window === "undefined") return { name: "", phone: "", city: "" };
-  try {
-    const raw = localStorage.getItem(LEAD_DRAFT_STORAGE_KEY);
-    if (!raw) return { name: "", phone: "", city: "" };
-    const parsed = JSON.parse(raw) as Partial<{ name: string; phone: string; city: string }>;
-    return {
-      name: typeof parsed.name === "string" ? parsed.name : "",
-      phone: typeof parsed.phone === "string" ? parsed.phone : "",
-      city: typeof parsed.city === "string" ? parsed.city : "",
-    };
-  } catch {
-    return { name: "", phone: "", city: "" };
+function inferPlanOption(href: string, explicitPlan: string | null, lang: Locale): string {
+  const options = PLAN_OPTIONS_BY_LANG[lang];
+  const combined = `${explicitPlan || ""} ${decodeURIComponent(href)}`.toLowerCase();
+  if (combined.includes("growth") || combined.includes("2.000.000") || combined.includes("$449")) {
+    return options[1].label;
   }
+  if (combined.includes("premium") || combined.includes("custom")) {
+    return options[2].label;
+  }
+  if (combined.includes("basic") || combined.includes("1.500.000") || combined.includes("$299")) {
+    return options[0].label;
+  }
+  return options[3].label;
 }
 
-export default function PreWhatsAppModal({ context, onClose }: PreWhatsAppModalProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const initial = loadSavedDraft();
+export default function PreWhatsAppModal() {
+  const { lang } = useLanguage();
+  const planOptions = PLAN_OPTIONS_BY_LANG[lang];
 
-  const [name, setName] = useState(initial.name);
-  const [phone, setPhone] = useState(initial.phone);
-  const [city, setCity] = useState(initial.city);
+  const [open, setOpen] = useState(false);
+  const [targetHref, setTargetHref] = useState("");
+  const [clickSource, setClickSource] = useState("whatsapp_cta");
+
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [planInterest, setPlanInterest] = useState<string>(planOptions[3].label);
   const [errorMsg, setErrorMsg] = useState("");
-  const [finalWaHref, setFinalWaHref] = useState<string | null>(null);
 
-  useScrollLock(true);
-  useFocusTrap(panelRef, true, onClose);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useScrollLock(open);
+  useFocusTrap(dialogRef, open, () => setOpen(false));
 
-    const cleanName = name.trim();
-    const normalizedPhone = normalizeWaPhone(phone);
-    const cleanCity = city.trim();
-
-    if (cleanName.length < 2) {
-      setErrorMsg("Isi nama panggilan atau nama usaha AC Anda dulu ya.");
-      return;
+  // Muat isian sebelumnya dari localStorage agar pengunjung yang kembali tidak perlu ketik ulang
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<SavedLeadProfile>;
+        if (parsed.fullName) setFullName(parsed.fullName);
+        if (parsed.phone) setPhone(parsed.phone);
+        if (parsed.city) setCity(parsed.city);
+      }
+    } catch {
+      // Abaikan bila mode privat membatasi storage
     }
-    if (normalizedPhone.length < 10 || normalizedPhone.length > 15) {
-      setErrorMsg("Masukkan nomor WhatsApp aktif yang benar, contoh: 081234567890.");
-      return;
-    }
-    if (cleanCity.length < 2) {
-      setErrorMsg("Isi kota atau kecamatan area kerja Anda supaya gampang dibahas.");
-      return;
-    }
+  }, []);
 
+  // Sinkronkan opsi paket default saat pengguna mengganti bahasa ID <-> EN
+  useEffect(() => {
+    setPlanInterest(PLAN_OPTIONS_BY_LANG[lang][3].label);
     setErrorMsg("");
+  }, [lang]);
+
+  // Delegasi klik global pada seluruh tautan WhatsApp (`wa.me/6285972577637`)
+  useEffect(() => {
+    const onDocumentClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest("a[href]") as HTMLAnchorElement | null;
+      if (!anchor) return;
+
+      const href = anchor.getAttribute("href") || "";
+      if (!href.includes("wa.me/6285972577637")) return;
+
+      // Abaikan tombol lewati langsung di dalam modal
+      if (anchor.dataset.bypassLeadModal === "true") return;
+
+      e.preventDefault();
+
+      const source =
+        anchor.dataset.trackSource ||
+        anchor.closest("section")?.id ||
+        "general_whatsapp_cta";
+      const detectedPlan = inferPlanOption(href, anchor.dataset.trackPlan || null, lang);
+
+      setTargetHref(href);
+      setClickSource(source);
+      setPlanInterest(detectedPlan);
+      setErrorMsg("");
+      setOpen(true);
+
+      trackGaEvent("whatsapp_modal_open", {
+        lead_source: source,
+        plan_interest: detectedPlan,
+        language: lang,
+      });
+    };
+
+    document.addEventListener("click", onDocumentClick, true);
+    return () => document.removeEventListener("click", onDocumentClick, true);
+  }, [lang]);
+
+  const handleDirectBypass = () => {
+    const eventId = generateEventId();
+    const currency = lang === "en" ? "USD" : "IDR";
+    const fallbackValue = lang === "en" ? 299 : 1500000;
+
+    trackGaEvent("whatsapp_click_direct", {
+      lead_source: clickSource,
+      plan_interest: planInterest,
+      language: lang,
+    });
+    void trackMetaConversion("Contact", {
+      eventId,
+      currency,
+      value: fallbackValue,
+      contentName: planInterest,
+      leadSource: `${clickSource}_direct`,
+    });
+    setOpen(false);
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    const trimmedName = fullName.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedCity = city.trim();
+
+    if (trimmedName.length < 2) {
+      setErrorMsg(
+        lang === "id"
+          ? "Mohon isi nama panggilan atau nama usaha AC Anda."
+          : "Please enter your name or HVAC company name."
+      );
+      return;
+    }
+    const digitCount = trimmedPhone.replace(/\D/g, "").length;
+    if (digitCount < 8) {
+      setErrorMsg(
+        lang === "id"
+          ? "Mohon isi nomor WhatsApp aktif (minimal 8 digit) supaya mudah dihubungi kembali."
+          : "Please enter a valid active phone / WhatsApp number (at least 8 digits)."
+      );
+      return;
+    }
 
     try {
       localStorage.setItem(
-        LEAD_DRAFT_STORAGE_KEY,
-        JSON.stringify({ name: cleanName, phone: phone.trim(), city: cleanCity })
+        STORAGE_KEY,
+        JSON.stringify({
+          fullName: trimmedName,
+          phone: trimmedPhone,
+          city: trimmedCity,
+          planInterest,
+        })
       );
     } catch {
-      // Abaikan bila browser membatasi penyimpanan lokal
+      // Abaikan bila storage penuh
     }
 
-    const origin = captureTrafficOrigin();
-    const originLine = origin.campaign
-      ? `${origin.channel} (${origin.campaign})`
-      : origin.channel;
+    const currency = lang === "en" ? "USD" : "IDR";
+    const matchedOption = planOptions.find((opt) => opt.label === planInterest);
+    const value = matchedOption ? matchedOption.value : lang === "en" ? 299 : 1500000;
+    const eventId = generateEventId();
 
-    const composedMessage = [
-      context.presetMessage,
-      "",
-      `Nama / Usaha: ${cleanName}`,
-      `Domisili / Area Kerja: ${cleanCity}`,
-      `No. WhatsApp: ${phone.trim()}`,
-      `Info dari: ${originLine}`,
-    ].join("\n");
-
-    const waHref = `${BUSINESS.whatsapp.url}?text=${encodeURIComponent(composedMessage)}`;
-
-    // Kirim konversi Lead serentak ke Browser Meta Pixel + Server CAPI (event_id kembar)
-    trackPreWaLeadSubmitted({
-      source: context.source,
-      topicLabel: context.topicLabel,
-      user: {
-        name: cleanName,
-        phone: phone.trim(),
-        city: cleanCity,
+    // 1. Kirim Lead ke Meta Pixel + Server CAPI dengan event_id identik + PII ter-hash (EMQ tinggi)
+    void trackMetaConversion("Lead", {
+      eventId,
+      currency,
+      value,
+      contentName: planInterest,
+      leadSource: clickSource,
+      userData: {
+        fullName: trimmedName,
+        phone: trimmedPhone,
+        city: trimmedCity,
+        ...(lang === "id" ? { countryCode: "id" } : {}),
       },
-      destination: waHref,
     });
 
-    setFinalWaHref(waHref);
+    // 2. Kirim event generate_lead ke Google Analytics 4
+    trackGaEvent("generate_lead", {
+      currency,
+      value,
+      lead_source: clickSource,
+      plan_interest: planInterest,
+      city: trimmedCity || "unspecified",
+      language: lang,
+    });
 
-    // Buka WhatsApp langsung di dalam aksi klik pengguna agar tidak ditahan browser HP / IG
-    window.open(waHref, "_blank", "noopener,noreferrer");
+    // 3. Susun pesan WhatsApp rapi sesuai bahasa pengunjung
+    const messageLines =
+      lang === "id"
+        ? [
+            "Halo Mas Nanang, saya mau diskusi pembuatan website usaha service AC:",
+            "",
+            `Nama / Usaha: ${trimmedName}`,
+            `No. WA Aktif: ${trimmedPhone}`,
+            ...(trimmedCity ? [`Area Layanan: ${trimmedCity}`] : []),
+            `Pilihan Paket: ${planInterest}`,
+            "",
+            "Mohon info langkah selanjutnya ya Mas. Terima kasih!",
+          ]
+        : [
+            "Hi Nanang, I'd like to discuss building a website for my HVAC / AC business:",
+            "",
+            `Name / Company: ${trimmedName}`,
+            `Phone / WhatsApp: ${trimmedPhone}`,
+            ...(trimmedCity ? [`Service Area / City: ${trimmedCity}`] : []),
+            `Package Interest: ${planInterest}`,
+            "Language: English (International Inquiry)",
+            "",
+            "Please share the next steps. Thank you!",
+          ];
+
+    const finalWaUrl = `${BUSINESS.whatsapp.url}?text=${encodeURIComponent(
+      messageLines.join("\n")
+    )}`;
+
+    setOpen(false);
+    window.open(finalWaUrl, "_blank", "noopener,noreferrer");
   };
 
+  if (!open) return null;
+
   return (
-    <motion.div
-      className="fixed inset-0 z-[95] overflow-y-auto"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+    <div
+      className="fixed inset-0 z-[95] flex items-center justify-center p-4 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lead-modal-title"
     >
-      {/* Latar gelap */}
+      {/* Latar gelap blur */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+        onClick={() => setOpen(false)}
         aria-hidden="true"
       />
 
-      <div className="relative flex min-h-full items-center justify-center p-4 sm:p-6">
-        <motion.div
-          ref={panelRef}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="judul-modal-wa"
-          className="relative w-full max-w-md overflow-hidden rounded-3xl border border-accent/35 bg-surface p-6 shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85)] sm:p-7"
-          initial={{ opacity: 0, y: 28, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 18, scale: 0.97 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-accent/15 blur-3xl"
-          />
+      <div
+        ref={dialogRef}
+        className="relative z-10 w-full max-w-md overflow-hidden rounded-3xl border border-accent/35 bg-surface p-6 shadow-[0_30px_90px_-15px_rgba(0,0,0,0.9)] sm:p-7"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-accent/15 blur-3xl"
+        />
 
-          <div className="relative flex items-start justify-between gap-4">
-            <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-accent">
-              <WhatsAppIcon className="h-3.5 w-3.5" />
-              {context.topicLabel}
+        <div className="relative flex items-start justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-accent">
+              <WhatsAppIcon className="h-3 w-3" />
+              {lang === "id" ? "Konsultasi Langsung" : "Direct WhatsApp Chat"}
             </span>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Tutup jendela"
-              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-mist transition-colors hover:border-accent/60 hover:text-white"
+            <h2
+              id="lead-modal-title"
+              className="mt-3 font-display text-xl font-bold tracking-tight text-white sm:text-2xl"
             >
-              <X className="h-4 w-4" aria-hidden="true" />
-            </button>
+              {lang === "id"
+                ? "Kenalan Singkat Sebelum ke WhatsApp"
+                : "Quick Intro Before Opening WhatsApp"}
+            </h2>
           </div>
 
-          {!finalWaHref ? (
-            <form onSubmit={handleSubmit} noValidate className="relative mt-5">
-              <h3
-                id="judul-modal-wa"
-                className="font-display text-2xl font-bold tracking-tight text-white"
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label={lang === "id" ? "Tutup jendela" : "Close dialog"}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-mist transition-colors hover:border-accent/50 hover:text-white"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+
+        <p className="relative mt-2 text-xs leading-relaxed text-mist sm:text-sm">
+          {lang === "id"
+            ? "Isi 10 detik supaya pesan chat Anda otomatis rapi dan saya bisa langsung menyiapkan saran sesuai area kerja usaha AC Anda."
+            : "Takes 10 seconds so your WhatsApp message is pre-formatted cleanly with your market and package details."}
+        </p>
+
+        <form onSubmit={handleSubmit} className="relative mt-5 space-y-4" noValidate>
+          <div>
+            <label
+              htmlFor="lead-name"
+              className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
+            >
+              {lang === "id" ? "Nama Anda / Nama Usaha AC *" : "Your Name / HVAC Company *"}
+            </label>
+            <input
+              id="lead-name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              required
+              data-autofocus
+              value={fullName}
+              onChange={(e) => {
+                setFullName(e.target.value);
+                if (errorMsg) setErrorMsg("");
+              }}
+              placeholder={
+                lang === "id"
+                  ? "Contoh: Pak Budi / Berkah Jaya AC"
+                  : "e.g. Mike Carter / CoolBreeze HVAC"
+              }
+              className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white placeholder:text-mist/50 focus:border-accent focus:outline-none"
+            />
+          </div>
+
+          <div className="grid gap-3.5 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="lead-phone"
+                className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
               >
-                Kenalan Singkat Sebelum Masuk WhatsApp
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-mist">
-                Isi 3 baris singkat di bawah supaya begitu chat terbuka, saya langsung paham nama
-                dan area kerja usaha AC Anda.
-              </p>
+                {lang === "id" ? "Nomor WhatsApp *" : "Phone / WhatsApp *"}
+              </label>
+              <input
+                id="lead-phone"
+                name="tel"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                required
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  if (errorMsg) setErrorMsg("");
+                }}
+                placeholder={lang === "id" ? "0812xxxx" : "+1 512-555-0192"}
+                className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white placeholder:text-mist/50 focus:border-accent focus:outline-none"
+              />
+            </div>
 
-              <div className="mt-5 space-y-4">
-                <div>
-                  <label
-                    htmlFor="prewa-name"
-                    className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/85"
-                  >
-                    Nama Anda / Nama Usaha AC
-                  </label>
-                  <div className="relative mt-1.5">
-                    <User
-                      className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-mist"
-                      aria-hidden="true"
-                    />
-                    <input
-                      id="prewa-name"
-                      type="text"
-                      autoComplete="name"
-                      data-autofocus
-                      placeholder="Contoh: Budi / Berkah Jaya AC"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-xl border border-line bg-ink py-3 pl-10 pr-4 text-sm text-white placeholder:text-mist/50 transition-colors focus:border-accent"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="prewa-phone"
-                    className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/85"
-                  >
-                    Nomor WhatsApp Aktif
-                  </label>
-                  <div className="relative mt-1.5">
-                    <Phone
-                      className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-mist"
-                      aria-hidden="true"
-                    />
-                    <input
-                      id="prewa-phone"
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      placeholder="Contoh: 0812-3456-7890"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full rounded-xl border border-line bg-ink py-3 pl-10 pr-4 text-sm text-white placeholder:text-mist/50 transition-colors focus:border-accent"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="prewa-city"
-                    className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/85"
-                  >
-                    Kota / Kecamatan Area Kerja
-                  </label>
-                  <div className="relative mt-1.5">
-                    <MapPin
-                      className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-mist"
-                      aria-hidden="true"
-                    />
-                    <input
-                      id="prewa-city"
-                      type="text"
-                      autoComplete="address-level2"
-                      placeholder="Contoh: Bekasi Selatan / Tangerang"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-full rounded-xl border border-line bg-ink py-3 pl-10 pr-4 text-sm text-white placeholder:text-mist/50 transition-colors focus:border-accent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {errorMsg && (
-                <p
-                  role="alert"
-                  className="mt-4 rounded-xl border border-amber-400/35 bg-amber-400/10 px-3.5 py-2.5 text-xs leading-relaxed text-amber-200"
-                >
-                  {errorMsg}
-                </p>
-              )}
-
-              <button type="submit" className="btn-primary mt-6 w-full !py-3.5 text-sm">
-                <WhatsAppIcon className="h-4 w-4" />
-                Lanjut Chat ke WhatsApp
-              </button>
-
-              <p className="mt-3.5 flex items-center justify-center gap-1.5 text-center text-[0.7rem] text-mist">
-                <Lock className="h-3 w-3 shrink-0 text-accent" aria-hidden="true" />
-                Data aman, hanya dipakai untuk membalas konsultasi Anda.
-              </p>
-            </form>
-          ) : (
-            <div className="relative mt-5 text-center">
-              <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-accent/40 bg-accent/15 text-accent">
-                <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
-              </span>
-              <h3
-                id="judul-modal-wa"
-                className="mt-4 font-display text-2xl font-bold tracking-tight text-white"
+            <div>
+              <label
+                htmlFor="lead-city"
+                className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
               >
-                Mengarahkan ke WhatsApp...
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-mist">
-                Kalau aplikasi WhatsApp belum terbuka otomatis di layar Anda, silakan tekan tombol
-                di bawah ini.
-              </p>
+                {lang === "id" ? "Kota / Area Kerja" : "City / Country"}
+              </label>
+              <input
+                id="lead-city"
+                name="address-level2"
+                type="text"
+                autoComplete="address-level2"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder={
+                  lang === "id"
+                    ? "Contoh: Bekasi / Sidoarjo"
+                    : "e.g. Austin, TX / Sydney"
+                }
+                className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white placeholder:text-mist/50 focus:border-accent focus:outline-none"
+              />
+            </div>
+          </div>
 
+          <div>
+            <label
+              htmlFor="lead-plan"
+              className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
+            >
+              {lang === "id" ? "Paket yang Diminati" : "Package Interest"}
+            </label>
+            <select
+              id="lead-plan"
+              name="plan"
+              value={planInterest}
+              onChange={(e) => setPlanInterest(e.target.value)}
+              className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white focus:border-accent focus:outline-none"
+            >
+              {planOptions.map((opt) => (
+                <option key={opt.label} value={opt.label}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {errorMsg && (
+            <p role="alert" className="rounded-xl border border-red-400/35 bg-red-500/10 px-3.5 py-2.5 text-xs text-red-200">
+              {errorMsg}
+            </p>
+          )}
+
+          <button type="submit" className="btn-primary w-full justify-center py-3.5 text-sm">
+            <WhatsAppIcon className="h-4 w-4" />
+            {lang === "id" ? "Lanjut Chat ke WhatsApp" : "Continue to WhatsApp"}
+          </button>
+
+          <div className="flex items-center justify-between gap-2 pt-1 text-xs text-mist">
+            <span className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+              {lang === "id" ? "Data aman & bebas spam" : "Private & spam-free"}
+            </span>
+
+            {targetHref && (
               <a
-                href={finalWaHref}
+                href={targetHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                data-direct-wa="true"
-                onClick={onClose}
-                className="btn-primary mt-6 w-full !py-3.5 text-sm"
+                data-bypass-lead-modal="true"
+                onClick={handleDirectBypass}
+                className="inline-flex items-center gap-1 font-medium text-white/75 underline decoration-white/30 underline-offset-4 transition-colors hover:text-accent"
               >
-                <WhatsAppIcon className="h-4 w-4" />
-                Buka WhatsApp Manual
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                {lang === "id" ? "Langsung ke WA" : "Open WA directly"}
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
-            </div>
-          )}
-        </motion.div>
+            )}
+          </div>
+        </form>
       </div>
-    </motion.div>
+    </div>
   );
 }

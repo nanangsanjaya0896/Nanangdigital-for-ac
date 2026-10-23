@@ -1,96 +1,78 @@
-import { Check } from "lucide-react";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
-
-const REASSURANCES = [
-  "Belum punya foto atau teks pun bisa dibantu",
-  "Tanya dulu gratis tanpa harus langsung jadi",
-  "Pelunasan 50% setelah website selesai",
-];
+import { BUSINESS, getGeneralWaLink } from "../data/business";
+import { useLanguage } from "../i18n/LanguageContext";
 
 export default function FinalCTASection() {
+  const { lang } = useLanguage();
+  const waLink = getGeneralWaLink(lang);
+  const phoneDisplay =
+    lang === "id" ? BUSINESS.whatsapp.display : BUSINESS.whatsapp.displayIntl;
+
   return (
-    <section id="kontak" aria-label="Mulai konsultasi" className="relative py-24 md:py-32">
+    <section
+      id="kontak"
+      aria-label={
+        lang === "id"
+          ? "Mulai diskusi di WhatsApp"
+          : "Start a conversation on WhatsApp"
+      }
+      className="relative overflow-hidden py-24 md:py-36"
+    >
       <div className="section-wrap">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[2rem] border border-accent/25 bg-surface px-6 py-16 text-center md:px-12 md:py-24">
-            {/* Ornamen */}
+          <div className="relative overflow-hidden rounded-[2rem] border border-accent/35 bg-gradient-to-br from-[#0e2019] via-surface to-surface px-6 py-16 text-center sm:px-12 md:py-24">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full border border-accent/15"
+              className="bg-grid absolute inset-0 opacity-50 [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,black,transparent)]"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -bottom-32 -right-24 h-96 w-96 rounded-full border border-accent/15"
-            />
-            <div
-              aria-hidden="true"
-              className="glow-orb pointer-events-none absolute left-1/2 top-0 h-72 w-[42rem] -translate-x-1/2 rounded-full"
-            />
-            <div
-              aria-hidden="true"
-              className="bg-grid pointer-events-none absolute inset-0 opacity-50 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_20%,black,transparent)]"
+              className="glow-orb pointer-events-none absolute left-1/2 top-1/2 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full"
             />
 
-            <div className="relative">
-              <p className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/[0.06] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
-                Siap Mulai Kapan Saja
+            <div className="relative mx-auto max-w-3xl">
+              <p className="inline-flex items-center gap-2.5 rounded-full border border-accent/35 bg-accent/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+                {lang === "id"
+                  ? "Siap Bikin Usaha AC Makin Rapi?"
+                  : "Ready to Book More Local HVAC Jobs?"}
               </p>
 
-              <h2 className="mx-auto mt-6 max-w-3xl font-display text-3xl font-bold leading-[1.14] tracking-tight sm:text-4xl lg:text-[2.9rem]">
-                Yuk, Rapikan Tampilan Online{" "}
-                <span className="text-accent">Usaha Service AC</span> Anda Sekarang.
-              </h2>
+              {lang === "id" ? (
+                <h2 className="mt-7 font-display text-3xl font-bold leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+                  Ngobrol Dulu di WhatsApp,{" "}
+                  <span className="text-accent">Gratis Tanpa Paksaan</span>.
+                </h2>
+              ) : (
+                <h2 className="mt-7 font-display text-3xl font-bold leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+                  Let&apos;s Chat on WhatsApp,{" "}
+                  <span className="text-accent">Zero Pressure</span>.
+                </h2>
+              )}
 
               <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist md:text-lg">
-                Ceritakan saja kondisi usaha Anda sekarang lewat WhatsApp. Saya bantu carikan paket
-                yang paling pas sama kebutuhan dan budget Anda saat ini.
+                {lang === "id"
+                  ? "Ceritakan daerah layanan dan jenis jasa AC yang paling ingin Anda kejar. Saya bantu pilihkan paket yang paling pas sama kebutuhan usaha Anda sekarang."
+                  : "Tell me your city, core HVAC services, and growth goals. I'll recommend the exact package that fits your shop best and get your site live in 3 to 5 days."}
               </p>
 
-              {/* Nomor WhatsApp */}
-              <div className="mt-9 inline-flex items-center gap-4 rounded-2xl border border-line bg-black/30 px-6 py-4">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-deep text-[#04140c]">
-                  <WhatsAppIcon className="h-5 w-5" />
-                </span>
-                <span className="text-left">
-                  <span className="block text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-mist">
-                    WhatsApp Langsung Nanang
-                  </span>
-                  <a
-                    href={BUSINESS.whatsapp.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    data-track-source="final_section_phone"
-                    className="font-mono text-lg font-semibold tracking-wide text-white transition-colors hover:text-accent md:text-2xl"
-                  >
-                    {BUSINESS.whatsapp.display}
-                  </a>
-                </span>
-              </div>
-
-              <div className="mt-9">
+              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <a
-                  href={WA_LINK_GENERAL}
+                  href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  data-track-source="final_section_cta"
-                  className="btn-primary !px-9 !py-4 text-base"
+                  data-track-source="final_cta_section"
+                  className="btn-primary px-9 py-4 text-base"
                 >
                   <WhatsAppIcon className="h-5 w-5" />
-                  Chat di WhatsApp Sekarang
+                  {lang === "id" ? "Chat WhatsApp Sekarang" : "Message Me on WhatsApp"}
                 </a>
               </div>
 
-              <ul className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
-                {REASSURANCES.map((text) => (
-                  <li key={text} className="flex items-center gap-2 text-xs text-mist md:text-sm">
-                    <Check className="h-3.5 w-3.5 text-accent" strokeWidth={3} aria-hidden="true" />
-                    {text}
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-5 font-mono text-xs tracking-wider text-mist">
+                WhatsApp: <span className="text-white/90">{phoneDisplay}</span>
+              </p>
             </div>
           </div>
         </Reveal>

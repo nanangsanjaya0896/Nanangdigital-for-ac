@@ -2,19 +2,32 @@ import { useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowRight, Move } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
+import { BUSINESS, getGeneralWaLink } from "../data/business";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Locale } from "../i18n/LanguageContext";
 
-const MARQUEE_ITEMS = [
-  "Website Usaha Service AC",
-  "Setup Meta Ads Lokal",
-  "Teks Layanan Jelas",
-  "Nyaman Dibuka dari HP",
-  "Tombol Chat WhatsApp",
-  "Gratis Domain & Hosting 1 Tahun",
-];
+const MARQUEE_ITEMS_BY_LANG: Record<Locale, string[]> = {
+  id: [
+    "Website Usaha Service AC",
+    "Setup Meta Ads Lokal",
+    "Teks Layanan Jelas",
+    "Nyaman Dibuka dari HP",
+    "Tombol Chat WhatsApp",
+    "Gratis Domain & Hosting 1 Tahun",
+  ],
+  en: [
+    "HVAC Contractor Websites",
+    "Local Meta Lead Ads",
+    "Done-For-You Copywriting",
+    "Fast Mobile UX",
+    "1-Tap WhatsApp & Lead Form",
+    "Free Domain & Hosting Year 1",
+  ],
+};
 
 export default function Hero() {
+  const { lang } = useLanguage();
   const reduced = useReducedMotion();
   const [photoFailed, setPhotoFailed] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -24,6 +37,11 @@ export default function Hero() {
   const dragStartRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(
     null
   );
+
+  const marqueeItems = MARQUEE_ITEMS_BY_LANG[lang];
+  const waLink = getGeneralWaLink(lang);
+  const phoneDisplay =
+    lang === "id" ? BUSINESS.whatsapp.display : BUSINESS.whatsapp.displayIntl;
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (reduced) return;
@@ -79,7 +97,11 @@ export default function Hero() {
   const dynamicRotation = offset.x * 0.12;
 
   return (
-    <section id="beranda" aria-label="Beranda" className="relative overflow-hidden">
+    <section
+      id="beranda"
+      aria-label={lang === "id" ? "Beranda" : "Home"}
+      className="relative overflow-hidden"
+    >
       {/* Latar: grid + glow */}
       <div
         aria-hidden="true"
@@ -104,39 +126,54 @@ export default function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>
-            Khusus Teknisi & Usaha Service AC
+            {lang === "id"
+              ? "Khusus Teknisi & Usaha Service AC"
+              : "Built Exclusively for HVAC & AC Contractors"}
           </p>
 
-          <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
-            Biar Usaha <span className="text-accent">Service AC</span> Anda Gampang Ditemukan &{" "}
-            <span className="relative inline-block">
-              Dihubungi <span className="text-outline">Pelanggan</span>.
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
-              />
-            </span>
-          </h1>
+          {lang === "id" ? (
+            <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
+              Biar Usaha <span className="text-accent">Service AC</span> Anda Gampang Ditemukan &{" "}
+              <span className="relative inline-block">
+                Dihubungi <span className="text-outline">Pelanggan</span>.
+                <span
+                  aria-hidden="true"
+                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
+                />
+              </span>
+            </h1>
+          ) : (
+            <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
+              Turn Local <span className="text-accent">HVAC Searches</span> Into{" "}
+              <span className="relative inline-block">
+                Booked <span className="text-outline">Service Calls</span>.
+                <span
+                  aria-hidden="true"
+                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
+                />
+              </span>
+            </h1>
+          )}
 
           <p className="hero-in hero-d3 mt-7 max-w-xl text-base leading-relaxed text-mist md:text-lg">
-            Saya bantu buatkan website yang rapi plus setting iklan Facebook & Instagram untuk usaha
-            service AC Anda. Selesai dalam 3 sampai 5 hari kerja, sudah beres sama domain dan
-            hosting tahun pertama.
+            {lang === "id"
+              ? "Saya bantu buatkan website yang rapi plus setting iklan Facebook & Instagram untuk usaha service AC Anda. Selesai dalam 3 sampai 5 hari kerja, sudah beres sama domain dan hosting tahun pertama."
+              : "I build fast, conversion-focused websites and local Facebook & Instagram lead campaigns tailored for AC repair and HVAC businesses. Live in 3 to 5 business days with your first-year domain & hosting included."}
           </p>
 
           <div className="hero-in hero-d4 mt-10 flex flex-wrap items-center gap-4">
             <a
-              href={WA_LINK_GENERAL}
+              href={waLink}
               target="_blank"
               rel="noopener noreferrer"
               data-track-source="hero_primary_cta"
               className="btn-primary"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              Chat & Konsultasi Gratis
+              {lang === "id" ? "Chat & Konsultasi Gratis" : "Free WhatsApp Consultation"}
             </a>
             <a href="#paket" className="btn-ghost">
-              Cek Paket Mulai Rp1,5 Jt
+              {lang === "id" ? "Cek Paket Mulai Rp1,5 Jt" : "View Packages from $299"}
               <ArrowDown className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
@@ -146,14 +183,18 @@ export default function Hero() {
               href="#karya"
               className="group inline-flex items-center gap-2 py-2 text-sm font-medium text-mist transition-colors hover:text-accent"
             >
-              Intip contoh tampilan website AC
+              {lang === "id"
+                ? "Intip contoh tampilan website AC"
+                : "See live HVAC website layouts"}
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 aria-hidden="true"
               />
             </a>
             <p className="mt-3 text-xs tracking-wide text-mist">
-              Boleh tanya-tanya dulu santai di WA. Pelunasan 50% baru dibayar setelah website jadi.
+              {lang === "id"
+                ? "Boleh tanya-tanya dulu santai di WA. Pelunasan 50% baru dibayar setelah website jadi."
+                : "No-pressure chat via WhatsApp. Pay only 50% upfront and the final 50% after you approve the live site."}
             </p>
           </div>
         </div>
@@ -165,7 +206,7 @@ export default function Hero() {
             className="absolute -right-3 top-24 z-30 hidden items-center gap-2 rounded-full border border-accent/35 bg-surface/95 px-3.5 py-2 text-[0.7rem] font-medium text-mist shadow-lg backdrop-blur lg:top-6 lg:inline-flex"
           >
             <Move className="h-3.5 w-3.5 text-accent" />
-            Tarik & goyangkan kartu
+            {lang === "id" ? "Tarik & goyangkan kartu" : "Drag & swing badge"}
           </span>
 
           <div className={reduced ? "" : "hero-card-float"}>
@@ -187,17 +228,14 @@ export default function Hero() {
                 aria-hidden="true"
                 className="relative mx-auto flex w-full flex-col items-center lg:-mt-[17rem]"
               >
-                {/* Dudukan gantungan atas */}
                 <div className="flex h-3 w-12 items-center justify-center rounded-full border border-accent/60 bg-[#0d1518] shadow-[0_0_20px_rgba(0,223,143,0.45)]">
                   <span className="h-1 w-6 rounded-full bg-accent" />
                 </div>
 
-                {/* Pita tali lanyard anyaman kontras dari atas ke bawah */}
                 <div className="lanyard-strap relative flex h-24 w-5 flex-col items-center justify-center overflow-hidden border-x-2 border-accent/80 shadow-[0_0_28px_rgba(0,223,143,0.3)] sm:h-28 lg:h-[21rem]">
                   <span className="h-full w-[2px] bg-gradient-to-b from-accent via-accent/90 to-accent shadow-[0_0_10px_rgba(0,223,143,0.9)]" />
                 </div>
 
-                {/* Jepitan & ring pengait metalik ke lubang kartu */}
                 <div className="relative z-20 flex flex-col items-center">
                   <div className="h-3.5 w-8 rounded-md border border-accent/70 bg-gradient-to-b from-[#26323d] to-[#11171e] shadow-[0_4px_14px_rgba(0,0,0,0.75)]" />
                   <div className="-mt-1 h-3.5 w-3.5 rounded-full border-2 border-accent bg-ink shadow-[0_0_14px_rgba(0,223,143,0.65)]" />
@@ -209,7 +247,6 @@ export default function Hero() {
 
               {/* Kartu ID */}
               <div className="relative overflow-hidden rounded-[1.75rem] border border-accent/30 bg-surface/95 p-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8),0_0_40px_-18px_rgba(0,223,143,0.28)] backdrop-blur-xl sm:p-7">
-                {/* Lubang slot gantungan di bibir atas kartu */}
                 <div
                   aria-hidden="true"
                   className="mx-auto mb-4 flex h-2.5 w-14 items-center justify-center rounded-full border border-white/15 bg-ink shadow-inner"
@@ -217,7 +254,6 @@ export default function Hero() {
                   <span className="h-1 w-8 rounded-full bg-accent/40" />
                 </div>
 
-                {/* Efek kilau cahaya kaca bergerak halus melintasi kartu */}
                 {!reduced && (
                   <div
                     aria-hidden="true"
@@ -253,7 +289,7 @@ export default function Hero() {
                         src={BUSINESS.founderPhoto.url}
                         srcSet={BUSINESS.founderPhoto.srcSet}
                         sizes={BUSINESS.founderPhoto.sizes}
-                        alt={BUSINESS.founderPhoto.alt}
+                        alt={BUSINESS.founderPhoto.alt[lang]}
                         width={400}
                         height={350}
                         fetchPriority="high"
@@ -290,26 +326,26 @@ export default function Hero() {
 
                 <dl className="relative mt-6 space-y-3 border-t border-line pt-5 text-sm">
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-mist">Spesialis</dt>
-                    <dd className="text-right font-medium">Website Usaha AC</dd>
+                    <dt className="text-mist">{lang === "id" ? "Spesialis" : "Specialty"}</dt>
+                    <dd className="text-right font-medium">
+                      {lang === "id" ? "Website Usaha AC" : "HVAC Websites & Ads"}
+                    </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <dt className="text-mist">WhatsApp</dt>
-                    <dd className="text-right font-mono text-[0.8rem]">
-                      {BUSINESS.whatsapp.display}
-                    </dd>
+                    <dd className="text-right font-mono text-[0.8rem]">{phoneDisplay}</dd>
                   </div>
                 </dl>
 
                 <a
-                  href={WA_LINK_GENERAL}
+                  href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-track-source="hero_id_card_cta"
                   className="relative mt-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-deep py-3.5 text-sm font-bold text-[#04140c] transition-transform duration-300 hover:scale-[1.03] active:scale-95"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
-                  NGOBROL DI WHATSAPP
+                  {lang === "id" ? "NGOBROL DI WHATSAPP" : "CHAT ON WHATSAPP"}
                 </a>
               </div>
             </div>
@@ -323,7 +359,7 @@ export default function Hero() {
           <div className="marquee-track flex w-max" aria-hidden="true">
             {[0, 1].map((group) => (
               <div key={group} className="flex items-center gap-10 pr-10">
-                {MARQUEE_ITEMS.map((text) => (
+                {marqueeItems.map((text) => (
                   <span
                     key={text}
                     className="flex items-center gap-10 whitespace-nowrap text-sm font-medium uppercase tracking-[0.2em] text-mist"
@@ -336,7 +372,7 @@ export default function Hero() {
             ))}
           </div>
         </div>
-        <span className="sr-only">{MARQUEE_ITEMS.join(", ")}</span>
+        <span className="sr-only">{marqueeItems.join(", ")}</span>
       </div>
     </section>
   );
