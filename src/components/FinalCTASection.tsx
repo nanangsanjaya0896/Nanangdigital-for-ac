@@ -1,13 +1,11 @@
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { BUSINESS, getGeneralWaLink } from "../data/business";
+import { getGeneralWaLink } from "../data/business";
 import { useLanguage } from "../i18n/LanguageContext";
 
 export default function FinalCTASection() {
   const { lang } = useLanguage();
   const waLink = getGeneralWaLink(lang);
-  const phoneDisplay =
-    lang === "id" ? BUSINESS.whatsapp.display : BUSINESS.whatsapp.displayIntl;
 
   return (
     <section
@@ -69,10 +67,6 @@ export default function FinalCTASection() {
                   {lang === "id" ? "Chat WhatsApp Sekarang" : "Message Me on WhatsApp"}
                 </a>
               </div>
-
-              <p className="mt-5 font-mono text-xs tracking-wider text-mist">
-                WhatsApp: <span className="text-white/90">{phoneDisplay}</span>
-              </p>
             </div>
           </div>
         </Reveal>

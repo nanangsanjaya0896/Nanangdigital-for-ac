@@ -9,7 +9,7 @@ Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang San
   - Dilengkapi pusat artikel SEO organik statis di `/panduan/` beserta 4 panduan teknis usaha service AC.
 - **Pasar Global HVAC (`/en/`, `lang="en"`):**
   - Posisi khusus kontraktor HVAC & Air Conditioning internasional dengan harga USD: **Basic `$299`**, **Growth `$449`**, dan **Premium `Custom`**.
-  - Prerender HTML statis murni di `dist/en/index.html` lengkap dengan `hreflang` dua arah (`id`, `en`, `x-default`), `OfferCatalog` berdenominasi `USD`, format nomor WhatsApp internasional (`+62 859-7257-7637`), dan pelacakan nilai konversi `USD` otomatis ke GA4 serta Meta Pixel + Server CAPI.
+  - Prerender HTML statis murni di `dist/en/index.html` lengkap dengan `hreflang` dua arah (`id`, `en`, `x-default`), `OfferCatalog` berdenominasi `USD`, tombol CTA langsung ke URL WhatsApp, dan pelacakan nilai konversi `USD` otomatis ke GA4 serta Meta Pixel + Server CAPI.
 - **Pengalih Bahasa Instan (`ID | EN`):**
   - Tersedia langsung di bilah navigasi atas (desktop & seluler) untuk mengganti 100% bahasa seluruh bagian halaman, modal pra-WhatsApp, dan template pesan chat secara instan tanpa muat ulang halaman.
 

@@ -44,7 +44,6 @@ function buildEnglishHomeSchemaGraph(siteOrigin) {
           url: `${siteOrigin}/en/`,
           image:
             "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1",
-          telephone: "+62-859-7257-7637",
           priceRange: "$299 - $449+",
           founder: {
             "@type": "Person",

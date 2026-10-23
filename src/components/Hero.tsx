@@ -40,8 +40,6 @@ export default function Hero() {
 
   const marqueeItems = MARQUEE_ITEMS_BY_LANG[lang];
   const waLink = getGeneralWaLink(lang);
-  const phoneDisplay =
-    lang === "id" ? BUSINESS.whatsapp.display : BUSINESS.whatsapp.displayIntl;
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (reduced) return;
@@ -332,8 +330,10 @@ export default function Hero() {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-mist">WhatsApp</dt>
-                    <dd className="text-right font-mono text-[0.8rem]">{phoneDisplay}</dd>
+                    <dt className="text-mist">{lang === "id" ? "Estimasi" : "Turnaround"}</dt>
+                    <dd className="text-right font-medium text-accent">
+                      {lang === "id" ? "3 - 5 Hari Kerja" : "3 - 5 Business Days"}
+                    </dd>
                   </div>
                 </dl>
 
