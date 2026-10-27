@@ -12,6 +12,9 @@
  *    diubah menjadi alamat produksi https://<project>.pages.dev.
  * 3. Otomatis di Vercel: `VERCEL_PROJECT_PRODUCTION_URL`.
  * 4. Bawaan: https://nanangdigital.pages.dev
+ *
+ * Di Cloudflare Workers (Workers Builds) alamat website tidak dikirim otomatis ke proses build,
+ * jadi `SITE_URL` wajib diisi sebagai Build variable. Kalau belum diisi, log build menampilkan peringatan.
  */
 
 export const DEFAULT_SITE_URL = "https://nanangdigital.pages.dev";
@@ -57,6 +60,22 @@ export function resolveSiteUrlWithSource(env = process.env) {
   if (fromVercel) return { url: fromVercel, source: "Vercel (VERCEL_PROJECT_PRODUCTION_URL)" };
 
   return { url: DEFAULT_SITE_URL, source: "bawaan" };
+}
+
+/**
+ * Pesan peringatan untuk log build kalau alamat website belum diatur di Cloudflare Workers.
+ * @param {Record<string, string | undefined>} [env]
+ * @returns {string}
+ */
+export function siteUrlWarning(env = process.env) {
+  const { source } = resolveSiteUrlWithSource(env);
+  if (source !== "bawaan" || !env.WORKERS_CI) return "";
+  return [
+    "⚠ SITE_URL belum diisi. Tag SEO, sitemap.xml, dan robots.txt sementara memakai alamat bawaan.",
+    "  Isi di dashboard Cloudflare: Worker > Settings > Build > Variables and secrets > Add,",
+    "  nama SITE_URL, isi alamat website (contoh https://nanangdigital-for-ac.namaakun.workers.dev),",
+    "  lalu jalankan ulang build (Retry build).",
+  ].join("\n");
 }
 
 /** @param {Record<string, string | undefined>} [env] */

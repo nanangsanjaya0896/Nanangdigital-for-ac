@@ -6,6 +6,7 @@
 @source not "../server";
 @source not "../functions";
 @source not "../api";
+@source not "../worker";
 
 @theme {
   --color-ink: #0d1116;

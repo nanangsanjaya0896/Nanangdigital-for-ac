@@ -2,7 +2,7 @@
  * Logika inti Meta Conversions API (`/api/meta-capi`), tanpa ketergantungan ke hosting tertentu.
  *
  * Dipakai bersama oleh:
- * - Cloudflare Pages Functions: `functions/api/meta-capi.js` (hosting utama)
+ * - Cloudflare Workers: `worker/index.js` dan Cloudflare Pages Functions: `functions/api/meta-capi.js` (hosting utama)
  * - Vercel Serverless Function: `api/meta-capi.js` (alternatif)
  * - Vite Dev Server: `vite.config.ts` (Live Preview lokal)
  *

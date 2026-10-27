@@ -1,0 +1,3 @@
+# Dibaca Cloudflare Workers: file di bawah ini tidak ikut diunggah sebagai halaman publik.
+# _routes.json hanya untuk Cloudflare Pages. Di Workers fungsinya diganti "run_worker_first" di wrangler.jsonc.
+_routes.json

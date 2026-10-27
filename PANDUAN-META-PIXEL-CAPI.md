@@ -1,30 +1,31 @@
-# Panduan Aktivasi Meta Pixel (`2971268586402489`) + Conversions API (CAPI) di Cloudflare Pages
+# Panduan Aktivasi Meta Pixel (`2971268586402489`) + Conversions API (CAPI) di Cloudflare
 
-Nomor **Meta Pixel / Dataset ID (`2971268586402489`)** sudah **ditanamkan langsung** di kode browser (`src/utils/tracking.ts` & `index.html`) maupun di kode server (`server/meta-capi-core.js`, dijalankan oleh `functions/api/meta-capi.js` di Cloudflare Pages).
+Nomor **Meta Pixel / Dataset ID (`2971268586402489`)** sudah **ditanamkan langsung** di kode browser (`src/utils/tracking.ts` & `index.html`) maupun di kode server (`server/meta-capi-core.js`, dijalankan oleh `worker/index.js` di Cloudflare Workers atau `functions/api/meta-capi.js` di Cloudflare Pages).
 
-Artinya, untuk menyalakan **Meta Pixel + Meta CAPI** secara penuh, Anda hanya perlu menempel **1 token rahasia (`META_CAPI_ACCESS_TOKEN`)** di dashboard Cloudflare Pages.
+Artinya, untuk menyalakan **Meta Pixel + Meta CAPI** secara penuh, Anda hanya perlu menempel **1 token rahasia (`META_CAPI_ACCESS_TOKEN`)** di dashboard Cloudflare.
 
 ---
 
-## Langkah 1: Tempel token CAPI di Cloudflare Pages (1 menit)
+## Langkah 1: Tempel token CAPI di dashboard Cloudflare (1 menit)
 
-1. Buka **[dash.cloudflare.com](https://dash.cloudflare.com)**, masuk ke **Workers & Pages**, lalu pilih project website (misalnya `nanangdigital`).
+1. Buka **[dash.cloudflare.com](https://dash.cloudflare.com)**, masuk ke **Workers & Pages**, lalu pilih project website (misalnya `nanangdigital-for-ac`).
 2. Klik **Settings** > **Variables and Secrets** > **Add**, lalu isi:
    * **Variable name:** `META_CAPI_ACCESS_TOKEN`
    * **Value:** *(tempel kode panjang `EAA...` dari Meta Events Manager > Settings > Conversions API > Generate access token)*
-   * Klik **Encrypt**, lalu **Save**.
 3. *(Opsional, kalau ingin tes dulu di tab Test Events Meta)*:
-   * Tambahkan sementara variabel `META_TEST_EVENT_CODE` berisi kode tes dari tab *Test Events* (contoh: `TEST51829`), lalu **Save**.
-4. Buka tab **Deployments**, klik titik tiga (`...`) pada deployment paling atas, lalu pilih **Retry deployment**.
+   * Tambahkan sementara variabel `META_TEST_EVENT_CODE` berisi kode tes dari tab *Test Events* (contoh: `TEST51829`).
+4. Simpan sesuai jenis project:
+   * **Workers** (Cara A di panduan deploy): pilih tipe **Secret** untuk token, lalu klik **Deploy**. Langsung aktif.
+   * **Pages** (Cara B): klik **Encrypt**, lalu **Save**. Setelah itu buka tab **Deployments**, klik titik tiga (`...`) pada deployment paling atas, lalu pilih **Retry deployment**.
 
 ---
 
 ## Langkah 2: Cek apakah server CAPI sudah aktif
 
-Setelah deploy selesai (**Success**), buka alamat ini di browser HP atau laptop (sesuaikan kalau alamat project Anda berbeda):
+Setelah token tersimpan, buka alamat ini di browser HP atau laptop. Ganti `ALAMAT` dengan alamat website Anda, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`:
 
 ```text
-https://nanangdigital.pages.dev/api/meta-capi
+ALAMAT/api/meta-capi
 ```
 
 Kalau token sudah terpasang, akan tampil status berikut (isi token tidak pernah ditampilkan):
