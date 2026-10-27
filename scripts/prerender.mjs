@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { build as viteBuild, loadEnv } from "vite";
 import React from "react";
 import { renderToString } from "react-dom/server";
-import { resolveSiteUrlWithSource } from "./site-url.mjs";
+import { resolveSiteUrlWithSource, siteUrlWarning } from "./site-url.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -293,6 +293,8 @@ ${sitemapEntries
     `✓ Prerendered ${sitemapEntries.length} static SEO pages (/, /panduan/, + ${SEO_ARTICLES.length} articles) & updated sitemap.xml, robots.txt, 404.html`
   );
   console.log(`✓ Alamat website (SITE_URL): ${SITE_ORIGIN} [sumber: ${siteUrlSource}]`);
+  const siteWarning = siteUrlWarning({ ...env, ...process.env });
+  if (siteWarning) console.warn(siteWarning);
 }
 
 /** @param {string} dir */

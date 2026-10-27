@@ -1,0 +1,27 @@
+// Konfigurasi Cloudflare Workers (Workers Builds: Build command `npm run build`, Deploy command `npx wrangler deploy`).
+// Panduan lengkap: PANDUAN-DEPLOY-CLOUDFLARE.md
+//
+// Penting: "name" harus sama persis dengan nama project (Worker) di dashboard Cloudflare.
+// Kalau project dibuat dengan nama lain, ubah "name" di bawah ini supaya sama.
+//
+// Cloudflare Pages (cara lama) tidak memakai file ini karena tidak ada "pages_build_output_dir".
+// Pages menulis peringatan "Skipping file and continuing" di log lalu tetap deploy seperti biasa.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "nanangdigital-for-ac",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    // Hasil `npm run build`
+    "directory": "./dist",
+    // Alamat yang tidak ada menampilkan dist/404.html dengan status 404
+    "not_found_handling": "404-page",
+    // Hanya /api/* yang menjalankan Worker. Halaman lain langsung dari CDN (gratis tanpa batas)
+    "run_worker_first": ["/api/*"]
+  },
+  // Variabel biasa yang diisi di dashboard tidak terhapus saat deploy berikutnya
+  "keep_vars": true,
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * Utilitas kecil untuk Cloudflare Pages Functions (`functions/api/*.js`).
+ * Utilitas kecil untuk Cloudflare Workers (`worker/index.js`) dan Pages Functions (`functions/api/*.js`).
  * Hanya memakai Web API standar (Request, Response, Headers).
  */
 

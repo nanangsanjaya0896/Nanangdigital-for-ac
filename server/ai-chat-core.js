@@ -4,7 +4,7 @@ import { CHAT_KNOWLEDGE, CHAT_KNOWLEDGE_VERSION } from "./chat-knowledge.generat
  * Logika inti Live AI Chat NanangDigital (`/api/ai-chat`), tanpa ketergantungan ke hosting tertentu.
  *
  * Dipakai bersama oleh:
- * - Cloudflare Pages Functions: `functions/api/ai-chat.js` (hosting utama)
+ * - Cloudflare Workers: `worker/index.js` dan Cloudflare Pages Functions: `functions/api/ai-chat.js` (hosting utama)
  * - Vercel Serverless Function: `api/ai-chat.js` (alternatif)
  * - Vite Dev Server: `vite.config.ts` (Live Preview lokal)
  *
@@ -35,7 +35,7 @@ function missingKeyHint(platform) {
   if (platform === "local") {
     return "GEMINI_API_KEY belum diisi di file .env.local (khusus pengetesan di komputer sendiri).";
   }
-  return "GEMINI_API_KEY belum diisi di Cloudflare Pages (Settings > Variables and Secrets), lalu deploy ulang.";
+  return "GEMINI_API_KEY belum diisi di dashboard Cloudflare (project > Settings > Variables and Secrets, tipe Secret).";
 }
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai";
