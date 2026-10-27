@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { Sparkles, X } from "lucide-react";
+import { Bot, X } from "lucide-react";
 import { trackGaEvent } from "../utils/tracking";
 
 /**
@@ -151,7 +151,7 @@ export default function AIChatWidget() {
         >
           {!everOpened && <span className="ai-chat-ping" aria-hidden="true" />}
           <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-accent/15 text-accent">
-            {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Sparkles className="h-5 w-5" aria-hidden="true" />}
+            {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Bot className="h-5 w-5" aria-hidden="true" />}
             {!open && (
               <span
                 className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-accent"

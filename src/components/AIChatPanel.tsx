@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
-import { ArrowUp, RotateCcw, Sparkles, X } from "lucide-react";
+import { ArrowUp, Bot, RotateCcw, X } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { waUrl } from "../data/business";
 import { useScrollLock } from "../hooks/useScrollLock";
@@ -394,7 +394,7 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
       >
         <div className="flex items-center gap-3 border-b border-line bg-gradient-to-r from-[#0e2019] to-surface px-4 py-3">
           <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-accent/10 text-accent">
-            <Sparkles className="h-5 w-5" aria-hidden="true" />
+            <Bot className="h-5 w-5" aria-hidden="true" />
             <span
               className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-surface bg-accent"
               aria-hidden="true"
