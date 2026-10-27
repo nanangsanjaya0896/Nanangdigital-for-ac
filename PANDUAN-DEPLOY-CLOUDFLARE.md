@@ -168,6 +168,7 @@ Setelah itu, daftarkan domain baru di Google Search Console.
 | Log build menampilkan `⚠ SITE_URL belum diisi` | Isi build variable `SITE_URL` (Cara A, Langkah 3) |
 | `/api/meta-capi` masih `"ready_for_live_capi": false` | Token belum diisi sebagai Secret. Di Cara B, jangan lupa **Retry deployment** setelah mengisi |
 | `/api/ai-chat` masih `"ai_enabled": false` padahal key sudah diisi | Cek ejaan `GEMINI_API_KEY`. Pengunjung dari Inggris dan Eropa memang dijawab mode bawaan selama memakai free tier Gemini |
+| Muncul build untuk branch selain `main` (misalnya branch revisi) | Itu build preview dan tidak mengubah website utama. Kalau tidak perlu, matikan di **Settings** > **Build** > **Branch control** dengan menonaktifkan build untuk non-production branch |
 
 ## Batas paket gratis
 
