@@ -5,11 +5,12 @@ import type { Plan } from "./plans";
 import { FAQ_ITEMS } from "./faq";
 import { PROCESS_STEPS } from "./process";
 import { BONUSES } from "./bonuses";
+import { PROJECTS, PROJECT_TYPE_LABEL } from "./projects";
 
 /**
  * Basis pengetahuan Asisten AI NanangDigital.
  *
- * Seluruh fakta diambil langsung dari data website (paket, harga, FAQ, alur kerja, bonus),
+ * Seluruh fakta diambil langsung dari data website (paket, harga, FAQ, alur kerja, bonus, contoh website),
  * jadi kalau harga atau isi paket diubah di `src/data/*.ts`, jawaban AI ikut berubah.
  * File server `server/chat-knowledge.generated.js` dibuat ulang otomatis saat `npm run build`.
  */
@@ -57,6 +58,12 @@ export function buildChatKnowledge(): string {
     lines.push(`- ${bonus.title}: ${bonus.description}`);
   }
 
+  lines.push("", "CONTOH WEBSITE (BAGIAN KARYA):");
+  for (const project of PROJECTS) {
+    lines.push(`- ${project.title} (${PROJECT_TYPE_LABEL[project.type].toLowerCase()}, sudah online di ${project.liveUrl}): ${project.description}`);
+    lines.push(`  Fitur: ${project.features.join("; ")}.`);
+  }
+
   lines.push("", "PERTANYAAN YANG SERING DITANYAKAN:");
   for (const item of FAQ_ITEMS) {
     lines.push(`T: ${item.question}`);
@@ -67,7 +74,7 @@ export function buildChatKnowledge(): string {
   lines.push(
     "- \"No Artikel\" artinya paket tidak termasuk penulisan artikel blog.",
     "- \"Gratis Meta Ads\" artinya bantuan setup iklan Facebook dan Instagram. Website tidak menyebutkan apakah saldo iklan yang dibayar ke Meta sudah termasuk, jadi hal itu dijelaskan langsung oleh Mas Nanang di WhatsApp.",
-    "- Contoh tampilan di bagian Karya adalah demo dan konsep desain, bukan proyek klien sungguhan. Nama usaha, warna, foto, dan tarif nanti disesuaikan dengan usaha klien.",
+    "- Contoh website di bagian Karya adalah website demo buatan Mas Nanang yang sudah online, bukan proyek klien. Nama usaha, foto, testimoni, dan angka di dalam website demo hanya contoh. Untuk klien, nama usaha, warna, foto, dan tarif disesuaikan dengan usaha klien.",
     "- Website juga punya halaman Panduan berisi artikel gratis seputar promosi usaha service AC dan cara daftar di Google Maps.",
     "- Pemesanan, harga Paket Premium Custom, jadwal, dan biaya perpanjangan domain dikonfirmasi lewat tombol WhatsApp di bawah chat."
   );

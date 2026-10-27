@@ -6,6 +6,7 @@ Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang San
 
 - **Beranda (`/`):** Paket Basic `Rp1.500.000`, Paket Growth `Rp2.000.000`, dan Paket Premium Custom (`Sesuai Permintaan`).
 - **Panduan (`/panduan/`):** pusat artikel SEO organik statis beserta 4 panduan usaha service AC.
+- **Contoh Website (bagian Karya di beranda):** menampilkan website demo [ARKTIS Home Service](https://arktishomeservices.vercel.app/) yang sudah online, lengkap dengan screenshot halaman utama, form booking, dan tampilan HP, plus tombol untuk membuka website aslinya. Website demo diberi label jujur sebagai demo, bukan proyek klien. Untuk menambah website berikutnya, cukup tambahkan datanya di `src/data/projects.ts` dan simpan screenshot WebP di `public/images/`. Asisten AI otomatis ikut mengenali website baru itu setelah `npm run build`.
 - **Bahasa:** seluruh website memakai Bahasa Indonesia. Versi bahasa Inggris (`/en/`) sudah dihapus, dan alamat lama `/en` otomatis diarahkan (301) ke beranda lewat `public/_redirects` (Cloudflare) dan `vercel.json` (Vercel), termasuk parameter iklan seperti `fbclid` dan UTM. Kode versi dua bahasa terakhir tersimpan di riwayat Git (commit `4f4b0b9`) kalau suatu saat ingin dipakai lagi.
 
 ## Deploy (Cloudflare Pages)
@@ -28,7 +29,7 @@ Hosting utama: **Cloudflare Pages**, gratis dan boleh dipakai untuk website bisn
 ## Live AI Chat (Asisten AI NanangDigital)
 
 - Tombol **Tanya Asisten AI** di pojok kanan bawah semua halaman, berbahasa Indonesia dengan harga Rupiah. Pertanyaan berbahasa lain tetap dijawab, dan harga selalu dalam Rupiah.
-- Tanpa API key, chat langsung menjawab dari data website (paket, harga, FAQ, alur kerja, bonus). Setelah `GEMINI_API_KEY` (gratis dari Google AI Studio) dipasang di Cloudflare Pages (Settings > Variables and Secrets), chat dijawab AI generatif lewat fungsi server `/api/ai-chat`.
+- Tanpa API key, chat langsung menjawab dari data website (paket, harga, FAQ, alur kerja, bonus, contoh website). Setelah `GEMINI_API_KEY` (gratis dari Google AI Studio) dipasang di Cloudflare Pages (Settings > Variables and Secrets), chat dijawab AI generatif lewat fungsi server `/api/ai-chat`.
 - Tombol WhatsApp di dalam chat tetap lewat form kenalan + tracking GA4 dan Meta Pixel/CAPI yang sama.
 - Panel chat dimuat hanya saat tombol disentuh, jadi tidak membebani skor PageSpeed.
 - Panduan lengkap aktivasi dan aturan free tier Gemini: [`PANDUAN-LIVE-AI-CHAT.md`](./PANDUAN-LIVE-AI-CHAT.md).

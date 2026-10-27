@@ -151,7 +151,7 @@ export default function Hero() {
               href="#karya"
               className="group inline-flex items-center gap-2 py-2 text-sm font-medium text-mist transition-colors hover:text-accent"
             >
-              Intip contoh tampilan website AC
+              Lihat contoh website AC yang sudah online
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 aria-hidden="true"
