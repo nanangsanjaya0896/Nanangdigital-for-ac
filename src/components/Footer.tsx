@@ -8,7 +8,7 @@ import { SEO_ARTICLES } from "../data/articles";
 const FOOT_NAV_LEFT: readonly { readonly id: string; readonly label: string }[] = [
   { id: "beranda", label: "Beranda" },
   { id: "tentang", label: "Tentang" },
-  { id: "karya", label: "Contoh Desain" },
+  { id: "karya", label: "Contoh Website" },
   { id: "layanan", label: "Layanan" },
 ];
 

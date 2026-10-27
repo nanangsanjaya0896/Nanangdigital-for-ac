@@ -4,6 +4,7 @@ import { FAQ_ITEMS } from "../data/faq";
 import { PROCESS_STEPS } from "../data/process";
 import { BONUSES } from "../data/bonuses";
 import { SERVICES } from "../data/services";
+import { PROJECTS } from "../data/projects";
 
 /**
  * Mesin jawaban bawaan Live AI Chat.
@@ -136,6 +137,9 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
     keywords: [
       ["contoh", 3], ["portofolio", 3], ["portfolio", 3], ["hasil", 2], ["karya", 3], ["demo", 3],
       ["example", 3], ["examples", 3], ["sample", 3], ["samples", 3], ["referensi", 2.5],
+      ["klien", 1.5], ["client", 1.5],
+      // Nama contoh website (misalnya "arktis") supaya pertanyaan soal website itu dijawab jujur
+      ...PROJECTS.map((project): [string, number] => [project.title.split(" ")[0].toLowerCase(), 3.5]),
     ],
   },
   {
@@ -462,12 +466,16 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
       };
     }
 
-    case "portfolio":
+    case "portfolio": {
+      const example = PROJECTS[0];
       return {
-        text: "Contoh tampilannya bisa dilihat di bagian Karya di halaman ini. Itu contoh desain dan demo, nanti nama usaha, warna, foto, dan daftar tarifnya disesuaikan penuh dengan usaha Anda.",
+        text: example
+          ? `Contohnya bisa dilihat di bagian Karya di halaman ini: website ${example.title} yang sudah online di ${example.liveUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}. Itu website demo lengkap buatan Mas Nanang, ada paket harga, form booking, dan tombol WhatsApp yang bisa langsung dicoba. Untuk usaha Anda, nama usaha, warna, foto, dan daftar tarifnya disesuaikan penuh.`
+          : "Contoh website bisa dilihat di bagian Karya di halaman ini. Nama usaha, warna, foto, dan daftar tarifnya nanti disesuaikan penuh dengan usaha Anda.",
         suggestWhatsApp: false,
         quickReplies: ["Lihat harga paket", "Berapa lama jadinya?"],
       };
+    }
 
     case "location":
       return {
