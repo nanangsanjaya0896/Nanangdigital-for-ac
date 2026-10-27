@@ -1,11 +1,11 @@
 /**
- * Sinkronisasi basis pengetahuan Asisten AI ke sisi server (Vercel Function).
+ * Sinkronisasi basis pengetahuan Asisten AI ke sisi server (Cloudflare Pages Functions / Vercel Function).
  *
  * Membaca `src/data/chatKnowledge.ts` (yang mengambil data paket, harga, FAQ, alur kerja,
  * dan bonus dari `src/data/*.ts`) lalu menulis hasilnya ke `server/chat-knowledge.generated.js`.
  *
  * Dijalankan otomatis di awal `npm run build`, atau manual lewat `npm run sync:chat`.
- * File hasilnya ikut di-commit supaya Vercel Function selalu punya data terbaru.
+ * File hasilnya ikut di-commit supaya fungsi server selalu punya data terbaru.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -66,9 +66,9 @@ export const CHAT_KNOWLEDGE = ${JSON.stringify(bundle, null, 2)};
     console.log(
       `✓ Basis pengetahuan Asisten AI diperbarui (versi ${version}, ID ${bundle.id.length} karakter, EN ${bundle.en.length} karakter)`
     );
-    if (process.env.VERCEL) {
+    if (process.env.CF_PAGES || process.env.VERCEL) {
       console.warn(
-        "⚠ server/chat-knowledge.generated.js berubah saat build di Vercel. Jalankan `npm run build` di lokal lalu commit file tersebut supaya data AI selalu sama dengan website."
+        "⚠ server/chat-knowledge.generated.js berubah saat build di hosting. Jalankan `npm run build` di lokal lalu commit file tersebut supaya data AI selalu sama dengan website."
       );
     }
   }

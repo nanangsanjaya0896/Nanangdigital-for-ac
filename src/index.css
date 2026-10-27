@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Kode server, skrip build, dan fungsi hosting bukan tampilan: jangan dipindai Tailwind
+   supaya teks di dalamnya tidak menambah CSS yang ikut di-inline ke setiap halaman. */
+@source not "../scripts";
+@source not "../server";
+@source not "../functions";
+@source not "../api";
+
 @theme {
   --color-ink: #0d1116;
   --color-ink-soft: #10151c;

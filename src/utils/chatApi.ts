@@ -1,7 +1,7 @@
 import type { Locale } from "../i18n/LanguageContext";
 
 /**
- * Penghubung widget Live AI Chat dengan Vercel Function `/api/ai-chat`.
+ * Penghubung widget Live AI Chat dengan fungsi server `/api/ai-chat` (Cloudflare Pages Functions / Vercel).
  * Semua kegagalan (AI belum dipasang, kuota habis, jaringan putus) dikembalikan sebagai
  * hasil "tidak ok" supaya widget bisa langsung memakai jawaban bawaan tanpa error di layar.
  */

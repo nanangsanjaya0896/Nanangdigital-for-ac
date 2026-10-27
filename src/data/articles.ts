@@ -25,8 +25,6 @@ export interface SeoArticle {
   waMessage: string;
 }
 
-export const SITE_ORIGIN = "https://nanangdigital-navy.vercel.app";
-
 export const SEO_ARTICLES_BY_LANG: Record<Locale, SeoArticle[]> = {
   id: [
     {

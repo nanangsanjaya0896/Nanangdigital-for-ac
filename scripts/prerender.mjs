@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { build as viteBuild, loadEnv } from "vite";
 import React from "react";
 import { renderToString } from "react-dom/server";
+import { resolveSiteUrlWithSource } from "./site-url.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -252,6 +253,9 @@ async function runPrerender() {
     "";
   const gscToken = normalizeGscVerificationToken(rawGsc);
 
+  // Alamat utama website untuk canonical, hreflang, JSON-LD, sitemap.xml, dan robots.txt
+  const { url: SITE_ORIGIN, source: siteUrlSource } = resolveSiteUrlWithSource({ ...env, ...process.env });
+
   await viteBuild({
     root: rootDir,
     logLevel: "warn",
@@ -273,18 +277,21 @@ async function runPrerender() {
   });
 
   const { default: App } = await import(path.join(ssrOutDir, "App.js"));
-  const { SEO_ARTICLES, SITE_ORIGIN } = await import(
+  const { SEO_ARTICLES } = await import(
     path.join(ssrOutDir, "articles", "articles.js")
   );
 
   const indexPath = path.join(distDir, "index.html");
   let baseTemplate = fs.readFileSync(indexPath, "utf8");
 
+  // Tag verifikasi Google Search Console tambahan dari Environment Variable (misalnya setelah pindah
+  // alamat website). Tag yang sudah ada tetap dipertahankan; Google mengizinkan beberapa tag sekaligus.
   if (gscToken && !baseTemplate.includes(`content="${gscToken}"`)) {
-    baseTemplate = baseTemplate.replace(
-      '<meta name="robots" content="index, follow" />',
-      `<meta name="robots" content="index, follow" />\n    <meta name="google-site-verification" content="${gscToken}" />`
-    );
+    const gscTag = `<meta name="google-site-verification" content="${escapeHtml(gscToken)}" />`;
+    const existingTag = baseTemplate.match(/<meta\s+name="google-site-verification"[^>]*>/);
+    baseTemplate = existingTag
+      ? baseTemplate.replace(existingTag[0], `${existingTag[0]}\n    ${gscTag}`)
+      : baseTemplate.replace(/<meta\s+charset="[^"]*"\s*\/?>/i, (charsetTag) => `${charsetTag}\n    ${gscTag}`);
   }
 
   // Inline stylesheet utama langsung ke dalam <head> untuk menghilangkan render-blocking CSS
@@ -402,13 +409,101 @@ ${sitemapEntries
 `;
 
   fs.writeFileSync(path.join(distDir, "sitemap.xml"), sitemapXml, "utf8");
-  fs.writeFileSync(path.join(rootDir, "public", "sitemap.xml"), sitemapXml, "utf8");
+
+  // 6. robots.txt mengikuti alamat website yang aktif
+  fs.writeFileSync(
+    path.join(distDir, "robots.txt"),
+    `User-agent: *\nAllow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`,
+    "utf8"
+  );
+
+  // 7. Halaman 404 statis: Cloudflare Pages & Vercel membalas status 404 asli untuk alamat yang tidak ada
+  // (tanpa file ini Cloudflare Pages menganggap website SPA dan menampilkan beranda untuk semua alamat).
+  fs.writeFileSync(path.join(distDir, "404.html"), build404Html(), "utf8");
 
   fs.rmSync(ssrOutDir, { recursive: true, force: true });
 
-  console.log(
-    `✓ Prerendered ${sitemapEntries.length} static SEO pages (/, /en/, /panduan/, + ${SEO_ARTICLES.length} articles) & updated sitemap.xml`
+  // Pengaman: tidak boleh ada placeholder %SITE_URL% yang tertinggal di hasil build
+  const leftovers = listFiles(distDir).filter(
+    (file) => /\.(html|xml|txt)$/.test(file) && fs.readFileSync(file, "utf8").includes("%SITE_URL%")
   );
+  if (leftovers.length) {
+    throw new Error(`Placeholder %SITE_URL% belum terganti di: ${leftovers.map((f) => path.relative(distDir, f)).join(", ")}`);
+  }
+
+  console.log(
+    `✓ Prerendered ${sitemapEntries.length} static SEO pages (/, /en/, /panduan/, + ${SEO_ARTICLES.length} articles) & updated sitemap.xml, robots.txt, 404.html`
+  );
+  console.log(`✓ Alamat website (SITE_URL): ${SITE_ORIGIN} [sumber: ${siteUrlSource}]`);
+}
+
+/** @param {string} dir */
+function listFiles(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(dir, entry.name);
+    return entry.isDirectory() ? listFiles(fullPath) : [fullPath];
+  });
+}
+
+function build404Html() {
+  return `<!doctype html>
+<html lang="id" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="theme-color" content="#0f1115" />
+    <meta name="color-scheme" content="dark" />
+    <title>Halaman tidak ditemukan | NanangDigital</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #0d1116;
+        color: #ffffff;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      }
+      main { max-width: 34rem; text-align: center; }
+      .code { margin: 0 0 12px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #00df8f; }
+      h1 { margin: 0 0 4px; font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.2; }
+      .en { margin: 0 0 18px; font-size: 1.05rem; }
+      p { margin: 0 0 8px; line-height: 1.6; color: #a9b4c4; }
+      nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }
+      a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 999px;
+        border: 1px solid rgb(255 255 255 / 0.16);
+        color: #ffffff;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      a.primary { background: linear-gradient(135deg, #00df8f, #00b373); border-color: transparent; color: #04140c; }
+      a:focus-visible { outline: 2px solid #00df8f; outline-offset: 3px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">Error 404</p>
+      <h1>Halaman tidak ditemukan</h1>
+      <p class="en" lang="en">Page not found</p>
+      <p>Alamat yang Anda buka tidak ada atau sudah dipindahkan.</p>
+      <p lang="en">The page you are looking for does not exist or has moved.</p>
+      <nav aria-label="Navigasi">
+        <a class="primary" href="/">Ke Beranda</a>
+        <a href="/en/" lang="en">English Site</a>
+        <a href="/panduan/">Panduan Usaha AC</a>
+      </nav>
+    </main>
+  </body>
+</html>
+`;
 }
 
 runPrerender().catch((err) => {
