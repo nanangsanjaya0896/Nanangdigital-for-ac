@@ -1,0 +1,93 @@
+# Workflow SEMENTARA: mengambil screenshot website ARKTIS untuk bagian Karya.
+# Server pengembangan tidak bisa membuka vercel.app, jadi screenshot diambil di GitHub Actions
+# lalu gambar WebP-nya di-commit ke branch ini. File ini dihapus lagi sebelum digabung ke main.
+name: Screenshot ARKTIS (sementara)
+
+on:
+  push:
+    branches:
+      - arena/fe3c86e2-nanangdigital-for-ac
+    paths:
+      - .github/workflows/screenshot-arktis.yml
+
+permissions:
+  contents: write
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pasang Playwright dan sharp
+        run: |
+          mkdir -p /tmp/shot && cd /tmp/shot
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund playwright@1 sharp@0.34
+          npx playwright install --with-deps chromium
+
+      - name: Ambil screenshot desktop, booking, dan HP
+        working-directory: /tmp/shot
+        env:
+          OUT_DIR: ${{ github.workspace }}/public/images
+        run: |
+          cat > shot.mjs <<'JS'
+          import { chromium, devices } from "playwright";
+          import sharp from "sharp";
+
+          const URL = "https://arktishomeservices.vercel.app/";
+          const OUT = process.env.OUT_DIR;
+          const browser = await chromium.launch();
+
+          async function open(context) {
+            const page = await context.newPage();
+            try {
+              await page.goto(URL, { waitUntil: "networkidle", timeout: 60000 });
+            } catch {
+              await page.goto(URL, { waitUntil: "load", timeout: 60000 });
+            }
+            await page.waitForTimeout(4000);
+            return page;
+          }
+
+          const desktopCtx = await browser.newContext({
+            viewport: { width: 1440, height: 900 },
+            deviceScaleFactor: 2,
+            locale: "id-ID",
+            timezoneId: "Asia/Jakarta",
+          });
+          const desktop = await open(desktopCtx);
+          const hero = await desktop.screenshot({ type: "png" });
+          await desktop.locator("#booking").first().scrollIntoViewIfNeeded().catch(() => {});
+          await desktop.waitForTimeout(3000);
+          const booking = await desktop.screenshot({ type: "png" });
+
+          const mobileCtx = await browser.newContext({ ...devices["iPhone 13"], locale: "id-ID", timezoneId: "Asia/Jakarta" });
+          const mobilePage = await open(mobileCtx);
+          const mobile = await mobilePage.screenshot({ type: "png" });
+
+          await browser.close();
+
+          const webp = (input, width, file) =>
+            sharp(input).resize({ width }).webp({ quality: 80, effort: 6 }).toFile(`${OUT}/${file}`);
+          await webp(hero, 1280, "karya-arktis-desktop-1280.webp");
+          await webp(hero, 640, "karya-arktis-desktop-640.webp");
+          await webp(booking, 1280, "karya-arktis-booking-1280.webp");
+          await webp(mobile, 480, "karya-arktis-mobile-480.webp");
+          console.log("Screenshot selesai");
+          JS
+          node shot.mjs
+          ls -la "$OUT_DIR"/karya-arktis-*
+
+      - name: Commit gambar ke branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/images/karya-arktis-*.webp
+          git commit -m "chore: screenshot website ARKTIS untuk bagian Karya"
+          git push
