@@ -5,6 +5,9 @@
   "functions": {
     "api/meta-capi.js": {
       "maxDuration": 10
+    },
+    "api/ai-chat.js": {
+      "maxDuration": 25
     }
   },
   "headers": [

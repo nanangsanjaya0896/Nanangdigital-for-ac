@@ -20,6 +20,7 @@ export default function StickyWhatsApp() {
       target="_blank"
       rel="noopener noreferrer"
       data-track-source="sticky_whatsapp_float"
+      data-sticky-wa=""
       aria-label={
         lang === "id"
           ? "Hubungi NanangDigital melalui WhatsApp"
