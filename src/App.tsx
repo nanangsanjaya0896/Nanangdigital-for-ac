@@ -16,6 +16,7 @@ import FAQSection from "./components/FAQSection";
 import FinalCTASection from "./components/FinalCTASection";
 import Footer from "./components/Footer";
 import StickyWhatsApp from "./components/StickyWhatsApp";
+import AIChatWidget from "./components/AIChatWidget";
 import PreWhatsAppModal from "./components/PreWhatsAppModal";
 import PanduanPage from "./components/PanduanPage";
 import { findArticleBySlug } from "./data/articles";
@@ -97,6 +98,7 @@ export default function App({ initialPath, initialLang }: AppProps = {}) {
         )}
 
         <StickyWhatsApp />
+        <AIChatWidget />
         <PreWhatsAppModal />
       </MotionConfig>
     </LanguageProvider>

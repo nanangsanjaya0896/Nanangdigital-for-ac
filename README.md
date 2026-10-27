@@ -13,6 +13,14 @@ Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang San
 - **Pengalih Bahasa Instan (`ID | EN`):**
   - Tersedia langsung di bilah navigasi atas (desktop & seluler) untuk mengganti 100% bahasa seluruh bagian halaman, modal pra-WhatsApp, dan template pesan chat secara instan tanpa muat ulang halaman.
 
+## Live AI Chat (Asisten AI NanangDigital)
+
+- Tombol **Tanya Asisten AI** di pojok kanan bawah semua halaman, dua bahasa (`ID` & `EN`), dan otomatis mengikuti bahasa yang diketik pengunjung.
+- Tanpa API key, chat langsung menjawab dari data website (paket, harga, FAQ, alur kerja, bonus). Setelah `GEMINI_API_KEY` (gratis dari Google AI Studio) dipasang di Vercel, chat dijawab AI generatif lewat endpoint serverless `/api/ai-chat`.
+- Tombol WhatsApp di dalam chat tetap lewat form kenalan + tracking GA4 dan Meta Pixel/CAPI yang sama.
+- Panel chat dimuat hanya saat tombol disentuh, jadi tidak membebani skor PageSpeed.
+- Panduan lengkap aktivasi dan aturan free tier Gemini: [`PANDUAN-LIVE-AI-CHAT.md`](./PANDUAN-LIVE-AI-CHAT.md).
+
 ## Pelacakan Analitik & Konversi
 
 - **Google Search Console:** Tag verifikasi tertanam permanen di seluruh 7 halaman statis (`/` , `/en/`, `/panduan/`, dan 4 artikel panduan).

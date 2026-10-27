@@ -2,10 +2,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import type { Plugin } from "vite";
 // @ts-expect-error modul ESM serverless Vercel dipakai juga oleh dev server lokal
 import { getMetaCapiHealth, processMetaCapiEvent } from "./api/meta-capi.js";
+// @ts-expect-error modul ESM serverless Vercel dipakai juga oleh dev server lokal
+import { getAiChatHealth, processAiChatRequest } from "./api/ai-chat.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,8 +70,90 @@ function metaCapiDevPlugin(): Plugin {
   };
 }
 
+/**
+ * Middleware dev agar endpoint /api/ai-chat berjalan identik di lokal maupun di Vercel.
+ * Basis pengetahuan dibaca langsung dari src/data/chatKnowledge.ts supaya perubahan data
+ * paket langsung terasa di Live Preview. API key bisa ditaruh di `.env.local` (tidak ikut Git).
+ */
+function aiChatDevPlugin(): Plugin {
+  return {
+    name: "ai-chat-dev-endpoint",
+    configureServer(server) {
+      const getEnv = () => ({
+        ...loadEnv(server.config.mode, server.config.root, ""),
+        ...process.env,
+      });
+
+      server.middlewares.use("/api/ai-chat", (req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Cache-Control", "no-store");
+
+        if (req.method === "GET") {
+          res.statusCode = 200;
+          res.end(JSON.stringify(getAiChatHealth(getEnv())));
+          return;
+        }
+
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ ok: false, error: "Method Not Allowed" }));
+          return;
+        }
+
+        let rawBody = "";
+        let tooLarge = false;
+        req.on("data", (chunk: Buffer) => {
+          rawBody += chunk.toString("utf8");
+          if (rawBody.length > 64_000) {
+            tooLarge = true;
+            res.statusCode = 413;
+            res.end(JSON.stringify({ ok: false, error: "Payload too large" }));
+            req.destroy();
+          }
+        });
+        req.on("end", async () => {
+          if (tooLarge) return;
+          let parsed: Record<string, unknown> = {};
+          try {
+            parsed = rawBody ? (JSON.parse(rawBody) as Record<string, unknown>) : {};
+          } catch {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ ok: false, error: "Invalid JSON body" }));
+            return;
+          }
+
+          let knowledge: Record<string, string> | undefined;
+          try {
+            const mod = await server.ssrLoadModule("/src/data/chatKnowledge.ts");
+            knowledge = mod.buildChatKnowledgeBundle() as Record<string, string>;
+          } catch {
+            knowledge = undefined;
+          }
+
+          const forwarded = req.headers["x-forwarded-for"];
+          const clientIp = Array.isArray(forwarded)
+            ? forwarded[0]
+            : typeof forwarded === "string"
+              ? forwarded.split(",")[0]
+              : req.socket.remoteAddress || "";
+
+          const result = await processAiChatRequest({
+            body: parsed,
+            clientKey: String(clientIp || "").trim(),
+            env: getEnv(),
+            ...(knowledge ? { knowledge } : {}),
+          });
+
+          res.statusCode = result.status;
+          res.end(JSON.stringify(result.payload));
+        });
+      });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), metaCapiDevPlugin()],
+  plugins: [react(), tailwindcss(), metaCapiDevPlugin(), aiChatDevPlugin()],
   server: {
     host: "0.0.0.0",
     port: 5173,
