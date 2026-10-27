@@ -157,7 +157,7 @@ export function trackGaEvent(
 /**
  * Kirim event konversi Meta secara sinkron antara:
  * 1) Browser Meta Pixel (`fbq('track', eventName, customData, { eventID })`)
- * 2) Server Vercel Function (`/api/meta-capi`) dengan `event_id` yang SAMA PERSIS untuk deduplikasi
+ * 2) Fungsi server `/api/meta-capi` (Cloudflare Pages Functions / Vercel) dengan `event_id` yang SAMA PERSIS untuk deduplikasi
  */
 export async function trackMetaConversion(
   eventName: "Contact" | "Lead" | "ViewContent",

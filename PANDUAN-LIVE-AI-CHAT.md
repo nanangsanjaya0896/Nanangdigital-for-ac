@@ -7,7 +7,7 @@ Chat ini punya **dua mode** dan selalu menjawab, tidak pernah error di depan pen
 | Mode | Kapan aktif | Cara menjawab |
 | --- | --- | --- |
 | **Jawaban bawaan** | API key belum dipasang, kuota AI habis, atau koneksi AI gagal | Instan, dari data website (paket, harga, FAQ, alur kerja, bonus) |
-| **AI generatif (Gemini)** | Setelah `GEMINI_API_KEY` dipasang di Vercel | Bahasa natural, bisa menjawab pertanyaan bebas, tetap hanya memakai fakta dari website |
+| **AI generatif (Gemini)** | Setelah `GEMINI_API_KEY` dipasang di Cloudflare Pages | Bahasa natural, bisa menjawab pertanyaan bebas, tetap hanya memakai fakta dari website |
 
 ---
 
@@ -16,23 +16,25 @@ Chat ini punya **dua mode** dan selalu menjawab, tidak pernah error di depan pen
 1. Buka **[aistudio.google.com/apikey](https://aistudio.google.com/apikey)** lalu login dengan akun Google Anda.
 2. Klik **Create API key**, lalu salin kode yang muncul.
 
-## Langkah 2: Tempel di Vercel (1 menit)
+## Langkah 2: Tempel di Cloudflare Pages (1 menit)
 
-1. Buka project website di **[vercel.com](https://vercel.com)**, klik tab **Settings**, lalu menu **Environment Variables**.
-2. Tambahkan variabel ini:
-   * **Key:** `GEMINI_API_KEY`
+1. Buka **[dash.cloudflare.com](https://dash.cloudflare.com)**, masuk ke **Workers & Pages**, lalu pilih project website.
+2. Klik **Settings** > **Variables and Secrets** > **Add**, lalu isi:
+   * **Variable name:** `GEMINI_API_KEY`
    * **Value:** *(tempel API key dari Langkah 1)*
-   * Klik **Save**.
-3. Masuk ke tab **Deployments**, klik titik tiga (`...`) pada deployment paling atas, pilih **Redeploy**.
+   * Klik **Encrypt**, lalu **Save**.
+3. Buka tab **Deployments**, klik titik tiga (`...`) pada deployment paling atas, lalu pilih **Retry deployment**.
 
-> Jangan pernah menulis API key dengan awalan `VITE_` dan jangan menaruhnya di file kode. Dengan cara di atas, API key hanya tersimpan di server Vercel dan tidak pernah terkirim ke browser pengunjung.
+> Jangan pernah menulis API key dengan awalan `VITE_` dan jangan menaruhnya di file kode. Dengan cara di atas, API key hanya tersimpan di server Cloudflare dan tidak pernah terkirim ke browser pengunjung.
+>
+> Kalau website dideploy ke Vercel, caranya sama: isi `GEMINI_API_KEY` di Vercel > Settings > Environment Variables, lalu Redeploy.
 
 ## Langkah 3: Cek apakah AI sudah aktif
 
-Buka alamat berikut di browser (ganti dengan alamat website Anda):
+Buka alamat berikut di browser (sesuaikan kalau alamat website Anda berbeda):
 
 ```text
-https://alamat-website-anda/api/ai-chat
+https://nanangdigital.pages.dev/api/ai-chat
 ```
 
 Kalau berhasil, akan tampil seperti ini:
@@ -57,7 +59,7 @@ Kalau berhasil, akan tampil seperti ini:
 1. **Isi chat di free tier boleh dipakai Google** untuk meningkatkan produknya dan bisa dibaca peninjau manusia. Karena itu, nomor HP dan email yang diketik pengunjung **otomatis disembunyikan** sebelum dikirim ke Google, dan asisten diatur untuk tidak pernah meminta data pribadi.
 2. **Free tier tidak boleh melayani pengunjung dari Uni Eropa/EEA, Swiss, dan Inggris.** Pengunjung dari negara tersebut otomatis dijawab mode jawaban bawaan. Kalau ingin mereka juga dilayani AI:
    * Aktifkan billing di Google AI Studio.
-   * Tambahkan `GEMINI_PAID_TIER` dengan nilai `true` di Environment Variables Vercel, lalu Redeploy.
+   * Tambahkan `GEMINI_PAID_TIER` dengan nilai `true` di Cloudflare Pages (Settings > Variables and Secrets), lalu **Retry deployment**.
    * Perkiraan biaya model bawaan sekitar US$2 per 1.000 pesan (cek harga terbaru di halaman pricing Gemini API).
 3. **Kuota free tier terbatas per hari.** Kalau kuota model utama habis, chat otomatis mencoba model cadangan (`gemini-flash-lite-latest`, lalu `gemini-flash-latest`), dan kalau semuanya sibuk, pindah ke jawaban bawaan.
 
@@ -75,11 +77,11 @@ Semua fakta yang dipakai AI diambil langsung dari data website:
 
 Setelah data diubah, jalankan `npm run build`. Perintah itu otomatis memperbarui `server/chat-knowledge.generated.js` (basis pengetahuan untuk server). Commit file tersebut bersama perubahan data supaya jawaban AI selalu sama dengan isi website.
 
-Aturan perilaku asisten (gaya bahasa, larangan mengarang harga, larangan menjanjikan saldo iklan gratis, dan sebagainya) ada di fungsi `buildSystemPrompt` dalam `api/ai-chat.js`.
+Aturan perilaku asisten (gaya bahasa, larangan mengarang harga, larangan menjanjikan saldo iklan gratis, dan sebagainya) ada di fungsi `buildSystemPrompt` dalam `server/ai-chat-core.js`. File itu dipakai bersama oleh fungsi Cloudflare Pages (`functions/api/ai-chat.js`), adapter Vercel (`api/ai-chat.js`), dan Live Preview lokal.
 
 ---
 
-## Pengaturan opsional (Environment Variables)
+## Pengaturan opsional (Variables and Secrets)
 
 | Key | Isi | Fungsi |
 | --- | --- | --- |
@@ -104,7 +106,7 @@ Isi percakapan **tidak** dikirim ke GA4 maupun Meta.
 
 ## Keamanan bawaan
 
-* API key hanya ada di server Vercel.
+* API key hanya ada di server (Cloudflare Pages Functions).
 * Endpoint `/api/ai-chat` hanya menerima permintaan dari halaman website sendiri.
 * Dibatasi 25 pesan per 10 menit per pengunjung supaya kuota AI tidak disalahgunakan.
 * Riwayat chat hanya disimpan di browser pengunjung selama tab terbuka (sessionStorage), tidak disimpan di server.

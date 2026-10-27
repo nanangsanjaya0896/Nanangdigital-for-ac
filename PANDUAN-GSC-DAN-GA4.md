@@ -1,73 +1,51 @@
-# Panduan Menghubungkan Google Search Console (GSC) & Google Analytics 4 (GA4)
+# Panduan Google Search Console (GSC) & Google Analytics 4 (GA4)
 
-Website **`https://nanangdigital-navy.vercel.app/`** sudah disiapkan agar dapat terhubung ke **Google Search Console** dan **Google Analytics 4 (GA4)** hanya dengan memasukkan kodenya di menu **Environment Variables** pada dashboard Vercel, tanpa menurunkan skor hijau PageSpeed Insights sedikit pun.
+Website **`https://nanangdigital.pages.dev/`** (Cloudflare Pages) sudah membawa:
+
+* **Tag verifikasi Google Search Console** milik akun Google Anda (`cUtDIR_P8p7d7c7WhBW26zwoCDNGvTZuHAcGcS9X-B0`) di semua 7 halaman statis.
+* **Google Analytics 4 (`G-JY9N81NCQE`)** yang dimuat ringan tanpa menurunkan skor PageSpeed.
+* **`sitemap.xml` dan `robots.txt`** yang otomatis mengikuti alamat website aktif.
+
+Kalau Anda memakai domain sendiri, ganti `nanangdigital.pages.dev` di panduan ini dengan domain tersebut (dan isi `SITE_URL` di Cloudflare, lihat [`PANDUAN-DEPLOY-CLOUDFLARE-PAGES.md`](./PANDUAN-DEPLOY-CLOUDFLARE-PAGES.md)).
 
 ---
 
-## Bagian 1: Menghubungkan Google Search Console (GSC)
+## Bagian 1: Verifikasi Google Search Console
 
-1. Buka **https://search.google.com/search-console** dan login memakai akun Google Anda.
-2. Pada pilihan jenis properti, pilih kotak sebelah kanan yaitu **Awalan URL (URL Prefix)** (jangan pilih *Domain*, karena saat ini masih memakai subdomain bawaan `.vercel.app`).
-3. Ketik alamat lengkap:
+1. Buka **[search.google.com/search-console](https://search.google.com/search-console)** dan login dengan **akun Google yang sama** seperti sebelumnya.
+2. Klik **Tambahkan properti**, lalu pilih kotak kanan **Awalan URL (URL prefix)**. Jangan pilih *Domain*, karena subdomain `.pages.dev` bukan milik Anda sendiri.
+3. Ketik alamat lengkap lalu klik **Lanjutkan**:
    ```text
-   https://nanangdigital-navy.vercel.app/
+   https://nanangdigital.pages.dev/
    ```
-   Lalu klik **Terus / Continue**.
-4. Akan muncul jendela **Verifikasi kepemilikan**. Scroll sedikit ke bagian **Metode verifikasi lainnya**, lalu klik panah pada pilihan **Tag HTML (HTML tag)**.
-5. Salin kode verifikasi yang diberikan Google (Anda boleh menyalin satu baris `<meta name="google-site-verification" content="..." />` utuh ataupun hanya isi kodenya saja, sistem otomatis mengenali keduanya).
-   * *Catatan: Jangan tutup halaman Google Search Console dulu dan jangan klik Verifikasi sebelum langkah Vercel di Bagian 3 selesai.*
+4. Di jendela verifikasi, buka **Metode verifikasi lainnya** > **Tag HTML**.
+5. Bandingkan kode yang ditampilkan Google dengan kode yang sudah terpasang di website:
+   * **Sama** (`cUtDIR_P8p7d7c7WhBW26zwoCDNGvTZuHAcGcS9X-B0`): langsung klik **Verifikasi**. Google memakai kode yang sama untuk semua properti di satu akun, jadi biasanya ini yang terjadi.
+   * **Berbeda**: salin kodenya (boleh satu baris `<meta ... />` utuh atau isinya saja), lalu:
+     1. Di Cloudflare: project > **Settings** > **Variables and Secrets** > **Add**, nama `VITE_GSC_VERIFICATION`, isi kode tadi (tanpa Encrypt), **Save**.
+     2. Tab **Deployments** > titik tiga (`...`) pada deployment teratas > **Retry deployment**.
+     3. Setelah status **Success**, kembali ke Search Console dan klik **Verifikasi**.
+
+## Bagian 2: Kirim sitemap & minta pengindeksan
+
+1. Di menu kiri Search Console, klik **Peta Situs (Sitemaps)**.
+2. Di kolom *Tambahkan peta situs baru*, ketik `sitemap.xml`, lalu klik **Kirim**. Status akan tertulis **Sukses** (7 halaman).
+3. *(Supaya lebih cepat muncul di Google)*: klik kolom **Inspeksi URL** di bagian atas, tempel `https://nanangdigital.pages.dev/`, tekan Enter, lalu klik **Minta Pengindeksan**. Ulangi untuk `https://nanangdigital.pages.dev/en/`.
 
 ---
 
-## Bagian 2: Membuat & Mengambil Kode Google Analytics 4 (GA4)
+## Bagian 3: Google Analytics 4
 
-1. Buka **https://analytics.google.com/** dan klik **Mulai mengukur (Start measuring)** / buat akun baru:
-   * **Nama Akun:** `NanangDigital`
-   * **Nama Properti:** `Website NanangDigital AC`
-   * **Zona Waktu Pelaporan:** `Indonesia` (`GMT+07:00`) & **Mata Uang:** `Indonesian Rupiah (IDR)`
-2. Pada langkah pengumpulan data, pilih platform **Web**.
-3. Isi detail aliran data (*Data Stream*):
-   * **URL Situs:** `nanangdigital-navy.vercel.app` (pastikan pilihan di depannya `https://`)
-   * **Nama Aliran:** `LP NanangDigital Utama`
-   * Klik **Buat & lanjutkan**.
-4. Di pojok kanan atas halaman **Detail aliran web (Web stream details)**, salin **ID Pengukuran (Measurement ID)** yang diawali huruf **`G-`** (contoh: `G-9ABC123DEF`).
+ID pengukuran **`G-JY9N81NCQE`** sudah tertanam di kode (`index.html` dan `src/utils/tracking.ts`), jadi data langsung masuk ke properti GA4 Anda begitu website live. Tidak perlu mengisi Environment Variable apa pun.
 
----
+Opsional, supaya rapi: di GA4 buka **Admin** > **Aliran data (Data streams)** > pilih aliran web, lalu ubah **URL aliran** menjadi `https://nanangdigital.pages.dev`. Ini hanya label; pengumpulan data tetap jalan tanpa diubah.
 
-## Bagian 3: Memasang Keduanya Sekaligus di Dashboard Vercel
+> Kalau suatu hari ingin memakai ID GA4 yang lain, ID tersebut perlu diganti di kode (`index.html` dan `src/utils/tracking.ts`).
 
-1. Buka dashboard project Anda di **Vercel** -> klik tab **Settings** -> klik menu **Environment Variables** di sebelah kiri.
-2. Tambahkan 2 variabel baru berikut (biarkan centang *Production*, *Preview*, *Development* aktif):
-   * **Key 1:** `VITE_GSC_VERIFICATION`
-     * **Value:** Tempel kode dari Google Search Console tadi -> klik **Save**.
-   * **Key 2:** `VITE_GA_MEASUREMENT_ID`
-     * **Value:** Tempel ID Pengukuran GA4 tadi (contoh: `G-9ABC123DEF`) -> klik **Save**.
-3. Agar Vercel menerapkan variabel baru tersebut ke website live:
-   * Klik tab **Deployments** di bagian atas dashboard Vercel.
-   * Klik ikon titik tiga (`...`) pada deployment paling atas -> pilih **Redeploy** -> klik tombol **Redeploy**.
-4. Tunggu sekitar **30 sampai 45 detik** hingga status berubah menjadi **Ready**.
+### Event yang otomatis masuk ke GA4
 
----
-
-## Bagian 4: Klik Verifikasi & Submit Sitemap di Google Search Console
-
-Setelah redeploy Vercel selesai (**Ready**):
-
-1. Kembali ke tab **Google Search Console** tadi -> klik tombol **Verifikasi (Verify)** pada bagian **Tag HTML**. Status akan langsung berubah hijau (**Kepemilikan diverifikasi**).
-2. Klik **Buka Properti (Go to Property)**.
-3. Di menu sebelah kiri Google Search Console, klik **Peta Situs (Sitemaps)**.
-4. Pada kolom *Tambahkan peta situs baru*, ketik:
-   ```text
-   sitemap.xml
-   ```
-   Lalu klik **Kirim (Submit)**. Statusnya akan tertulis **Sukses**.
-5. *(Tips supaya cepat muncul di Google)*: Klik kolom pencarian paling atas (**Inspeksi URL apa pun...**), tempel `https://nanangdigital-navy.vercel.app/` -> tekan Enter -> klik **Minta Pengindeksan (Request Indexing)**.
-
----
-
-## Data Event Otomatis yang Masuk ke Google Analytics 4
-
-Begitu `VITE_GA_MEASUREMENT_ID` aktif, website otomatis mengirimkan 3 sinyal penting ke GA4 Anda:
-1. **`page_view`**: Setiap pengunjung yang membuka landing page.
-2. **`whatsapp_modal_opened`**: Setiap pengunjung yang menekan tombol CTA WhatsApp dan membuka form singkat (lengkap dengan info tombol mana yang diklik lewat parameter `cta_source` dan paket yang diminati lewat `cta_topic`).
-3. **`generate_lead`**: Setiap calon klien yang benar-benar mengisi Nama, Nomor WA, serta Kota/Kecamatan lalu lanjut ke chat WhatsApp. Anda bisa menandai event `generate_lead` ini sebagai **Peristiwa Penting (Key Event)** di menu *Admin > Events* GA4.
+1. **`page_view`**: setiap pengunjung yang membuka halaman.
+2. **`whatsapp_modal_open`**: pengunjung menekan tombol WhatsApp dan form singkat terbuka (parameter `lead_source` = tombol yang diklik, `plan_interest` = paket yang diminati, `language`).
+3. **`whatsapp_click_direct`**: pengunjung memilih langsung ke WhatsApp tanpa mengisi form.
+4. **`generate_lead`**: calon klien mengisi Nama, Nomor WA, dan Kota lalu lanjut ke WhatsApp (lengkap dengan `currency` IDR/USD dan `value`). Tandai event ini sebagai **Peristiwa Penting (Key Event)** di **Admin** > **Events**.
+5. **`ai_chat_open`, `ai_chat_message`, `ai_chat_reset`**: aktivitas Live AI Chat (isi percakapan tidak pernah dikirim).

@@ -1,29 +1,34 @@
-# Panduan Aktivasi Meta Pixel (`2971268586402489`) + Conversions API (CAPI) di Vercel
+# Panduan Aktivasi Meta Pixel (`2971268586402489`) + Conversions API (CAPI) di Cloudflare Pages
 
-Nomor **Meta Pixel / Dataset ID (`2971268586402489`)** sudah **ditanamkan langsung secara otomatis** di kode Browser (`src/utils/tracking.ts` & `index.html`) maupun di kode Server (`api/meta-capi.js`).
+Nomor **Meta Pixel / Dataset ID (`2971268586402489`)** sudah **ditanamkan langsung** di kode browser (`src/utils/tracking.ts` & `index.html`) maupun di kode server (`server/meta-capi-core.js`, dijalankan oleh `functions/api/meta-capi.js` di Cloudflare Pages).
 
-Artinya, untuk menyalakan **Meta Pixel + Meta CAPI** secara penuh 100%, Anda hanya tinggal menempel **1 baris token rahasia (`META_CAPI_ACCESS_TOKEN`)** di dashboard Vercel!
-
----
-
-## Langkah 1: Tempel Token CAPI di Dashboard Vercel (1 Menit)
-1. Buka dashboard project **`nanangdigital-navy`** di **[vercel.com](https://vercel.com)** -> klik tab **Settings** -> menu **Environment Variables**.
-2. Tambahkan **1 variabel ini saja**:
-   * **Key:** `META_CAPI_ACCESS_TOKEN`
-   * **Value:** *(Tempel kode panjang `EAA...` dari Meta Events Manager > Settings > Conversions API > Generate access token)*
-   * Klik **Save**.
-3. *(Opsional jika ingin tes live di tab Test Events dulu)*:
-   * Tambahkan sementara **Key:** `META_TEST_EVENT_CODE` dengan **Value** kode tes dari tab *Test Events* Meta (contoh: `TEST51829`) -> klik **Save**.
-4. Masuk ke tab **Deployments** di Vercel -> klik titik tiga (`...`) pada deployment paling atas -> pilih **Redeploy** -> klik **Redeploy**.
+Artinya, untuk menyalakan **Meta Pixel + Meta CAPI** secara penuh, Anda hanya perlu menempel **1 token rahasia (`META_CAPI_ACCESS_TOKEN`)** di dashboard Cloudflare Pages.
 
 ---
 
-## Langkah 2: Cara Cek 1 Detik Apakah Server CAPI Sudah Aktif!
-Begitu status deploy di Vercel bertuliskan **Ready**, cukup buka alamat ini di browser HP atau laptop Anda:
+## Langkah 1: Tempel token CAPI di Cloudflare Pages (1 menit)
+
+1. Buka **[dash.cloudflare.com](https://dash.cloudflare.com)**, masuk ke **Workers & Pages**, lalu pilih project website (misalnya `nanangdigital`).
+2. Klik **Settings** > **Variables and Secrets** > **Add**, lalu isi:
+   * **Variable name:** `META_CAPI_ACCESS_TOKEN`
+   * **Value:** *(tempel kode panjang `EAA...` dari Meta Events Manager > Settings > Conversions API > Generate access token)*
+   * Klik **Encrypt**, lalu **Save**.
+3. *(Opsional, kalau ingin tes dulu di tab Test Events Meta)*:
+   * Tambahkan sementara variabel `META_TEST_EVENT_CODE` berisi kode tes dari tab *Test Events* (contoh: `TEST51829`), lalu **Save**.
+4. Buka tab **Deployments**, klik titik tiga (`...`) pada deployment paling atas, lalu pilih **Retry deployment**.
+
+---
+
+## Langkah 2: Cek apakah server CAPI sudah aktif
+
+Setelah deploy selesai (**Success**), buka alamat ini di browser HP atau laptop (sesuaikan kalau alamat project Anda berbeda):
+
 ```text
-https://nanangdigital-navy.vercel.app/api/meta-capi
+https://nanangdigital.pages.dev/api/meta-capi
 ```
-Jika pemasangan token berhasil, layar akan menampilkan status aman berikut (tanpa membocorkan isi token Anda):
+
+Kalau token sudah terpasang, akan tampil status berikut (isi token tidak pernah ditampilkan):
+
 ```json
 {
   "ok": true,
@@ -34,6 +39,22 @@ Jika pemasangan token berhasil, layar akan menampilkan status aman berikut (tanp
   "ready_for_live_capi": true
 }
 ```
-Kalau tertulis `"ready_for_live_capi": true`, berarti **Meta Pixel Browser + Server CAPI Anda sudah 100% menyala penuh!**
 
-*(Catatan penting: Jika tadi Anda sempat mengisi `META_TEST_EVENT_CODE` untuk ngetes di tab Test Events, jangan lupa hapus variabel `META_TEST_EVENT_CODE` dan Redeploy sekali lagi sebelum menyalakan kampanye iklan sungguhan).*
+Kalau tertulis `"ready_for_live_capi": true`, berarti **Meta Pixel di browser + CAPI di server sudah menyala penuh**.
+
+*(Penting: kalau tadi Anda mengisi `META_TEST_EVENT_CODE` untuk tes, hapus variabel tersebut lalu **Retry deployment** sekali lagi sebelum menyalakan iklan sungguhan.)*
+
+---
+
+## Data yang dikirim server ke Meta
+
+Setiap event `Contact` dan `Lead` dikirim dua kali dengan `event_id` yang sama, dari Pixel di browser dan dari server, lalu Meta menggabungkannya (deduplikasi). Data dari server:
+
+* **Hash SHA-256 dari browser:** nomor WhatsApp (`ph`, juga dipakai sebagai `external_id`), nama depan (`fn`), nama belakang (`ln`), dan kota (`ct`). Data mentah tidak pernah dikirim; nilai yang bukan hash otomatis dibuang.
+* **Negara (`country`):** dari halaman Indonesia selalu `id`. Untuk halaman English, negara diambil dari lokasi IP pengunjung yang diberikan Cloudflare.
+* **Cookie klik iklan `fbc` dan `fbp`:** penting supaya Meta tahu lead berasal dari iklan yang mana.
+* **IP dan user agent pengunjung.**
+
+Semakin lengkap data ini, semakin tinggi **Event Match Quality** di Events Manager dan semakin akurat optimasi iklan Meta.
+
+> Website juga tetap bisa dideploy ke Vercel (`api/meta-capi.js`). Caranya sama: isi `META_CAPI_ACCESS_TOKEN` di Vercel > Settings > Environment Variables, lalu Redeploy.

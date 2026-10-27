@@ -1,0 +1,10 @@
+# Aturan header Cloudflare Pages (setara blok "headers" di vercel.json).
+# File ini dibaca Cloudflare saat deploy dan tidak ditampilkan sebagai halaman.
+
+# File JS/CSS hasil build punya hash di namanya, jadi aman di-cache browser selama 1 tahun
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Gambar portofolio & Open Graph: cache 30 hari, diperbarui di latar belakang
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
