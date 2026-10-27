@@ -2,12 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { ArrowUp, RotateCcw, Sparkles, X } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 import { waUrl } from "../data/business";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { trackGaEvent } from "../utils/tracking";
-import { STARTER_QUICK_REPLIES, detectReplyLang, getLocalReply } from "../utils/chatFallback";
+import { STARTER_QUICK_REPLIES, getLocalReply } from "../utils/chatFallback";
 import { checkAiAvailability, requestAiReply } from "../utils/chatApi";
 import type { ApiChatMessage, ChatMode } from "../utils/chatApi";
 
@@ -31,75 +29,36 @@ const MAX_STORED_MESSAGES = 40;
 const MAX_INPUT_CHARS = 500;
 const MIN_TYPING_MS = 700;
 
-const COPY: Record<
-  Locale,
-  {
-    title: string;
-    status: string;
-    welcome: string;
-    placeholder: string;
-    inputLabel: string;
-    send: string;
-    reset: string;
-    close: string;
-    typing: string;
-    whatsappInline: string;
-    whatsappFooter: string;
-    disclaimer: string;
-    quickRepliesLabel: string;
-    you: string;
-    assistant: string;
-  }
-> = {
-  id: {
-    title: "Asisten AI NanangDigital",
-    status: "Online 24 jam",
-    welcome:
-      "Halo! Saya asisten AI NanangDigital. Saya bisa bantu jelaskan paket website, harga, lama pengerjaan, sampai cara pembayarannya. Mau tanya apa dulu?",
-    placeholder: "Tulis pertanyaan Anda...",
-    inputLabel: "Pertanyaan untuk asisten AI",
-    send: "Kirim pertanyaan",
-    reset: "Mulai percakapan baru",
-    close: "Tutup chat",
-    typing: "Asisten sedang mengetik",
-    whatsappInline: "Chat Mas Nanang di WhatsApp",
-    whatsappFooter: "Lanjut ke WhatsApp",
-    disclaimer: "Dijawab otomatis oleh AI dan bisa keliru. Harga dan jadwal pasti dikonfirmasi lewat WhatsApp.",
-    quickRepliesLabel: "Pilihan pertanyaan cepat",
-    you: "Anda",
-    assistant: "Asisten",
-  },
-  en: {
-    title: "NanangDigital AI Assistant",
-    status: "Online 24/7",
-    welcome:
-      "Hi! I'm the NanangDigital AI assistant. I can walk you through packages, pricing, turnaround time, and payment options. What would you like to know?",
-    placeholder: "Type your question...",
-    inputLabel: "Question for the AI assistant",
-    send: "Send question",
-    reset: "Start a new conversation",
-    close: "Close chat",
-    typing: "Assistant is typing",
-    whatsappInline: "Message Nanang on WhatsApp",
-    whatsappFooter: "Continue on WhatsApp",
-    disclaimer: "Answers are automated by AI and may be inaccurate. Pricing and timelines are confirmed on WhatsApp.",
-    quickRepliesLabel: "Quick questions",
-    you: "You",
-    assistant: "Assistant",
-  },
-};
+const COPY = {
+  title: "Asisten AI NanangDigital",
+  status: "Online 24 jam",
+  welcome:
+    "Halo! Saya asisten AI NanangDigital. Saya bisa bantu jelaskan paket website, harga, lama pengerjaan, sampai cara pembayarannya. Mau tanya apa dulu?",
+  placeholder: "Tulis pertanyaan Anda...",
+  inputLabel: "Pertanyaan untuk asisten AI",
+  send: "Kirim pertanyaan",
+  reset: "Mulai percakapan baru",
+  close: "Tutup chat",
+  typing: "Asisten sedang mengetik",
+  whatsappInline: "Chat Mas Nanang di WhatsApp",
+  whatsappFooter: "Lanjut ke WhatsApp",
+  disclaimer: "Dijawab otomatis oleh AI dan bisa keliru. Harga dan jadwal pasti dikonfirmasi lewat WhatsApp.",
+  quickRepliesLabel: "Pilihan pertanyaan cepat",
+  you: "Anda",
+  assistant: "Asisten",
+} as const;
 
 function makeId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function welcomeMessage(lang: Locale): ChatMessage {
+function welcomeMessage(): ChatMessage {
   return {
-    id: `welcome-${lang}`,
+    id: "welcome",
     role: "assistant",
-    content: COPY[lang].welcome,
+    content: COPY.welcome,
     source: "welcome",
-    quickReplies: STARTER_QUICK_REPLIES[lang],
+    quickReplies: STARTER_QUICK_REPLIES,
   };
 }
 
@@ -130,16 +89,11 @@ function toApiMessages(messages: ChatMessage[]): ApiChatMessage[] {
     .slice(-12);
 }
 
-function buildHandoffHref(lang: Locale, lastQuestion?: string): string {
+function buildHandoffHref(lastQuestion?: string): string {
   const question = lastQuestion ? lastQuestion.slice(0, 200) : "";
-  const message =
-    lang === "id"
-      ? `Halo Mas Nanang, saya barusan tanya-tanya lewat Live AI Chat di website.${
-          question ? ` Pertanyaan saya: "${question}".` : ""
-        } Boleh dibantu lanjut?`
-      : `Hi Nanang, I just chatted with the AI assistant on your website.${
-          question ? ` My question: "${question}".` : ""
-        } Could you help me with the next steps?`;
+  const message = `Halo Mas Nanang, saya barusan tanya-tanya lewat Live AI Chat di website.${
+    question ? ` Pertanyaan saya: "${question}".` : ""
+  } Boleh dibantu lanjut?`;
   return waUrl(message);
 }
 
@@ -235,10 +189,9 @@ function MessageText({ text }: { text: string }) {
 }
 
 export default function AIChatPanel({ open, onClose, positionClassName }: AIChatPanelProps) {
-  const { lang } = useLanguage();
-  const copy = COPY[lang];
+  const copy = COPY;
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => loadStoredMessages() ?? [welcomeMessage(lang)]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => loadStoredMessages() ?? [welcomeMessage()]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [mode, setMode] = useState<ChatMode | "checking">("checking");
@@ -280,11 +233,6 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-
-  // Ganti bahasa sambutan kalau pengunjung belum mulai bertanya
-  useEffect(() => {
-    setMessages((previous) => (previous.some((message) => message.role === "user") ? previous : [welcomeMessage(lang)]));
-  }, [lang]);
 
   // Simpan percakapan di sessionStorage agar tetap ada saat pindah halaman (hilang saat tab ditutup)
   useEffect(() => {
@@ -337,7 +285,7 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
 
       let reply: ChatMessage | null = null;
       if (currentMode === "ai") {
-        const result = await requestAiReply(lang, toApiMessages(history));
+        const result = await requestAiReply(toApiMessages(history));
         if (result.ok) {
           reply = {
             id: makeId(),
@@ -353,7 +301,7 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
       }
 
       if (!reply) {
-        const local = getLocalReply(text, detectReplyLang(text, lang));
+        const local = getLocalReply(text);
         const elapsed = Date.now() - startedAt;
         if (elapsed < MIN_TYPING_MS) await wait(MIN_TYPING_MS - elapsed);
         reply = {
@@ -377,13 +325,13 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
       setMessages(finalHistory);
 
       trackGaEvent("ai_chat_message", {
-        language: lang,
+        language: "id",
         input_type: inputType,
         reply_source: reply.source ?? "local",
         turn: finalHistory.filter((message) => message.role === "user").length,
       });
     },
-    [lang]
+    []
   );
 
   const handleSubmit = (event: FormEvent) => {
@@ -400,7 +348,7 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
 
   const resetConversation = () => {
     conversationRef.current += 1;
-    const fresh = [welcomeMessage(lang)];
+    const fresh = [welcomeMessage()];
     messagesRef.current = fresh;
     setMessages(fresh);
     setInput("");
@@ -409,12 +357,12 @@ export default function AIChatPanel({ open, onClose, positionClassName }: AIChat
     } catch {
       // Abaikan bila storage dibatasi
     }
-    trackGaEvent("ai_chat_reset", { language: lang });
+    trackGaEvent("ai_chat_reset", { language: "id" });
     inputRef.current?.focus({ preventScroll: true });
   };
 
   const lastUserQuestion = [...messages].reverse().find((message) => message.role === "user")?.content;
-  const handoffHref = buildHandoffHref(lang, lastUserQuestion);
+  const handoffHref = buildHandoffHref(lastUserQuestion);
   const lastMessage = messages[messages.length - 1];
   const quickReplies =
     !busy && lastMessage?.role === "assistant" && lastMessage.quickReplies ? lastMessage.quickReplies : [];

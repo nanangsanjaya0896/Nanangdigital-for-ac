@@ -13,8 +13,6 @@ import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 
 interface Benefit {
   icon: LucideIcon;
@@ -29,99 +27,55 @@ interface FlowStep {
   isWhatsApp?: boolean;
 }
 
-const BENEFITS_BY_LANG: Record<Locale, Benefit[]> = {
-  id: [
-    {
-      icon: MonitorSmartphone,
-      title: "Tampilan usaha jauh lebih meyakinkan",
-      description: "Begitu halaman dibuka, pelanggan langsung lihat usaha Anda beneran niat dan rapi.",
-    },
-    {
-      icon: MousePointerClick,
-      title: "Chat masuk sudah ada formatnya",
-      description: "Tombol WhatsApp langsung mengisi pesan layanan yang dipilih calon pelanggan.",
-    },
-    {
-      icon: LayoutTemplate,
-      title: "Enteng dibuka dari HP",
-      description: "Mayoritas orang cari tukang AC lewat HP, jadi ukuran teks dan tombolnya dibuat lega.",
-    },
-    {
-      icon: PenLine,
-      title: "Kalimat layanan beres ditulisin",
-      description: "Anda tinggal cerita layanan sehari-hari, saya yang susun bahasanya supaya enak dibaca.",
-    },
-    {
-      icon: Megaphone,
-      title: "Tinggal sambung ke iklan lokal",
-      description: "Kalau mau pasang iklan Facebook atau Instagram, halamannya sudah siap menampung klik.",
-    },
-    {
-      icon: Rocket,
-      title: "Hemat waktu balas pertanyaan dasar",
-      description: "Daftar jasa, kisaran biaya, dan area jangkauan sudah tertulis jelas sejak awal.",
-    },
-  ],
-  en: [
-    {
-      icon: MonitorSmartphone,
-      title: "Instant contractor credibility",
-      description: "Homeowners see a sharp, trustworthy brand within seconds instead of a bare phone number.",
-    },
-    {
-      icon: MousePointerClick,
-      title: "Pre-qualified booking messages",
-      description: "Every inquiry arrives with the customer's name, city, phone, and service selected.",
-    },
-    {
-      icon: LayoutTemplate,
-      title: "Lightning-fast on mobile",
-      description: "Over 80% of AC repair searches happen on a phone, so buttons and text stay effortless to tap.",
-    },
-    {
-      icon: PenLine,
-      title: "Service copy written for you",
-      description: "Tell me what services you offer and I write clear homeowner-friendly copy from scratch.",
-    },
-    {
-      icon: Megaphone,
-      title: "Built ready for paid ad traffic",
-      description: "Pre-wired with Meta Pixel, server CAPI deduplication, and Google Analytics 4.",
-    },
-    {
-      icon: Rocket,
-      title: "Fewer repetitive questions",
-      description: "Your service list, coverage towns, and process are crystal clear before they message you.",
-    },
-  ],
-};
+const BENEFITS: Benefit[] = [
+  {
+    icon: MonitorSmartphone,
+    title: "Tampilan usaha jauh lebih meyakinkan",
+    description: "Begitu halaman dibuka, pelanggan langsung lihat usaha Anda beneran niat dan rapi.",
+  },
+  {
+    icon: MousePointerClick,
+    title: "Chat masuk sudah ada formatnya",
+    description: "Tombol WhatsApp langsung mengisi pesan layanan yang dipilih calon pelanggan.",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "Enteng dibuka dari HP",
+    description: "Mayoritas orang cari tukang AC lewat HP, jadi ukuran teks dan tombolnya dibuat lega.",
+  },
+  {
+    icon: PenLine,
+    title: "Kalimat layanan beres ditulisin",
+    description: "Anda tinggal cerita layanan sehari-hari, saya yang susun bahasanya supaya enak dibaca.",
+  },
+  {
+    icon: Megaphone,
+    title: "Tinggal sambung ke iklan lokal",
+    description: "Kalau mau pasang iklan Facebook atau Instagram, halamannya sudah siap menampung klik.",
+  },
+  {
+    icon: Rocket,
+    title: "Hemat waktu balas pertanyaan dasar",
+    description: "Daftar jasa, kisaran biaya, dan area jangkauan sudah tertulis jelas sejak awal.",
+  },
+];
 
-const FLOW_BY_LANG: Record<Locale, FlowStep[]> = {
-  id: [
-    { icon: Users, label: "Warga Cari Jasa AC", note: "Lewat Google, kiriman link, atau iklan lokal" },
-    { icon: MonitorSmartphone, label: "Buka Website Usaha Anda", note: "Cek layanan, kisaran biaya, & area kerja" },
-    { icon: null, label: "Klik Tombol WhatsApp", note: "Pesan otomatis terisi sesuai kebutuhan servis", isWhatsApp: true },
-    { icon: MessagesSquare, label: "Cocokkan Jadwal", note: "Tinggal pastikan alamat rumah dan jam kedatangan" },
-    { icon: UserCheck, label: "Berangkat Kerjakan Order", note: "Pelanggan baru masuk tanpa ribet tanya dari nol" },
-  ],
-  en: [
-    { icon: Users, label: "Homeowner Searches for AC Help", note: "Via Google search, Maps, referral, or local ads" },
-    { icon: MonitorSmartphone, label: "Lands on Your HVAC Website", note: "Sees your services, service radius, & proof" },
-    { icon: null, label: "Submits Quick Booking Inquiry", note: "Name, phone, city & issue pre-filled cleanly", isWhatsApp: true },
-    { icon: MessagesSquare, label: "Confirm Dispatch Slot", note: "Lock in address & arrival window in seconds" },
-    { icon: UserCheck, label: "Complete Job & Win Repeat Plan", note: "Turn urgent calls into recurring maintenance clients" },
-  ],
-};
+const FLOW: FlowStep[] = [
+  { icon: Users, label: "Warga Cari Jasa AC", note: "Lewat Google, kiriman link, atau iklan lokal" },
+  { icon: MonitorSmartphone, label: "Buka Website Usaha Anda", note: "Cek layanan, kisaran biaya, & area kerja" },
+  { icon: null, label: "Klik Tombol WhatsApp", note: "Pesan otomatis terisi sesuai kebutuhan servis", isWhatsApp: true },
+  { icon: MessagesSquare, label: "Cocokkan Jadwal", note: "Tinggal pastikan alamat rumah dan jam kedatangan" },
+  { icon: UserCheck, label: "Berangkat Kerjakan Order", note: "Pelanggan baru masuk tanpa ribet tanya dari nol" },
+];
 
 export default function SolutionSection() {
-  const { lang } = useLanguage();
-  const benefits = BENEFITS_BY_LANG[lang];
-  const flowSteps = FLOW_BY_LANG[lang];
+  const benefits = BENEFITS;
+  const flowSteps = FLOW;
 
   return (
     <section
       id="solusi"
-      aria-label={lang === "id" ? "Solusi dari NanangDigital" : "How NanangDigital helps"}
+      aria-label="Solusi dari NanangDigital"
       className="relative border-y border-line bg-ink-soft py-24 md:py-32"
     >
       <div
@@ -131,25 +85,14 @@ export default function SolutionSection() {
       <div className="section-wrap relative">
         <SectionHeader
           index="02"
-          eyebrow={lang === "id" ? "Cara Kerjanya" : "How It Works"}
+          eyebrow="Cara Kerjanya"
           title={
-            lang === "id" ? (
-              <>
-                Punya Halaman Resmi Sendiri yang <span className="text-accent">Bantu Jualan</span>{" "}
-                24 Jam.
-              </>
-            ) : (
-              <>
-                A Dedicated Website That <span className="text-accent">Books Jobs 24/7</span> While
-                You Work.
-              </>
-            )
+            <>
+              Punya Halaman Resmi Sendiri yang <span className="text-accent">Bantu Jualan</span>{" "}
+              24 Jam.
+            </>
           }
-          description={
-            lang === "id"
-              ? "Saat Anda fokus mengerjakan unit di lapangan, website ini yang bertugas menjelaskan layanan usaha Anda ke calon pelanggan sampai mereka klik chat WhatsApp."
-              : "While you and your crew handle repairs in the field, your website explains your services, builds trust, and sends pre-qualified homeowner inquiries straight to your phone."
-          }
+          description="Saat Anda fokus mengerjakan unit di lapangan, website ini yang bertugas menjelaskan layanan usaha Anda ke calon pelanggan sampai mereka klik chat WhatsApp."
         />
 
         <div className="mt-16 grid gap-12 lg:grid-cols-2 lg:gap-16">
@@ -184,12 +127,10 @@ export default function SolutionSection() {
                 className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-accent/10 blur-3xl"
               />
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                {lang === "id" ? "Alur Pelanggan Memesan" : "Customer Booking Flow"}
+                Alur Pelanggan Memesan
               </p>
               <h3 className="mt-3 font-display text-xl font-bold tracking-tight md:text-2xl">
-                {lang === "id"
-                  ? "Dari lihat halaman sampai jadi jadwal servis."
-                  : "From first visit to confirmed service appointment."}
+                Dari lihat halaman sampai jadi jadwal servis.
               </h3>
 
               <ol className="relative mt-8 space-y-0">

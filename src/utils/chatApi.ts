@@ -1,5 +1,3 @@
-import type { Locale } from "../i18n/LanguageContext";
-
 /**
  * Penghubung widget Live AI Chat dengan fungsi server `/api/ai-chat` (Cloudflare Pages Functions / Vercel).
  * Semua kegagalan (AI belum dipasang, kuota habis, jaringan putus) dikembalikan sebagai
@@ -37,14 +35,14 @@ export async function checkAiAvailability(): Promise<ChatMode> {
   }
 }
 
-export async function requestAiReply(lang: Locale, messages: ApiChatMessage[]): Promise<AiReplyResult> {
+export async function requestAiReply(messages: ApiChatMessage[]): Promise<AiReplyResult> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), 25000);
   try {
     const response = await fetch(ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ lang, messages }),
+      body: JSON.stringify({ messages }),
       signal: controller.signal,
     });
     const data = (await response.json().catch(() => null)) as {

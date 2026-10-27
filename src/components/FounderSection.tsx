@@ -4,9 +4,7 @@ import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { BUSINESS, getGeneralWaLink } from "../data/business";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
+import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 
 interface Approach {
   icon: LucideIcon;
@@ -14,95 +12,56 @@ interface Approach {
   description: string;
 }
 
-const APPROACHES_BY_LANG: Record<Locale, Approach[]> = {
-  id: [
-    {
-      icon: Compass,
-      title: "Ngobrol santai soal usaha Anda dulu",
-      description:
-        "Kita mulai dari layanan apa saja yang paling sering dipesan, area mana yang ingin dikejar, dan kebiasaan pelanggan Anda.",
-    },
-    {
-      icon: ListChecks,
-      title: "Merapikan susunan info layanan & harga",
-      description:
-        "Supaya orang awam sekali lihat langsung paham bedanya cuci rutin, tambah freon, atau bongkar pasang.",
-    },
-    {
-      icon: Hand,
-      title: "Bikin tampilan yang enteng di HP",
-      description:
-        "Tidak kebanyakan animasi berat yang bikin loading lama. Fokusnya tulisan jelas dan tombol gampang dipencet.",
-    },
-    {
-      icon: MessageCircle,
-      title: "Mengantar orang langsung chat ke nomor Anda",
-      description:
-        "Begitu calon pelanggan cocok lihat info di halaman, sekali klik langsung nyambung ke WhatsApp usaha Anda.",
-    },
-  ],
-  en: [
-    {
-      icon: Compass,
-      title: "Start with your highest-margin jobs",
-      description:
-        "We look at the exact calls you want more of, whether AC repairs, seasonal tune-ups, mini-splits, or commercial maintenance contracts.",
-    },
-    {
-      icon: ListChecks,
-      title: "Structure services & pricing clearly",
-      description:
-        "Plain-English sections so homeowners immediately understand what you offer, where you travel, and why they can trust your crew.",
-    },
-    {
-      icon: Hand,
-      title: "Engineered for speed on every phone",
-      description:
-        "Zero bloated templates or sluggish plugins. Pages open almost instantly even on weak cellular data.",
-    },
-    {
-      icon: MessageCircle,
-      title: "Route every lead straight to your phone",
-      description:
-        "Every inquiry lands directly in your WhatsApp with customer details already organized and tracked.",
-    },
-  ],
-};
+const APPROACHES: Approach[] = [
+  {
+    icon: Compass,
+    title: "Ngobrol santai soal usaha Anda dulu",
+    description:
+      "Kita mulai dari layanan apa saja yang paling sering dipesan, area mana yang ingin dikejar, dan kebiasaan pelanggan Anda.",
+  },
+  {
+    icon: ListChecks,
+    title: "Merapikan susunan info layanan & harga",
+    description:
+      "Supaya orang awam sekali lihat langsung paham bedanya cuci rutin, tambah freon, atau bongkar pasang.",
+  },
+  {
+    icon: Hand,
+    title: "Bikin tampilan yang enteng di HP",
+    description:
+      "Tidak kebanyakan animasi berat yang bikin loading lama. Fokusnya tulisan jelas dan tombol gampang dipencet.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Mengantar orang langsung chat ke nomor Anda",
+    description:
+      "Begitu calon pelanggan cocok lihat info di halaman, sekali klik langsung nyambung ke WhatsApp usaha Anda.",
+  },
+];
 
-const SKILL_CHIPS_BY_LANG: Record<Locale, string[]> = {
-  id: ["Website Usaha AC", "Landing Page", "Copywriting", "Meta Ads"],
-  en: ["HVAC Websites", "High-Convert LPs", "HVAC Copywriting", "Meta Lead Ads"],
-};
+const SKILL_CHIPS: string[] = ["Website Usaha AC", "Landing Page", "Copywriting", "Meta Ads"];
 
 export default function FounderSection() {
-  const { lang } = useLanguage();
   const [photoFailed, setPhotoFailed] = useState(false);
 
-  const approaches = APPROACHES_BY_LANG[lang];
-  const skillChips = SKILL_CHIPS_BY_LANG[lang];
+  const approaches = APPROACHES;
+  const skillChips = SKILL_CHIPS;
 
   return (
     <section
       id="tentang"
-      aria-label={lang === "id" ? `Tentang ${BUSINESS.brand}` : `About ${BUSINESS.brand}`}
+      aria-label={`Tentang ${BUSINESS.brand}`}
       className="relative py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="03"
-          eyebrow={lang === "id" ? "Siapa yang Mengerjakan" : "Who Builds Your Site"}
+          eyebrow="Siapa yang Mengerjakan"
           title={
-            lang === "id" ? (
-              <>
-                Langsung Dikerjakan Sendiri oleh{" "}
-                <span className="text-accent">Nanang Sanjaya</span>.
-              </>
-            ) : (
-              <>
-                Built Directly Hand-in-Hand with{" "}
-                <span className="text-accent">Nanang Sanjaya</span>.
-              </>
-            )
+            <>
+              Langsung Dikerjakan Sendiri oleh{" "}
+              <span className="text-accent">Nanang Sanjaya</span>.
+            </>
           }
         />
 
@@ -119,7 +78,7 @@ export default function FounderSection() {
                   {!photoFailed ? (
                     <img
                       src={BUSINESS.founderPhoto.avatarUrl}
-                      alt={BUSINESS.founderPhoto.alt[lang]}
+                      alt={BUSINESS.founderPhoto.alt}
                       width={80}
                       height={80}
                       loading="lazy"
@@ -144,18 +103,16 @@ export default function FounderSection() {
               </div>
 
               <p className="relative mt-6 text-sm leading-relaxed text-mist">
-                {lang === "id"
-                  ? "Dari obrolan pertama di WhatsApp, penulisan isi halaman, sampai website naik tayang dan siap dipasang iklan, semuanya saya pegang sendiri. Jadi komunikasi cepat nyambung tanpa dilempar ke admin lain."
-                  : "From our first chat on WhatsApp to copywriting, page speed optimization, domain setup, and ad tracking, you work directly with me. Zero account-manager handoffs or slow agency red tape."}
+                Dari obrolan pertama di WhatsApp, penulisan isi halaman, sampai website naik tayang dan siap dipasang iklan, semuanya saya pegang sendiri. Jadi komunikasi cepat nyambung tanpa dilempar ke admin lain.
               </p>
 
               <div className="relative mt-7 border-t border-line pt-6">
                 <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-mist">
-                  {lang === "id" ? "Yang Saya Kerjakan Sehari-hari" : "Core Focus Areas"}
+                  Yang Saya Kerjakan Sehari-hari
                 </p>
                 <ul
                   className="mt-4 flex flex-wrap gap-2"
-                  aria-label={lang === "id" ? "Fokus pengerjaan" : "Core skills"}
+                  aria-label="Fokus pengerjaan"
                 >
                   {skillChips.map((chip) => (
                     <li
@@ -173,39 +130,21 @@ export default function FounderSection() {
           {/* Narasi + pendekatan */}
           <div>
             <Reveal delay={0.1}>
-              {lang === "id" ? (
-                <>
-                  <p className="text-base leading-relaxed text-mist md:text-lg">
-                    Kenapa {BUSINESS.brand} cuma fokus di{" "}
-                    <strong className="font-semibold text-white">
-                      usaha service AC dan cuci AC panggilan
-                    </strong>
-                    ? Karena kebutuhan tukang dan bengkel AC itu beda jauh dengan toko baju atau
-                    kafe. Pelanggan AC sering butuh cepat saat unit di kamar tiba-tiba panas atau
-                    bocor air, jadi halamannya harus ringkas dan meyakinkan.
-                  </p>
-                  <p className="mt-5 text-base leading-relaxed text-mist md:text-lg">
-                    Anda juga tidak perlu pusing mikirin istilah koding, hosting, atau pixel iklan.
-                    Cukup kirim data usaha lewat chat, sisanya saya bereskan sampai siap pakai.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-base leading-relaxed text-mist md:text-lg">
-                    Why does {BUSINESS.brand} specialize exclusively in{" "}
-                    <strong className="font-semibold text-white">
-                      HVAC, air conditioning repair, and maintenance contractors
-                    </strong>
-                    ? Because an urgent cooling breakdown is nothing like selling e-commerce
-                    products or restaurant tables. Homeowners need fast answers, local proof, and
-                    an effortless way to reach your dispatch line right away.
-                  </p>
-                  <p className="mt-5 text-base leading-relaxed text-mist md:text-lg">
-                    You never have to wrestle with code, DNS records, SSL certificates, or tracking
-                    pixels. Share your company info on WhatsApp and I handle everything end to end.
-                  </p>
-                </>
-              )}
+              <>
+                <p className="text-base leading-relaxed text-mist md:text-lg">
+                  Kenapa {BUSINESS.brand} cuma fokus di{" "}
+                  <strong className="font-semibold text-white">
+                    usaha service AC dan cuci AC panggilan
+                  </strong>
+                  ? Karena kebutuhan tukang dan bengkel AC itu beda jauh dengan toko baju atau
+                  kafe. Pelanggan AC sering butuh cepat saat unit di kamar tiba-tiba panas atau
+                  bocor air, jadi halamannya harus ringkas dan meyakinkan.
+                </p>
+                <p className="mt-5 text-base leading-relaxed text-mist md:text-lg">
+                  Anda juga tidak perlu pusing mikirin istilah koding, hosting, atau pixel iklan.
+                  Cukup kirim data usaha lewat chat, sisanya saya bereskan sampai siap pakai.
+                </p>
+              </>
             </Reveal>
 
             <ol className="mt-10 space-y-1">
@@ -239,14 +178,14 @@ export default function FounderSection() {
 
             <Reveal delay={0.5}>
               <a
-                href={getGeneralWaLink(lang)}
+                href={WA_LINK_GENERAL}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-track-source="founder_cta"
                 className="btn-primary mt-9"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                {lang === "id" ? "Ngobrol Langsung di WhatsApp" : "Chat Directly on WhatsApp"}
+                Ngobrol Langsung di WhatsApp
               </a>
             </Reveal>
           </div>

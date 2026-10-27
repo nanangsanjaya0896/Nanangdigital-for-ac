@@ -1,17 +1,12 @@
-# NanangDigital (Bilingual ID / EN)
+# NanangDigital
 
-Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang Sanjaya**), spesialis pembuatan website konversi tinggi dan kampanye Meta Ads lokal khusus usaha **Service AC & HVAC Contractors** di Indonesia maupun pasar internasional (AS, Australia, Inggris, Eropa, Singapura, Malaysia).
+Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang Sanjaya**), spesialis pembuatan website konversi tinggi dan kampanye Meta Ads lokal khusus usaha **Service AC di Indonesia**.
 
-## Rute & Bahasa Aktif
+## Halaman
 
-- **Pasar Indonesia (`/` , `lang="id"`):**
-  - Paket Basic `Rp1.500.000`, Paket Growth `Rp2.000.000`, dan Paket Premium Custom (`Sesuai Permintaan`).
-  - Dilengkapi pusat artikel SEO organik statis di `/panduan/` beserta 4 panduan teknis usaha service AC.
-- **Pasar Global HVAC (`/en/`, `lang="en"`):**
-  - Posisi khusus kontraktor HVAC & Air Conditioning internasional dengan harga USD: **Basic `$299`**, **Growth `$449`**, dan **Premium `Custom`**.
-  - Prerender HTML statis murni di `dist/en/index.html` lengkap dengan `hreflang` dua arah (`id`, `en`, `x-default`), `OfferCatalog` berdenominasi `USD`, tombol CTA langsung ke URL WhatsApp, dan pelacakan nilai konversi `USD` otomatis ke GA4 serta Meta Pixel + Server CAPI.
-- **Pengalih Bahasa Instan (`ID | EN`):**
-  - Tersedia langsung di bilah navigasi atas (desktop & seluler) untuk mengganti 100% bahasa seluruh bagian halaman, modal pra-WhatsApp, dan template pesan chat secara instan tanpa muat ulang halaman.
+- **Beranda (`/`):** Paket Basic `Rp1.500.000`, Paket Growth `Rp2.000.000`, dan Paket Premium Custom (`Sesuai Permintaan`).
+- **Panduan (`/panduan/`):** pusat artikel SEO organik statis beserta 4 panduan usaha service AC.
+- **Bahasa:** seluruh website memakai Bahasa Indonesia. Versi bahasa Inggris (`/en/`) sudah dihapus, dan alamat lama `/en` otomatis diarahkan (301) ke beranda lewat `public/_redirects` (Cloudflare) dan `vercel.json` (Vercel), termasuk parameter iklan seperti `fbclid` dan UTM. Kode versi dua bahasa terakhir tersimpan di riwayat Git (commit `4f4b0b9`) kalau suatu saat ingin dipakai lagi.
 
 ## Deploy (Cloudflare Pages)
 
@@ -25,14 +20,14 @@ Hosting utama: **Cloudflare Pages**, gratis dan boleh dipakai untuk website bisn
 | Production branch | `main` |
 | Variables and Secrets | `META_CAPI_ACCESS_TOKEN` (wajib), `GEMINI_API_KEY` (opsional), `SITE_URL` (hanya untuk domain sendiri) |
 
-- **Alamat website** diatur di satu tempat (`scripts/site-url.mjs`). Canonical, `hreflang`, JSON-LD, `sitemap.xml`, dan `robots.txt` otomatis mengikuti alamat yang diberikan Cloudflare (bawaan `https://nanangdigital.pages.dev`), atau `SITE_URL` kalau memakai domain sendiri.
+- **Alamat website** diatur di satu tempat (`scripts/site-url.mjs`). Canonical, JSON-LD, `sitemap.xml`, dan `robots.txt` otomatis mengikuti alamat yang diberikan Cloudflare (bawaan `https://nanangdigital.pages.dev`), atau `SITE_URL` kalau memakai domain sendiri.
 - **Fungsi server** ada di `functions/api/` (Cloudflare Pages Functions). Logika intinya di `server/` dipakai bersama oleh adapter Vercel di `api/` dan Live Preview lokal, jadi website tetap bisa dideploy ke Vercel (`vercel.json`) kapan saja.
-- **`public/_routes.json`** membuat hanya `/api/*` yang menjalankan fungsi server, sehingga semua halaman tetap gratis tanpa batas. **`public/_headers`** mengatur cache file JS, CSS, dan gambar.
+- **`public/_routes.json`** membuat hanya `/api/*` yang menjalankan fungsi server, sehingga semua halaman tetap gratis tanpa batas. **`public/_headers`** mengatur cache file JS, CSS, dan gambar. **`public/_redirects`** mengarahkan alamat lama `/en` ke beranda.
 - **Halaman 404 statis** (`dist/404.html`) memastikan alamat yang tidak ada membalas status 404 asli, bukan menampilkan beranda.
 
 ## Live AI Chat (Asisten AI NanangDigital)
 
-- Tombol **Tanya Asisten AI** di pojok kanan bawah semua halaman, dua bahasa (`ID` & `EN`), dan otomatis mengikuti bahasa yang diketik pengunjung.
+- Tombol **Tanya Asisten AI** di pojok kanan bawah semua halaman, berbahasa Indonesia dengan harga Rupiah. Pertanyaan berbahasa lain tetap dijawab, dan harga selalu dalam Rupiah.
 - Tanpa API key, chat langsung menjawab dari data website (paket, harga, FAQ, alur kerja, bonus). Setelah `GEMINI_API_KEY` (gratis dari Google AI Studio) dipasang di Cloudflare Pages (Settings > Variables and Secrets), chat dijawab AI generatif lewat fungsi server `/api/ai-chat`.
 - Tombol WhatsApp di dalam chat tetap lewat form kenalan + tracking GA4 dan Meta Pixel/CAPI yang sama.
 - Panel chat dimuat hanya saat tombol disentuh, jadi tidak membebani skor PageSpeed.
@@ -40,8 +35,8 @@ Hosting utama: **Cloudflare Pages**, gratis dan boleh dipakai untuk website bisn
 
 ## Pelacakan Analitik & Konversi
 
-- **Google Search Console:** Tag verifikasi tertanam permanen di seluruh 7 halaman statis (`/` , `/en/`, `/panduan/`, dan 4 artikel panduan). Tag tambahan bisa dipasang lewat `VITE_GSC_VERIFICATION` tanpa mengubah kode.
-- **Google Analytics 4 (`G-JY9N81NCQE`):** Melacak tampilan halaman dan konversi `generate_lead` lengkap dengan mata uang (`IDR` / `USD`) serta bahasa aktif.
+- **Google Search Console:** Tag verifikasi tertanam permanen di seluruh 6 halaman statis (`/`, `/panduan/`, dan 4 artikel panduan). Tag tambahan bisa dipasang lewat `VITE_GSC_VERIFICATION` tanpa mengubah kode.
+- **Google Analytics 4 (`G-JY9N81NCQE`):** Melacak tampilan halaman dan konversi `generate_lead` lengkap dengan nilai paket dalam Rupiah (`IDR`).
 - **Meta Pixel + Server Conversions API (`2971268586402489`):** Deduplikasi `event_id` identik antara browser dan fungsi server `/api/meta-capi`. Data pengunjung di-hash SHA-256 di browser, lalu server meneruskan hash tersebut beserta `fbc`/`fbp`, IP, user agent, dan negara pengunjung ke Meta. Cukup isi variabel rahasia `META_CAPI_ACCESS_TOKEN` di Cloudflare Pages. Panduan: [`PANDUAN-META-PIXEL-CAPI.md`](./PANDUAN-META-PIXEL-CAPI.md).
 
 ## Menjalankan Proyek Secara Lokal
@@ -51,7 +46,7 @@ npm install
 npm run dev
 ```
 
-Build produksi penuh (termasuk prerender 7 halaman SEO statis, inline critical CSS, sitemap, robots.txt, dan halaman 404):
+Build produksi penuh (termasuk prerender 6 halaman SEO statis, inline critical CSS, sitemap, robots.txt, dan halaman 404):
 
 ```bash
 npm run build

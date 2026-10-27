@@ -1,7 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { Sparkles, X } from "lucide-react";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 import { trackGaEvent } from "../utils/tracking";
 
 /**
@@ -26,34 +24,19 @@ const TEASER_SESSION_KEY = "nd_ai_chat_teaser_v1";
 const PANEL_POSITION =
   "fixed inset-x-0 bottom-0 h-[min(88dvh,46rem)] rounded-t-[1.75rem] sm:inset-x-auto sm:bottom-[5.5rem] sm:right-5 sm:h-[min(38rem,calc(100dvh-7.5rem))] sm:w-[23.5rem] sm:rounded-[1.75rem] md:bottom-[6rem] md:right-7";
 
-const COPY: Record<
-  Locale,
-  { launcher: string; open: string; close: string; closeShort: string; teaser: string; teaserClose: string; loading: string }
-> = {
-  id: {
-    launcher: "Tanya Asisten AI",
-    // Label pembaca layar wajib memuat teks yang terlihat (WCAG 2.5.3 Label in Name)
-    open: "Tanya Asisten AI, buka Live AI Chat NanangDigital",
-    close: "Tutup Live AI Chat",
-    closeShort: "Tutup",
-    teaser: "Ada yang mau ditanyakan soal paket website? Tanya saya, langsung dijawab.",
-    teaserClose: "Tutup pesan",
-    loading: "Memuat chat...",
-  },
-  en: {
-    launcher: "Ask AI Assistant",
-    open: "Ask AI Assistant, open NanangDigital live AI chat",
-    close: "Close live AI chat",
-    closeShort: "Close",
-    teaser: "Questions about packages or pricing? Ask me, I reply instantly.",
-    teaserClose: "Dismiss message",
-    loading: "Loading chat...",
-  },
-};
+const COPY = {
+  launcher: "Tanya Asisten AI",
+  // Label pembaca layar wajib memuat teks yang terlihat (WCAG 2.5.3 Label in Name)
+  open: "Tanya Asisten AI, buka Live AI Chat NanangDigital",
+  close: "Tutup Live AI Chat",
+  closeShort: "Tutup",
+  teaser: "Ada yang mau ditanyakan soal paket website? Tanya saya, langsung dijawab.",
+  teaserClose: "Tutup pesan",
+  loading: "Memuat chat...",
+} as const;
 
 export default function AIChatWidget() {
-  const { lang } = useLanguage();
-  const copy = COPY[lang];
+  const copy = COPY;
 
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -117,8 +100,8 @@ export default function AIChatWidget() {
     setEverOpened(true);
     setOpen(true);
     setTeaserVisible(false);
-    trackGaEvent("ai_chat_open", { language: lang });
-  }, [lang]);
+    trackGaEvent("ai_chat_open", { language: "id" });
+  }, []);
 
   const closeChat = useCallback(() => {
     setOpen(false);

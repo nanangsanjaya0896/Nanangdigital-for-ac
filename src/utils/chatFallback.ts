@@ -1,10 +1,9 @@
-import { PLANS_BY_LANG, PRICING_NOTES_BY_LANG } from "../data/plans";
+import { PLANS, PRICING_NOTES } from "../data/plans";
 import type { Plan } from "../data/plans";
-import { FAQ_BY_LANG } from "../data/faq";
-import { PROCESS_STEPS_BY_LANG } from "../data/process";
-import { BONUSES_BY_LANG } from "../data/bonuses";
-import { SERVICES_BY_LANG } from "../data/services";
-import type { Locale } from "../i18n/LanguageContext";
+import { FAQ_ITEMS } from "../data/faq";
+import { PROCESS_STEPS } from "../data/process";
+import { BONUSES } from "../data/bonuses";
+import { SERVICES } from "../data/services";
 
 /**
  * Mesin jawaban bawaan Live AI Chat.
@@ -20,10 +19,12 @@ export interface LocalReply {
   quickReplies: string[];
 }
 
-export const STARTER_QUICK_REPLIES: Record<Locale, string[]> = {
-  id: ["Lihat harga paket", "Bedanya Basic dan Growth?", "Berapa lama jadinya?", "Cara pembayaran"],
-  en: ["See pricing", "Basic vs Growth?", "How long does it take?", "Payment options"],
-};
+export const STARTER_QUICK_REPLIES: string[] = [
+  "Lihat harga paket",
+  "Bedanya Basic dan Growth?",
+  "Berapa lama jadinya?",
+  "Cara pembayaran",
+];
 
 type IntentId =
   | "compare"
@@ -39,7 +40,7 @@ type IntentId =
   | "google"
   | "process"
   | "portfolio"
-  | "international"
+  | "location"
   | "chatbot"
   | "bonus"
   | "included"
@@ -102,8 +103,8 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
       ["requirements", 3], ["prepare", 3],
     ],
   },
-  { id: "basic", keywords: [["basic", 3], ["termurah", 2.5], ["paling murah", 2.5], ["cheapest", 2.5], ["~1 500 000", 3], ["~299", 3]] },
-  { id: "growth", keywords: [["growth", 3], ["~2 000 000", 3], ["~449", 3], ["paling populer", 2.5], ["most popular", 2.5]] },
+  { id: "basic", keywords: [["basic", 3], ["termurah", 2.5], ["paling murah", 2.5], ["cheapest", 2.5], ["~1 500 000", 3]] },
+  { id: "growth", keywords: [["growth", 3], ["~2 000 000", 3], ["paling populer", 2.5], ["most popular", 2.5]] },
   { id: "premium", keywords: [["premium", 3], ["custom", 2.5], ["kustom", 2.5], ["paling lengkap", 2.5], ["most complete", 2.5]] },
   {
     id: "ads",
@@ -138,14 +139,12 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
     ],
   },
   {
-    id: "international",
+    id: "location",
     keywords: [
-      ["luar negeri", 3.5], ["international", 3], ["internasional", 3], ["overseas", 3], ["abroad", 3],
-      ["usa", 3], ["america", 3], ["amerika", 3], ["australia", 3], ["uk", 2], ["inggris", 2],
-      ["europe", 3], ["eropa", 3], ["singapore", 3], ["singapura", 3], ["canada", 3], ["usd", 2.5],
-      ["dollar", 2.5], ["dolar", 2.5], ["luar kota", 3], ["kota lain", 2.5], ["seluruh indonesia", 3],
-      ["jarak jauh", 3], ["remote", 3], ["anywhere", 2.5], ["lokasi", 1.5], ["location", 1.5],
-      ["where are you", 2.5],
+      ["luar kota", 3], ["kota lain", 2.5], ["beda kota", 3], ["seluruh indonesia", 3], ["jarak jauh", 3],
+      ["domisili", 2.5], ["lokasi", 1.5], ["luar negeri", 3.5], ["internasional", 3], ["international", 3],
+      ["overseas", 3], ["abroad", 3], ["usd", 2.5], ["dollar", 2.5], ["dolar", 2.5], ["remote", 3],
+      ["anywhere", 2.5], ["location", 1.5], ["where are you", 2.5],
     ],
   },
   {
@@ -200,17 +199,6 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
 const PLAN_INTENTS: IntentId[] = ["basic", "growth", "premium"];
 const GENERIC_INTENTS: IntentId[] = ["pricing", "included", "process", "contact", "greeting"];
 
-const EN_HINTS = new Set([
-  "the", "is", "are", "what", "how", "much", "does", "do", "you", "your", "can", "i", "my", "me",
-  "price", "pricing", "cost", "long", "payment", "pay", "thanks", "thank", "which", "need", "want",
-  "included", "include", "hello", "quote", "deposit", "timeline", "about", "website", "get",
-]);
-const ID_HINTS = new Set([
-  "apa", "berapa", "bisa", "yang", "saya", "aku", "harga", "biaya", "gimana", "bagaimana", "dong",
-  "ya", "kak", "mas", "min", "lama", "bayar", "halo", "terima", "kasih", "makasih", "mau", "ingin",
-  "untuk", "dan", "itu", "ini", "nggak", "gak", "tidak", "sudah", "udah", "kalau", "kalo", "ada",
-  "pakai", "buat", "jadi", "berapaan", "dapat", "bedanya", "paket", "usaha",
-]);
 
 function normalize(text: string): string {
   const cleaned = text
@@ -232,19 +220,6 @@ function matches(normalizedText: string, keyword: string): boolean {
   return !keyword.includes(" ") && normalizedText.includes(` ${keyword}nya `);
 }
 
-/** Tebak bahasa pesan pengunjung supaya jawaban mengikuti bahasa yang dipakai. */
-export function detectReplyLang(text: string, fallback: Locale): Locale {
-  const words = normalize(text).trim().split(" ").filter(Boolean);
-  let en = 0;
-  let id = 0;
-  for (const word of words) {
-    if (EN_HINTS.has(word)) en += 1;
-    if (ID_HINTS.has(word)) id += 1;
-  }
-  if (en > id) return "en";
-  if (id > en) return "id";
-  return fallback;
-}
 
 function scoreIntents(normalizedText: string): Map<IntentId, number> {
   const scores = new Map<IntentId, number>();
@@ -293,12 +268,12 @@ function tokens(text: string): string[] {
 }
 
 /** Cocokkan ke FAQ berdasarkan kemiripan kata, untuk pertanyaan yang tidak kena kata kunci. */
-function matchFaq(text: string, lang: Locale): string | null {
+function matchFaq(text: string): string | null {
   const queryTokens = new Set(tokens(text));
   if (queryTokens.size === 0) return null;
   let bestAnswer: string | null = null;
   let bestScore = 0;
-  for (const item of FAQ_BY_LANG[lang]) {
+  for (const item of FAQ_ITEMS) {
     const questionTokens = new Set(tokens(item.question));
     let shared = 0;
     for (const token of queryTokens) {
@@ -313,43 +288,37 @@ function matchFaq(text: string, lang: Locale): string | null {
   return bestScore >= 0.5 ? bestAnswer : null;
 }
 
-function planPrice(plan: Plan, lang: Locale): string {
-  if (plan.customLabel) return lang === "id" ? "sesuai permintaan" : "custom quote";
+function planPrice(plan: Plan): string {
+  if (plan.customLabel) return "sesuai permintaan";
   return plan.price;
 }
 
-function findPlan(lang: Locale, id: Plan["id"]): Plan {
-  const plans = PLANS_BY_LANG[lang];
-  return plans.find((plan) => plan.id === id) ?? plans[0];
+function findPlan(id: Plan["id"]): Plan {
+  return PLANS.find((plan) => plan.id === id) ?? PLANS[0];
 }
 
-function faqAnswer(lang: Locale, id: string): string {
-  return FAQ_BY_LANG[lang].find((item) => item.id === id)?.answer ?? "";
+function faqAnswer(id: string): string {
+  return FAQ_ITEMS.find((item) => item.id === id)?.answer ?? "";
 }
 
-function halfOfPrice(plan: Plan, lang: Locale): string | null {
+function halfOfPrice(plan: Plan): string | null {
   if (plan.customLabel) return null;
   const digits = Number(plan.price.replace(/[^\d]/g, ""));
   if (!digits) return null;
-  if (lang === "id") {
-    return `Rp${Math.round(digits / 2).toLocaleString("id-ID")}`;
-  }
-  const half = digits / 2;
-  return `$${Number.isInteger(half) ? half : half.toFixed(2)}`;
+  return `Rp${Math.round(digits / 2).toLocaleString("id-ID")}`;
 }
 
-function planDetail(plan: Plan, lang: Locale): LocalReply {
-  const isId = lang === "id";
+function planDetail(plan: Plan): LocalReply {
   const features = plan.features.filter((feature) => !/^no\s/i.test(feature));
   const shown = features.slice(0, 7);
   const rest = features.length - shown.length;
-  const others = PLANS_BY_LANG[lang].filter((p) => p.id !== plan.id);
+  const others = PLANS.filter((p) => p.id !== plan.id);
   const lines = [
-    `${plan.name} (${planPrice(plan, lang)}). ${plan.tagline}`,
+    `${plan.name} (${planPrice(plan)}). ${plan.tagline}`,
     "",
-    isId ? "Yang didapat:" : "Highlights:",
+    "Yang didapat:",
     ...shown.map((feature) => `- ${feature}`),
-    ...(rest > 0 ? [isId ? `- dan ${rest} fasilitas lainnya` : `- plus ${rest} more`] : []),
+    ...(rest > 0 ? [`- dan ${rest} fasilitas lainnya`] : []),
     "",
     plan.priceNote,
   ];
@@ -357,23 +326,20 @@ function planDetail(plan: Plan, lang: Locale): LocalReply {
     text: lines.join("\n"),
     suggestWhatsApp: true,
     quickReplies: [
-      ...others.map((p) => (isId ? `Isi ${p.name}` : `What's in ${p.name}?`)),
-      isId ? "Cara pesan" : "How to get started",
+      ...others.map((p) => `Isi ${p.name}`),
+      "Cara pesan",
     ],
   };
 }
 
-function buildReply(intent: IntentId | null, text: string, lang: Locale, scores: Map<IntentId, number>): LocalReply {
-  const isId = lang === "id";
-  const plans = PLANS_BY_LANG[lang];
-  const starters = STARTER_QUICK_REPLIES[lang];
+function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId, number>): LocalReply {
+  const plans = PLANS;
+  const starters = STARTER_QUICK_REPLIES;
 
   switch (intent) {
     case "greeting":
       return {
-        text: isId
-          ? "Halo, selamat datang di NanangDigital! Saya asisten AI yang siap bantu jawab soal paket website dan iklan untuk usaha AC Anda. Mau tanya soal apa dulu?"
-          : "Hi, welcome to NanangDigital! I'm the AI assistant, here to answer questions about websites and ads for your HVAC business. What would you like to know?",
+        text: "Halo, selamat datang di NanangDigital! Saya asisten AI yang siap bantu jawab soal paket website dan iklan untuk usaha AC Anda. Mau tanya soal apa dulu?",
         suggestWhatsApp: false,
         quickReplies: starters,
       };
@@ -381,208 +347,180 @@ function buildReply(intent: IntentId | null, text: string, lang: Locale, scores:
     case "pricing":
       return {
         text: [
-          isId ? "Ada 3 paket website untuk usaha AC:" : "There are 3 packages:",
+          "Ada 3 paket website untuk usaha AC:",
           ...plans.map(
             (plan) =>
-              `- ${plan.name}: ${planPrice(plan, lang)}${plan.popular ? (isId ? " (paling populer)" : " (most popular)") : ""}`
+              `- ${plan.name}: ${planPrice(plan)}${plan.popular ? " (paling populer)" : ""}`
           ),
           "",
-          PRICING_NOTES_BY_LANG[lang][0],
+          PRICING_NOTES[0],
           "",
-          isId ? "Mau saya jelaskan bedanya?" : "Want me to explain the difference?",
+          "Mau saya jelaskan bedanya?",
         ].join("\n"),
         suggestWhatsApp: false,
-        quickReplies: isId
-          ? ["Bedanya Basic dan Growth?", "Isi Paket Growth", "Cara pembayaran"]
-          : ["Basic vs Growth?", "What's in Growth?", "Payment options"],
+        quickReplies: ["Bedanya Basic dan Growth?", "Isi Paket Growth", "Cara pembayaran"],
       };
 
     case "basic":
     case "growth":
     case "premium":
-      return planDetail(findPlan(lang, intent), lang);
+      return planDetail(findPlan(intent));
 
     case "compare":
       return {
         text: [
-          isId ? "Gampangnya begini:" : "In short:",
-          ...plans.map((plan) => `- ${plan.name} (${planPrice(plan, lang)}): ${plan.tagline}`),
+          "Gampangnya begini:",
+          ...plans.map((plan) => `- ${plan.name} (${planPrice(plan)}): ${plan.tagline}`),
           "",
-          isId
-            ? "Kalau masih ragu, ceritakan kondisi usaha Anda ke Mas Nanang di WhatsApp, nanti dibantu pilihkan yang paling pas."
-            : "Still unsure? Tell Nanang about your business on WhatsApp and he'll recommend the best fit.",
+          "Kalau masih ragu, ceritakan kondisi usaha Anda ke Mas Nanang di WhatsApp, nanti dibantu pilihkan yang paling pas.",
         ].join("\n"),
         suggestWhatsApp: true,
-        quickReplies: plans.map((plan) => (isId ? `Isi ${plan.name}` : `What's in ${plan.name}?`)),
+        quickReplies: plans.map((plan) => `Isi ${plan.name}`),
       };
 
     case "timeline":
       return {
-        text: faqAnswer(lang, "waktu"),
+        text: faqAnswer("waktu"),
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Cara pesan", "Cara pembayaran"] : ["How to get started", "Payment options"],
+        quickReplies: ["Cara pesan", "Cara pembayaran"],
       };
 
     case "payment": {
       const mentioned = PLAN_INTENTS.find((id) => (scores.get(id) ?? 0) >= 2.5) as Plan["id"] | undefined;
-      const plan = mentioned ? findPlan(lang, mentioned) : null;
-      const half = plan ? halfOfPrice(plan, lang) : null;
+      const plan = mentioned ? findPlan(mentioned) : null;
+      const half = plan ? halfOfPrice(plan) : null;
       const extra =
         plan && half
-          ? isId
-            ? `\n\nUntuk ${plan.name}, DP 50% berarti ${half} di awal dan ${half} saat pelunasan.`
-            : `\n\nFor the ${plan.name}, the 50% deposit is ${half} upfront and ${half} on approval.`
+          ? `\n\nUntuk ${plan.name}, DP 50% berarti ${half} di awal dan ${half} saat pelunasan.`
           : "";
       return {
-        text: `${faqAnswer(lang, "pembayaran")}${extra}`,
+        text: `${faqAnswer("pembayaran")}${extra}`,
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Lihat harga paket", "Berapa lama jadinya?"] : ["See pricing", "How long does it take?"],
+        quickReplies: ["Lihat harga paket", "Berapa lama jadinya?"],
       };
     }
 
     case "domain":
       return {
-        text: faqAnswer(lang, "domain"),
+        text: faqAnswer("domain"),
         suggestWhatsApp: true,
-        quickReplies: isId ? ["Lihat harga paket", "Cara pembayaran"] : ["See pricing", "Payment options"],
+        quickReplies: ["Lihat harga paket", "Cara pembayaran"],
       };
 
     case "revision":
       return {
-        text: faqAnswer(lang, "revisi"),
+        text: faqAnswer("revisi"),
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Bedanya Basic dan Growth?", "Cara pesan"] : ["Basic vs Growth?", "How to get started"],
+        quickReplies: ["Bedanya Basic dan Growth?", "Cara pesan"],
       };
 
     case "requirements":
       return {
-        text: isId
-          ? "Cukup siapkan data dasar usaha: nama usaha, daftar layanan dan tarif, area kerja, foto hasil kerja kalau ada, dan nomor WhatsApp. Teks halamannya nanti ditulis oleh Mas Nanang, Anda tinggal cek hasilnya."
-          : "Just send the basics: company name, services and pricing, service area, job photos if you have them, and your contact number. Nanang writes all the website copy for you.",
+        text: "Cukup siapkan data dasar usaha: nama usaha, daftar layanan dan tarif, area kerja, foto hasil kerja kalau ada, dan nomor WhatsApp. Teks halamannya nanti ditulis oleh Mas Nanang, Anda tinggal cek hasilnya.",
         suggestWhatsApp: true,
-        quickReplies: isId ? ["Berapa lama jadinya?", "Cara pembayaran"] : ["How long does it take?", "Payment options"],
+        quickReplies: ["Berapa lama jadinya?", "Cara pembayaran"],
       };
 
     case "ads": {
-      const service = SERVICES_BY_LANG[lang][1];
-      const adPattern = isId ? /(setup meta ads|copy iklan|kampanye)/i : /(meta ads setup|ad copy|campaign optimization)/i;
+      const service = SERVICES[1];
+      const adPattern = /(setup meta ads|copy iklan|kampanye)/i;
       const adLines = plans
         .map((plan) => ({ plan, items: plan.features.filter((feature) => adPattern.test(feature)) }))
         .filter((entry) => entry.items.length > 0)
         .map((entry) => `- ${entry.plan.name}: ${entry.items.join(", ")}`);
-      const budgetNote = isId
-        ? "Soal saldo iklan yang dibayar ke Meta, nanti dijelaskan langsung oleh Mas Nanang di WhatsApp."
-        : "The ad budget paid to Meta is discussed directly with Nanang on WhatsApp.";
+      const budgetNote = "Soal saldo iklan yang dibayar ke Meta, nanti dijelaskan langsung oleh Mas Nanang di WhatsApp.";
       // Kalau yang ditanyakan saldo/budget iklan, jawaban langsungnya ditaruh paling atas
       const asksBudget = /\b(saldo|budget|spend|biaya iklan)/.test(normalize(text));
       const details = [service.description, ...(adLines.length ? ["", ...adLines] : [])];
       return {
         text: (asksBudget ? [budgetNote, "", ...details] : [...details, "", budgetNote]).join("\n"),
         suggestWhatsApp: true,
-        quickReplies: isId ? ["Isi Paket Growth", "Lihat harga paket"] : ["What's in Growth?", "See pricing"],
+        quickReplies: ["Isi Paket Growth", "Lihat harga paket"],
       };
     }
 
     case "google":
       return {
-        text: isId
-          ? "Semua paket sudah termasuk pembuatan akun Google My Business (Google Maps) supaya usaha Anda lebih mudah ditemukan warga sekitar. Paket Growth dan Premium Custom juga dapat setup Google Search Console dan Google Analytics untuk memantau pengunjung website.\n\nAda juga artikel gratis cara daftar usaha AC di Google Maps di halaman Panduan."
-          : "Every package includes Google Business Profile (Google Maps) setup so local homeowners can find you more easily. Growth and Premium Custom also include Google Search Console and Google Analytics 4 setup to track your website visitors.\n\nThere are free marketing guides in the Guides section too.",
+        text: "Semua paket sudah termasuk pembuatan akun Google My Business (Google Maps) supaya usaha Anda lebih mudah ditemukan warga sekitar. Paket Growth dan Premium Custom juga dapat setup Google Search Console dan Google Analytics untuk memantau pengunjung website.\n\nAda juga artikel gratis cara daftar usaha AC di Google Maps di halaman Panduan.",
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Bedanya Basic dan Growth?", "Lihat harga paket"] : ["Basic vs Growth?", "See pricing"],
+        quickReplies: ["Bedanya Basic dan Growth?", "Lihat harga paket"],
       };
 
     case "process": {
-      const steps = PROCESS_STEPS_BY_LANG[lang];
+      const steps = PROCESS_STEPS;
       return {
         text: [
-          isId ? `Alur kerjanya ada ${steps.length} langkah:` : `The process has ${steps.length} steps:`,
+          `Alur kerjanya ada ${steps.length} langkah:`,
           // Judul langkah di website ditulis dari sudut pandang Nanang ("Saya Kerjakan..."),
           // sedangkan di chat yang bicara adalah asisten, jadi "Saya" diganti "Mas Nanang".
-          ...steps.map((step, index) => `${index + 1}. ${isId ? step.title.replace(/^Saya\s/, "Mas Nanang ") : step.title}`),
+          ...steps.map((step, index) => `${index + 1}. ${step.title.replace(/^Saya\s/, "Mas Nanang ")}`),
           "",
-          isId
-            ? "Langkah pertamanya cukup chat Mas Nanang lewat tombol WhatsApp di bawah."
-            : "Step one is simply messaging Nanang with the WhatsApp button below.",
+          "Langkah pertamanya cukup chat Mas Nanang lewat tombol WhatsApp di bawah.",
         ].join("\n"),
         suggestWhatsApp: true,
-        quickReplies: isId ? ["Data apa yang perlu disiapkan?", "Cara pembayaran"] : ["What do you need from me?", "Payment options"],
+        quickReplies: ["Data apa yang perlu disiapkan?", "Cara pembayaran"],
       };
     }
 
     case "portfolio":
       return {
-        text: isId
-          ? "Contoh tampilannya bisa dilihat di bagian Karya di halaman ini. Itu contoh desain dan demo, nanti nama usaha, warna, foto, dan daftar tarifnya disesuaikan penuh dengan usaha Anda."
-          : "You can browse sample designs in the Work section on this page. They're demos and design concepts, and your site gets fully customized with your own branding, photos, and pricing.",
+        text: "Contoh tampilannya bisa dilihat di bagian Karya di halaman ini. Itu contoh desain dan demo, nanti nama usaha, warna, foto, dan daftar tarifnya disesuaikan penuh dengan usaha Anda.",
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Lihat harga paket", "Berapa lama jadinya?"] : ["See pricing", "How long does it take?"],
+        quickReplies: ["Lihat harga paket", "Berapa lama jadinya?"],
       };
 
-    case "international": {
-      const usdList = PLANS_BY_LANG.en.map((plan) => `${plan.name} ${planPrice(plan, "en")}`).join(", ");
+    case "location":
       return {
-        text: isId
-          ? `Bisa. Semua koordinasi lewat WhatsApp, jadi usaha Anda di kota mana pun tetap bisa dilayani. Untuk usaha AC atau HVAC di luar negeri, tersedia versi bahasa Inggris dengan harga dalam USD: ${usdList}.`
-          : `Yes. Everything runs over WhatsApp, so Nanang works with HVAC and AC companies anywhere. Packages: ${usdList}.`,
+        text: "Bisa. Semua koordinasi lewat WhatsApp, jadi usaha service AC di kota mana pun di Indonesia tetap bisa dilayani tanpa harus ketemu langsung. Untuk saat ini NanangDigital fokus melayani usaha di Indonesia dengan harga dalam Rupiah.",
         suggestWhatsApp: true,
         quickReplies: starters,
       };
-    }
 
     case "chatbot":
       return {
-        text: isId
-          ? "Iya, saya asisten AI di website ini. Fitur Live Chat AI seperti ini juga sudah termasuk di semua paket, jadi website usaha AC Anda nanti bisa menjawab pertanyaan calon pelanggan kapan saja."
-          : "Yes, I'm the AI assistant on this site. An AI Live Chat like this one is included in every package, so your HVAC website can answer customer questions around the clock.",
+        text: "Iya, saya asisten AI di website ini. Fitur Live Chat AI seperti ini juga sudah termasuk di semua paket, jadi website usaha AC Anda nanti bisa menjawab pertanyaan calon pelanggan kapan saja.",
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Lihat harga paket", "Bedanya Basic dan Growth?"] : ["See pricing", "Basic vs Growth?"],
+        quickReplies: ["Lihat harga paket", "Bedanya Basic dan Growth?"],
       };
 
     case "bonus":
       return {
         text: [
-          isId ? "Semua paket dapat bonus gratis:" : "Every package comes with free bonuses:",
-          ...BONUSES_BY_LANG[lang].map((bonus) => `- ${bonus.title}`),
+          "Semua paket dapat bonus gratis:",
+          ...BONUSES.map((bonus) => `- ${bonus.title}`),
         ].join("\n"),
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Lihat harga paket", "Cara pesan"] : ["See pricing", "How to get started"],
+        quickReplies: ["Lihat harga paket", "Cara pesan"],
       };
 
     case "included":
       return {
-        text: faqAnswer(lang, "paket"),
+        text: faqAnswer("paket"),
         suggestWhatsApp: false,
-        quickReplies: isId ? ["Lihat harga paket", "Bedanya Basic dan Growth?"] : ["See pricing", "Basic vs Growth?"],
+        quickReplies: ["Lihat harga paket", "Bedanya Basic dan Growth?"],
       };
 
     case "contact":
       return {
-        text: isId
-          ? "Tentu, Mas Nanang bisa langsung dihubungi lewat WhatsApp. Tekan tombol hijau di bawah, nanti ada form singkat supaya pesan Anda langsung rapi."
-          : "Of course. You can reach Nanang directly on WhatsApp. Tap the green button below and a quick form will format your message for you.",
+        text: "Tentu, Mas Nanang bisa langsung dihubungi lewat WhatsApp. Tekan tombol hijau di bawah, nanti ada form singkat supaya pesan Anda langsung rapi.",
         suggestWhatsApp: true,
         quickReplies: [],
       };
 
     case "thanks":
       return {
-        text: isId
-          ? "Sama-sama! Kalau masih ada yang mau ditanyakan, tanya saja. Kalau sudah siap, tombol WhatsApp di bawah langsung terhubung ke Mas Nanang."
-          : "You're welcome! Ask me anything else anytime. When you're ready, the WhatsApp button below connects you straight to Nanang.",
+        text: "Sama-sama! Kalau masih ada yang mau ditanyakan, tanya saja. Kalau sudah siap, tombol WhatsApp di bawah langsung terhubung ke Mas Nanang.",
         suggestWhatsApp: true,
         quickReplies: [],
       };
 
     default: {
-      const faq = matchFaq(text, lang);
+      const faq = matchFaq(text);
       if (faq) {
         return { text: faq, suggestWhatsApp: true, quickReplies: starters };
       }
       return {
-        text: isId
-          ? "Maaf, untuk pertanyaan itu saya belum punya jawaban pastinya. Supaya infonya tidak keliru, langsung tanya Mas Nanang lewat tombol WhatsApp di bawah, atau pilih salah satu topik ini:"
-          : "Sorry, I don't have a confirmed answer for that one. To get accurate info, ask Nanang with the WhatsApp button below, or pick one of these topics:",
+        text: "Maaf, untuk pertanyaan itu saya belum punya jawaban pastinya. Supaya infonya tidak keliru, langsung tanya Mas Nanang lewat tombol WhatsApp di bawah, atau pilih salah satu topik ini:",
         suggestWhatsApp: true,
         quickReplies: starters,
       };
@@ -591,9 +529,9 @@ function buildReply(intent: IntentId | null, text: string, lang: Locale, scores:
 }
 
 /** Jawaban instan dari basis pengetahuan website (tanpa memanggil AI). */
-export function getLocalReply(message: string, lang: Locale): LocalReply {
+export function getLocalReply(message: string): LocalReply {
   const normalizedText = normalize(message);
   const scores = scoreIntents(normalizedText);
   const intent = pickIntent(scores);
-  return buildReply(intent, message, lang, scores);
+  return buildReply(intent, message, scores);
 }

@@ -1,40 +1,29 @@
 import { ArrowUpRight } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import { SERVICES_BY_LANG } from "../data/services";
-import { useLanguage } from "../i18n/LanguageContext";
+import { SERVICES } from "../data/services";
 
 export default function LayananSection() {
-  const { lang } = useLanguage();
-  const services = SERVICES_BY_LANG[lang];
+  const services = SERVICES;
 
   return (
     <section
       id="layanan"
-      aria-label={lang === "id" ? "Layanan NanangDigital" : "NanangDigital services"}
+      aria-label="Layanan NanangDigital"
       className="relative py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="05"
-          eyebrow={lang === "id" ? "Cakupan Pengerjaan" : "What We Deliver"}
+          eyebrow="Cakupan Pengerjaan"
           title={
-            lang === "id" ? (
-              <>
-                Dari Halaman Website Sampai <span className="text-accent">Setting Iklan Lokal</span>,
-                Bisa Sekalian.
-              </>
-            ) : (
-              <>
-                From High-Speed Websites to <span className="text-accent">Local Lead Ads</span>,
-                Handled End-to-End.
-              </>
-            )
+            <>
+              Dari Halaman Website Sampai <span className="text-accent">Setting Iklan Lokal</span>,
+              Bisa Sekalian.
+            </>
           }
           description={
-            lang === "id"
-              ? "Mau mulai dari punya website dulu boleh, mau langsung sekalian dipasangin iklan Facebook & Instagram juga siap."
-              : "Start with a conversion-ready HVAC website alone, or bundle it with local Facebook & Instagram lead ads right out of the gate."
+            "Mau mulai dari punya website dulu boleh, mau langsung sekalian dipasangin iklan Facebook & Instagram juga siap."
           }
         />
 
@@ -67,9 +56,7 @@ export default function LayananSection() {
                 <a
                   href="#paket"
                   aria-label={
-                    lang === "id"
-                      ? `Lihat paket untuk ${service.title}`
-                      : `View packages for ${service.title}`
+                    `Lihat paket untuk ${service.title}`
                   }
                   className="inline-flex h-11 w-11 items-center justify-center justify-self-start rounded-full border border-line text-mist transition-all duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-[#04140c] md:justify-self-end"
                 >

@@ -2,19 +2,17 @@ import { Check } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { PLANS_BY_LANG, PRICING_NOTES_BY_LANG } from "../data/plans";
+import { PLANS, PRICING_NOTES } from "../data/plans";
 import { waUrl } from "../data/business";
-import { useLanguage } from "../i18n/LanguageContext";
 
 export default function PricingSection() {
-  const { lang } = useLanguage();
-  const plans = PLANS_BY_LANG[lang];
-  const notes = PRICING_NOTES_BY_LANG[lang];
+  const plans = PLANS;
+  const notes = PRICING_NOTES;
 
   return (
     <section
       id="paket"
-      aria-label={lang === "id" ? "Pilihan paket dan harga" : "Packages and pricing"}
+      aria-label="Pilihan paket dan harga"
       className="relative py-24 md:py-32"
     >
       <div
@@ -24,24 +22,15 @@ export default function PricingSection() {
       <div className="section-wrap relative">
         <SectionHeader
           index="07"
-          eyebrow={lang === "id" ? "Paket & Harga" : "Transparent Pricing"}
+          eyebrow={"Paket & Harga"}
           title={
-            lang === "id" ? (
-              <>
-                Paket Jasa Pembuatan Website, <span className="text-accent">Transparan</span> Sesuai
-                Kebutuhan Usaha.
-              </>
-            ) : (
-              <>
-                Clear One-Time Packages Built Around Your{" "}
-                <span className="text-accent">Growth Stage</span>.
-              </>
-            )
+            <>
+              Paket Jasa Pembuatan Website, <span className="text-accent">Transparan</span> Sesuai
+              Kebutuhan Usaha.
+            </>
           }
           description={
-            lang === "id"
-              ? "Tiga pilihan jelas dari Paket Basic, Paket Growth, sampai Paket Premium Custom. Semua sudah termasuk domain & hosting tahun pertama, SSL HTTPS, Live Chat AI, dan Google My Business."
-              : "Choose from Basic ($299), Growth ($449), or Premium Custom. Every package includes 1st-year custom domain & hosting, SSL HTTPS, AI Live Chat, and Google Business Profile setup."
+            "Tiga pilihan jelas dari Paket Basic, Paket Growth, sampai Paket Premium Custom. Semua sudah termasuk domain & hosting tahun pertama, SSL HTTPS, Live Chat AI, dan Google My Business."
           }
         />
 
@@ -57,7 +46,7 @@ export default function PricingSection() {
               >
                 {plan.popular && (
                   <span className="mb-5 inline-flex w-fit items-center gap-2 rounded-full bg-accent px-3.5 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.2em] text-[#04140c]">
-                    {lang === "id" ? "Paling Populer" : "Most Popular"}
+                    Paling Populer
                   </span>
                 )}
 
@@ -72,9 +61,6 @@ export default function PricingSection() {
                   )}
                   <p className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
                     {plan.price}
-                    {lang === "en" && plan.price !== "Custom" && (
-                      <span className="ml-1.5 font-sans text-sm font-medium text-mist">USD</span>
-                    )}
                   </p>
                   <p className="mt-2 text-xs leading-relaxed text-mist">{plan.priceNote}</p>
                 </div>
@@ -115,7 +101,7 @@ export default function PricingSection() {
         {/* Catatan transparan */}
         <Reveal delay={0.3}>
           <ul
-            aria-label={lang === "id" ? "Keterangan paket" : "Package notes"}
+            aria-label="Keterangan paket"
             className="mt-12 grid gap-3 rounded-2xl border border-line bg-surface/60 p-6 sm:grid-cols-3 md:p-7"
           >
             {notes.map((note) => (

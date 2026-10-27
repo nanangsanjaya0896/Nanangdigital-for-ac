@@ -64,7 +64,7 @@ export const CHAT_KNOWLEDGE = ${JSON.stringify(bundle, null, 2)};
     fs.mkdirSync(path.dirname(targetFile), { recursive: true });
     fs.writeFileSync(targetFile, fileContent, "utf8");
     console.log(
-      `✓ Basis pengetahuan Asisten AI diperbarui (versi ${version}, ID ${bundle.id.length} karakter, EN ${bundle.en.length} karakter)`
+      `✓ Basis pengetahuan Asisten AI diperbarui (versi ${version}, ${bundle.id.length} karakter)`
     );
     if (process.env.CF_PAGES || process.env.VERCEL) {
       console.warn(

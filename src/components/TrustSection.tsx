@@ -3,8 +3,6 @@ import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import { BUSINESS } from "../data/business";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 
 interface Commitment {
   icon: LucideIcon;
@@ -12,90 +10,53 @@ interface Commitment {
   description: string;
 }
 
-const COMMITMENTS_BY_LANG: Record<Locale, Commitment[]> = {
-  id: [
-    {
-      icon: UserCheck,
-      title: "Langsung Ditangani Nanang Sendiri",
-      description:
-        "Bukan dilempar ke tim magang. Yang ngobrol di chat sama Anda, itu juga yang ngerjain websitenya sampai beres.",
-    },
-    {
-      icon: FileCheck2,
-      title: "Lunasnya Nanti Kalau Sudah Jadi",
-      description:
-        "Awal pengerjaan cukup DP 50%. Sisa 50% baru dibayar setelah website selesai dan Anda cek sendiri di HP.",
-    },
-    {
-      icon: RefreshCw,
-      title: "Revisi Enak, Tinggal Sebut di Chat",
-      description:
-        "Mau ganti foto, ubah kisaran tarif cuci AC, atau tambah nama perumahan area layanan? Tinggal kabari saja.",
-    },
-    {
-      icon: MessageCircle,
-      title: "Habis Tayang Tidak Ditinggal Kabur",
-      description:
-        "Kalau besok-besok bingung cara pakai atau mau nanya soal iklan, nomor WhatsApp saya tetap aktif dan siap bantu.",
-    },
-  ],
-  en: [
-    {
-      icon: UserCheck,
-      title: "Direct 1-on-1 Execution by Nanang",
-      description:
-        "Never passed off to junior interns. The person chatting with you on WhatsApp builds every line of your site personally.",
-    },
-    {
-      icon: FileCheck2,
-      title: "Pay the Final 50% Only After Approval",
-      description:
-        "Start with a 50% deposit and settle the remaining 50% only once you've tested and approved your live website.",
-    },
-    {
-      icon: RefreshCw,
-      title: "Zero-Friction Revisions via Chat",
-      description:
-        "Want to tweak service pricing, add new cities, or swap photos before launch? Send a quick message and consider it done.",
-    },
-    {
-      icon: MessageCircle,
-      title: "Ongoing Support After Launch Day",
-      description:
-        "I don't vanish after launch. My WhatsApp stays open whenever you want advice scaling ads or adding new offers.",
-    },
-  ],
-};
+const COMMITMENTS: Commitment[] = [
+  {
+    icon: UserCheck,
+    title: "Langsung Ditangani Nanang Sendiri",
+    description:
+      "Bukan dilempar ke tim magang. Yang ngobrol di chat sama Anda, itu juga yang ngerjain websitenya sampai beres.",
+  },
+  {
+    icon: FileCheck2,
+    title: "Lunasnya Nanti Kalau Sudah Jadi",
+    description:
+      "Awal pengerjaan cukup DP 50%. Sisa 50% baru dibayar setelah website selesai dan Anda cek sendiri di HP.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Revisi Enak, Tinggal Sebut di Chat",
+    description:
+      "Mau ganti foto, ubah kisaran tarif cuci AC, atau tambah nama perumahan area layanan? Tinggal kabari saja.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Habis Tayang Tidak Ditinggal Kabur",
+    description:
+      "Kalau besok-besok bingung cara pakai atau mau nanya soal iklan, nomor WhatsApp saya tetap aktif dan siap bantu.",
+  },
+];
 
 export default function TrustSection() {
-  const { lang } = useLanguage();
-  const commitments = COMMITMENTS_BY_LANG[lang];
+  const commitments = COMMITMENTS;
 
   return (
     <section
       id="komitmen"
-      aria-label={lang === "id" ? "Komitmen kerja NanangDigital" : "Our working commitments"}
+      aria-label="Komitmen kerja NanangDigital"
       className="relative border-y border-line bg-ink-soft py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="10"
-          eyebrow={lang === "id" ? "Enaknya Kerja Bareng" : "Zero-Risk Guarantee"}
+          eyebrow="Enaknya Kerja Bareng"
           title={
-            lang === "id" ? (
-              <>
-                Transparan dari Awal, <span className="text-accent">Aman Sampai Beres</span>.
-              </>
-            ) : (
-              <>
-                Straightforward Terms, <span className="text-accent">Protected From Day One</span>.
-              </>
-            )
+            <>
+              Transparan dari Awal, <span className="text-accent">Aman Sampai Beres</span>.
+            </>
           }
           description={
-            lang === "id"
-              ? `Saya tidak mengarang cerita muluk-muluk. Ini empat hal pasti yang selalu saya pegang tiap mengerjakan website klien di ${BUSINESS.brand}.`
-              : `No inflated agency promises or multi-year lock-in contracts. Just four rock-solid commitments on every ${BUSINESS.brand} project.`
+            `Saya tidak mengarang cerita muluk-muluk. Ini empat hal pasti yang selalu saya pegang tiap mengerjakan website klien di ${BUSINESS.brand}.`
           }
         />
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import SectionHeader from "./SectionHeader";
@@ -6,16 +6,14 @@ import Reveal from "./Reveal";
 import ProjectStack from "./ProjectStack";
 import ProjectCard from "./ProjectCard";
 import ProjectDetailModal from "./ProjectDetailModal";
-import { PROJECTS_BY_LANG, PROJECT_TYPE_LABEL_BY_LANG } from "../data/projects";
+import { PROJECTS, PROJECT_TYPE_LABEL } from "../data/projects";
 import type { Project } from "../data/projects";
-import { useLanguage } from "../i18n/LanguageContext";
 
 const ALL_KEY = "__ALL__";
 
 export default function WorksSection() {
-  const { lang } = useLanguage();
-  const projects = PROJECTS_BY_LANG[lang];
-  const typeLabels = PROJECT_TYPE_LABEL_BY_LANG[lang];
+  const projects = PROJECTS;
+  const typeLabels = PROJECT_TYPE_LABEL;
   const categories = Array.from(new Set(projects.map((p) => p.category)));
 
   const [category, setCategory] = useState<string>(ALL_KEY);
@@ -23,11 +21,6 @@ export default function WorksSection() {
   const [modalId, setModalId] = useState<string | null>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const detailBtnRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    setCategory(ALL_KEY);
-    setActiveIdx(0);
-  }, [lang]);
 
   const filtered =
     category === ALL_KEY ? projects : projects.filter((p) => p.category === category);
@@ -57,38 +50,26 @@ export default function WorksSection() {
   return (
     <section
       id="karya"
-      aria-label={lang === "id" ? "Karya dan contoh desain" : "Sample work & layouts"}
+      aria-label="Karya dan contoh desain"
       className="relative border-y border-line bg-ink-soft py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="04"
-          eyebrow={lang === "id" ? "Contoh Tampilan" : "Sample Layouts"}
+          eyebrow="Contoh Tampilan"
           title={
-            lang === "id" ? (
-              <>
-                Intip Gambaran <span className="text-accent">Website & Iklan</span> Usaha AC.
-              </>
-            ) : (
-              <>
-                Explore <span className="text-accent">Website & Ad Layouts</span> Built for HVAC.
-              </>
-            )
+            <>
+              Intip Gambaran <span className="text-accent">Website & Iklan</span> Usaha AC.
+            </>
           }
-          description={
-            lang === "id"
-              ? "Beberapa contoh susunan halaman dan tampilan iklan yang bisa disesuaikan warnanya, daftar layanannya, sampai foto tim teknisi usaha Anda."
-              : "Browse real layout styles and local ad concepts ready to be tailored with your company brand, service areas, pricing, and technician photos."
-          }
+          description="Beberapa contoh susunan halaman dan tampilan iklan yang bisa disesuaikan warnanya, daftar layanannya, sampai foto tim teknisi usaha Anda."
         />
 
         {/* Filter kategori */}
         <Reveal delay={0.1}>
           <div
             role="group"
-            aria-label={
-              lang === "id" ? "Saring karya berdasarkan kategori" : "Filter samples by category"
-            }
+            aria-label="Saring karya berdasarkan kategori"
             className="mt-12 flex flex-wrap gap-2"
           >
             <button
@@ -101,7 +82,7 @@ export default function WorksSection() {
                   : "border border-line text-mist hover:border-accent/40 hover:text-white"
               }`}
             >
-              {lang === "id" ? "Semua" : "All"}
+              Semua
             </button>
             {categories.map((cat) => {
               const isActive = category === cat;
@@ -137,7 +118,7 @@ export default function WorksSection() {
 
             <AnimatePresence mode="wait">
               <motion.div
-                key={`${lang}-${active.id}`}
+                key={active.id}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -12 }}
@@ -163,7 +144,7 @@ export default function WorksSection() {
 
                 <ul
                   className="mt-6 flex flex-wrap gap-2"
-                  aria-label={lang === "id" ? "Tag karya" : "Sample tags"}
+                  aria-label="Tag karya"
                 >
                   {active.tags.map((tag) => (
                     <li
@@ -181,7 +162,7 @@ export default function WorksSection() {
                   onClick={() => openModal(active, detailBtnRef.current ?? document.body)}
                   className="btn-ghost mt-8 text-sm"
                 >
-                  {lang === "id" ? "Lihat Detail Karya" : "Inspect Full Layout"}
+                  Lihat Detail Karya
                   <ArrowUpRight className="h-4 w-4 text-accent" aria-hidden="true" />
                 </button>
               </motion.div>
@@ -194,15 +175,11 @@ export default function WorksSection() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <h3 className="font-display text-xl font-bold tracking-tight md:text-2xl">
               {category === ALL_KEY
-                ? lang === "id"
-                  ? "Semua Contoh Tampilan"
-                  : "All Sample Layouts"
+                ? "Semua Contoh Tampilan"
                 : category}
             </h3>
             <p className="text-sm text-mist">
-              {lang === "id"
-                ? `${filtered.length} contoh tersedia. Klik kartu untuk lihat rincian isinya`
-                : `${filtered.length} layouts available. Click any card for full details`}
+              {`${filtered.length} contoh tersedia. Klik kartu untuk lihat rincian isinya`}
             </p>
           </div>
 

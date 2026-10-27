@@ -1,60 +1,35 @@
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, ArrowUpRight, Globe } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 
-const NAV_LINKS_BY_LANG: Record<
-  Locale,
-  readonly { readonly id: string; readonly label: string }[]
-> = {
-  id: [
-    { id: "beranda", label: "Beranda" },
-    { id: "tentang", label: "Tentang" },
-    { id: "karya", label: "Karya" },
-    { id: "layanan", label: "Layanan" },
-    { id: "paket", label: "Paket Harga" },
-    { id: "faq", label: "FAQ" },
-  ],
-  en: [
-    { id: "beranda", label: "Home" },
-    { id: "tentang", label: "About" },
-    { id: "karya", label: "Work" },
-    { id: "layanan", label: "Services" },
-    { id: "paket", label: "Pricing" },
-    { id: "faq", label: "FAQ" },
-  ],
-};
+const NAV_LINKS: readonly { readonly id: string; readonly label: string }[] = [
+  { id: "beranda", label: "Beranda" },
+  { id: "tentang", label: "Tentang" },
+  { id: "karya", label: "Karya" },
+  { id: "layanan", label: "Layanan" },
+  { id: "paket", label: "Paket Harga" },
+  { id: "faq", label: "FAQ" },
+];
 
-const MOBILE_EXTRA_BY_LANG: Record<
-  Locale,
-  readonly { readonly id: string; readonly label: string }[]
-> = {
-  id: [
-    { id: "proses", label: "Proses" },
-    { id: "kontak", label: "Kontak" },
-  ],
-  en: [
-    { id: "proses", label: "Process" },
-    { id: "kontak", label: "Contact" },
-  ],
-};
+const MOBILE_EXTRA: readonly { readonly id: string; readonly label: string }[] = [
+  { id: "proses", label: "Proses" },
+  { id: "kontak", label: "Kontak" },
+];
 
-const NAV_ID_LIST = NAV_LINKS_BY_LANG.id.map((link) => link.id);
+const NAV_ID_LIST = NAV_LINKS.map((link) => link.id);
 
 export default function Navbar() {
-  const { lang, setLang } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const active = useActiveSection(NAV_ID_LIST);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const navLinks = NAV_LINKS_BY_LANG[lang];
-  const mobileExtraLinks = MOBILE_EXTRA_BY_LANG[lang];
+  const navLinks = NAV_LINKS;
+  const mobileExtraLinks = MOBILE_EXTRA;
 
   useScrollLock(menuOpen);
   useFocusTrap(menuRef, menuOpen, () => closeMenu(true));
@@ -77,7 +52,7 @@ export default function Navbar() {
         href="#konten"
         className="sr-only z-[100] rounded-full bg-accent px-5 py-3 font-semibold text-[#04140c] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
       >
-        {lang === "id" ? "Lewati ke konten utama" : "Skip to main content"}
+        Lewati ke konten utama
       </a>
 
       <header
@@ -87,15 +62,11 @@ export default function Navbar() {
             : "border-transparent bg-[#0f1115]/40 backdrop-blur-md"
         }`}
       >
-        {/* Grid 3 kolom seimbang kiri (Logo), tengah (Menu), kanan (Pilihan Bahasa) */}
+        {/* Grid 3 kolom seimbang: kiri (Logo), tengah (Menu), kanan (tombol menu seluler) */}
         <div className="section-wrap flex h-20 items-center justify-between gap-4 lg:grid lg:h-[5.5rem] lg:grid-cols-[1fr_auto_1fr]">
           <a
             href="#beranda"
-            aria-label={
-              lang === "id"
-                ? "NanangDigital, kembali ke beranda"
-                : "NanangDigital, back to top"
-            }
+            aria-label="NanangDigital, kembali ke beranda"
             className="shrink-0 py-2 lg:justify-self-start"
           >
             <Logo className="text-xl md:text-2xl" />
@@ -103,7 +74,7 @@ export default function Navbar() {
 
           {/* Menu desktop rata tengah sehingga kiri & kanan tetap seimbang */}
           <nav
-            aria-label={lang === "id" ? "Navigasi utama" : "Main navigation"}
+            aria-label="Navigasi utama"
             className="hidden lg:block lg:justify-self-center"
           >
             <ul className="flex items-center gap-8">
@@ -129,47 +100,15 @@ export default function Navbar() {
             </ul>
           </nav>
 
-          {/* Kolom kanan: Tombol Bahasa ID / EN + Hamburger Seluler */}
+          {/* Kolom kanan: tombol menu seluler (di desktop kolom ini kosong agar menu tetap di tengah) */}
           <div className="flex items-center gap-2.5 lg:justify-self-end">
-            <div
-              role="group"
-              aria-label={lang === "id" ? "Pilih bahasa tampilan" : "Choose language"}
-              className="inline-flex items-center rounded-full border border-line bg-white/[0.03] p-1"
-            >
-              <Globe className="ml-2 mr-1 hidden h-3.5 w-3.5 text-accent sm:block" aria-hidden="true" />
-              <button
-                type="button"
-                onClick={() => setLang("id")}
-                aria-pressed={lang === "id"}
-                className={`rounded-full px-2.5 py-1.5 text-xs font-bold tracking-wider transition-all ${
-                  lang === "id"
-                    ? "bg-accent text-[#04140c] shadow-[0_0_12px_rgba(0,223,143,0.45)]"
-                    : "text-mist hover:text-white"
-                }`}
-              >
-                ID
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("en")}
-                aria-pressed={lang === "en"}
-                className={`rounded-full px-2.5 py-1.5 text-xs font-bold tracking-wider transition-all ${
-                  lang === "en"
-                    ? "bg-accent text-[#04140c] shadow-[0_0_12px_rgba(0,223,143,0.45)]"
-                    : "text-mist hover:text-white"
-                }`}
-              >
-                EN
-              </button>
-            </div>
-
             <button
               ref={hamburgerRef}
               type="button"
               onClick={() => setMenuOpen(true)}
               aria-expanded={menuOpen}
               aria-controls="menu-seluler"
-              aria-label={lang === "id" ? "Buka menu navigasi" : "Open navigation menu"}
+              aria-label="Buka menu navigasi"
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent lg:hidden"
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
@@ -185,7 +124,7 @@ export default function Navbar() {
           id="menu-seluler"
           role="dialog"
           aria-modal="true"
-          aria-label={lang === "id" ? "Menu navigasi" : "Navigation menu"}
+          aria-label="Menu navigasi"
           className="fixed inset-0 z-[70] flex flex-col lg:hidden"
         >
           <div className="absolute inset-0 bg-[#0d1116]/95 backdrop-blur-2xl" aria-hidden="true" />
@@ -199,7 +138,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => closeMenu(true)}
-              aria-label={lang === "id" ? "Tutup menu" : "Close menu"}
+              aria-label="Tutup menu"
               data-autofocus
               className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-white transition-colors hover:border-accent/60 hover:text-accent"
             >
@@ -208,7 +147,7 @@ export default function Navbar() {
           </div>
 
           <nav
-            aria-label={lang === "id" ? "Navigasi seluler" : "Mobile navigation"}
+            aria-label="Navigasi seluler"
             className="relative flex-1 overflow-y-auto px-6 pb-10 sm:px-8"
           >
             <ul className="flex flex-col gap-1 pt-6">

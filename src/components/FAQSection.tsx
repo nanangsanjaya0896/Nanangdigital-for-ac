@@ -3,18 +3,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import { FAQ_BY_LANG } from "../data/faq";
-import { useLanguage } from "../i18n/LanguageContext";
+import { FAQ_ITEMS } from "../data/faq";
 
 export default function FAQSection() {
-  const { lang } = useLanguage();
-  const faqItems = FAQ_BY_LANG[lang];
+  const faqItems = FAQ_ITEMS;
   const [openId, setOpenId] = useState<string | null>(faqItems[0]?.id ?? null);
 
   return (
     <section
       id="faq"
-      aria-label={lang === "id" ? "Pertanyaan yang sering diajukan" : "Frequently asked questions"}
+      aria-label="Pertanyaan yang sering diajukan"
       className="relative py-24 md:py-32"
     >
       <div className="section-wrap">
@@ -22,23 +20,13 @@ export default function FAQSection() {
           <div className="lg:sticky lg:top-28 lg:self-start">
             <SectionHeader
               index="11"
-              eyebrow={lang === "id" ? "Tanya Jawab" : "FAQ"}
+              eyebrow="Tanya Jawab"
               title={
-                lang === "id" ? (
-                  <>
-                    Hal yang Paling Sering <span className="text-accent">Ditanyakan</span>.
-                  </>
-                ) : (
-                  <>
-                    Common <span className="text-accent">Questions</span> Answered Straight.
-                  </>
-                )
+                <>
+                  Hal yang Paling Sering <span className="text-accent">Ditanyakan</span>.
+                </>
               }
-              description={
-                lang === "id"
-                  ? "Masih ada yang belum terjawab di sini? Langsung lempar pertanyaan di chat WhatsApp saja, santai."
-                  : "Have another question about your market or custom requirements? Send a quick message on WhatsApp anytime."
-              }
+              description="Masih ada yang belum terjawab di sini? Langsung lempar pertanyaan di chat WhatsApp saja, santai."
             />
           </div>
 

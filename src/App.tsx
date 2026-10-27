@@ -20,14 +20,11 @@ import AIChatWidget from "./components/AIChatWidget";
 import PreWhatsAppModal from "./components/PreWhatsAppModal";
 import PanduanPage from "./components/PanduanPage";
 import { findArticleBySlug } from "./data/articles";
-import { LanguageProvider, detectInitialLocale } from "./i18n/LanguageContext";
-import type { Locale } from "./i18n/LanguageContext";
 import { captureFbClickId } from "./utils/tracking";
 
 export interface AppProps {
-  /** Digunakan oleh skrip prerender statis untuk `/`, `/en/`, `/panduan/`, dan `/panduan/<slug>/` */
+  /** Digunakan oleh skrip prerender statis untuk `/`, `/panduan/`, dan `/panduan/<slug>/` */
   initialPath?: string;
-  initialLang?: Locale;
 }
 
 function resolveRoute(pathname: string): { isPanduan: boolean; slug?: string } {
@@ -42,7 +39,7 @@ function resolveRoute(pathname: string): { isPanduan: boolean; slug?: string } {
   return { isPanduan: false };
 }
 
-export default function App({ initialPath, initialLang }: AppProps = {}) {
+export default function App({ initialPath }: AppProps = {}) {
   const [currentPath] = useState<string>(() => {
     if (initialPath) return initialPath;
     if (typeof window !== "undefined") return window.location.pathname;
@@ -51,7 +48,6 @@ export default function App({ initialPath, initialLang }: AppProps = {}) {
 
   const route = resolveRoute(currentPath);
   const matchedArticle = route.slug ? findArticleBySlug(route.slug) : undefined;
-  const resolvedInitialLang = detectInitialLocale(initialLang, currentPath);
 
   useEffect(() => {
     captureFbClickId();
@@ -71,36 +67,34 @@ export default function App({ initialPath, initialLang }: AppProps = {}) {
   }, []);
 
   return (
-    <LanguageProvider initialLang={resolvedInitialLang} pathname={currentPath}>
-      <MotionConfig reducedMotion="user">
-        {route.isPanduan ? (
-          <PanduanPage article={matchedArticle} slug={route.slug} />
-        ) : (
-          <>
-            <Navbar />
-            <main id="konten" tabIndex={-1}>
-              <Hero />
-              <ProblemSection />
-              <SolutionSection />
-              <FounderSection />
-              <WorksSection />
-              <LayananSection />
-              <FeaturesSection />
-              <PricingSection />
-              <ProcessSection />
-              <BonusSection />
-              <TrustSection />
-              <FAQSection />
-              <FinalCTASection />
-            </main>
-            <Footer />
-          </>
-        )}
+    <MotionConfig reducedMotion="user">
+      {route.isPanduan ? (
+        <PanduanPage article={matchedArticle} slug={route.slug} />
+      ) : (
+        <>
+          <Navbar />
+          <main id="konten" tabIndex={-1}>
+            <Hero />
+            <ProblemSection />
+            <SolutionSection />
+            <FounderSection />
+            <WorksSection />
+            <LayananSection />
+            <FeaturesSection />
+            <PricingSection />
+            <ProcessSection />
+            <BonusSection />
+            <TrustSection />
+            <FAQSection />
+            <FinalCTASection />
+          </main>
+          <Footer />
+        </>
+      )}
 
-        <StickyWhatsApp />
-        <AIChatWidget />
-        <PreWhatsAppModal />
-      </MotionConfig>
-    </LanguageProvider>
+      <StickyWhatsApp />
+      <AIChatWidget />
+      <PreWhatsAppModal />
+    </MotionConfig>
   );
 }
