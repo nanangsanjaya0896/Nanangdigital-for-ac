@@ -2,12 +2,11 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
 import type { Project } from "../data/projects";
-import { PROJECT_TYPE_LABEL_BY_LANG } from "../data/projects";
+import { PROJECT_TYPE_LABEL } from "../data/projects";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { waUrl } from "../data/business";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
-import { useLanguage } from "../i18n/LanguageContext";
 
 interface ProjectDetailModalProps {
   project: Project;
@@ -15,17 +14,14 @@ interface ProjectDetailModalProps {
 }
 
 export default function ProjectDetailModal({ project, onClose }: ProjectDetailModalProps) {
-  const { lang } = useLanguage();
   const panelRef = useRef<HTMLDivElement>(null);
-  const typeLabel = PROJECT_TYPE_LABEL_BY_LANG[lang][project.type];
+  const typeLabel = PROJECT_TYPE_LABEL[project.type];
 
   useScrollLock(true);
   useFocusTrap(panelRef, true, onClose);
 
   const waPrompt =
-    lang === "id"
-      ? `Halo NanangDigital, saya melihat contoh ${typeLabel.toLowerCase()} "${project.title}" di website Anda. Saya ingin diskusi tampilan serupa untuk bisnis service AC saya.`
-      : `Hi Nanang, I liked the "${project.title}" (${typeLabel}) layout on your site and would like a similar website built for my HVAC business.`;
+    `Halo NanangDigital, saya melihat contoh ${typeLabel.toLowerCase()} "${project.title}" di website Anda. Saya ingin diskusi tampilan serupa untuk bisnis service AC saya.`;
 
   return (
     <motion.div
@@ -82,7 +78,7 @@ export default function ProjectDetailModal({ project, onClose }: ProjectDetailMo
             <button
               type="button"
               onClick={onClose}
-              aria-label={lang === "id" ? "Tutup detail karya" : "Close preview modal"}
+              aria-label="Tutup detail karya"
               data-autofocus
               className="absolute right-5 top-5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/60 text-white backdrop-blur transition-colors hover:border-accent/60 hover:text-accent"
             >
@@ -111,9 +107,7 @@ export default function ProjectDetailModal({ project, onClose }: ProjectDetailMo
             {/* Ruang lingkup */}
             <div className="mt-8 rounded-2xl border border-line bg-white/[0.02] p-5 md:p-6">
               <h4 className="text-xs font-semibold uppercase tracking-[0.25em] text-mist">
-                {lang === "id"
-                  ? "Yang ditampilkan pada contoh ini"
-                  : "Highlights in this layout"}
+                Yang ditampilkan pada contoh ini
               </h4>
               <ul className="mt-4 space-y-3">
                 {project.scope.map((point) => (
@@ -128,7 +122,7 @@ export default function ProjectDetailModal({ project, onClose }: ProjectDetailMo
             {/* Tags */}
             <ul
               className="mt-6 flex flex-wrap gap-2"
-              aria-label={lang === "id" ? "Tag karya" : "Layout tags"}
+              aria-label="Tag karya"
             >
               {project.tags.map((tag) => (
                 <li
@@ -149,14 +143,10 @@ export default function ProjectDetailModal({ project, onClose }: ProjectDetailMo
                 className="btn-primary text-sm"
               >
                 <WhatsAppIcon className="h-4 w-4" />
-                {lang === "id"
-                  ? "Diskusikan tampilan seperti ini"
-                  : "Build a layout like this"}
+                Diskusikan tampilan seperti ini
               </a>
               <p className="text-xs leading-relaxed text-mist">
-                {lang === "id"
-                  ? `Gambar ini merupakan ${typeLabel.toLowerCase()} referensi desain yang siap disesuaikan penuh dengan identitas usaha AC Anda.`
-                  : `This ${typeLabel.toLowerCase()} layout is fully customized with your company name, brand colors, service areas, and photos.`}
+                {`Gambar ini merupakan ${typeLabel.toLowerCase()} referensi desain yang siap disesuaikan penuh dengan identitas usaha AC Anda.`}
               </p>
             </div>
           </div>

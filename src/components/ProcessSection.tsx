@@ -1,38 +1,26 @@
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
-import { useLanguage } from "../i18n/LanguageContext";
-import { PROCESS_STEPS_BY_LANG } from "../data/process";
+import { PROCESS_STEPS } from "../data/process";
 
 export default function ProcessSection() {
-  const { lang } = useLanguage();
-  const steps = PROCESS_STEPS_BY_LANG[lang];
+  const steps = PROCESS_STEPS;
 
   return (
     <section
       id="proses"
-      aria-label={lang === "id" ? "Alur pengerjaan" : "Project workflow"}
+      aria-label="Alur pengerjaan"
       className="relative border-y border-line bg-ink-soft py-24 md:py-32"
     >
       <div className="section-wrap">
         <SectionHeader
           index="08"
-          eyebrow={lang === "id" ? "Tahapan Kerja" : "Simple 5-Step Process"}
+          eyebrow="Tahapan Kerja"
           title={
-            lang === "id" ? (
-              <>
-                Lima Langkah Jelas, <span className="text-accent">3 Sampai 5 Hari</span> Sudah Jadi.
-              </>
-            ) : (
-              <>
-                Five Clear Steps, Live in <span className="text-accent">3 to 5 Business Days</span>.
-              </>
-            )
+            <>
+              Lima Langkah Jelas, <span className="text-accent">3 Sampai 5 Hari</span> Sudah Jadi.
+            </>
           }
-          description={
-            lang === "id"
-              ? "Tidak perlu rapat bertele-tele. Semua koordinasi cukup lewat chat WhatsApp di sela waktu kerja Anda."
-              : "Zero long Zoom calls or complicated onboarding forms. Everything runs smoothly right over WhatsApp around your schedule."
-          }
+          description="Tidak perlu rapat bertele-tele. Semua koordinasi cukup lewat chat WhatsApp di sela waktu kerja Anda."
         />
 
         <div className="relative mt-16">

@@ -2,32 +2,19 @@ import { useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, ArrowRight, Move } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { BUSINESS, getGeneralWaLink } from "../data/business";
+import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 import { useReducedMotion } from "../hooks/useReducedMotion";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 
-const MARQUEE_ITEMS_BY_LANG: Record<Locale, string[]> = {
-  id: [
-    "Website Usaha Service AC",
-    "Setup Meta Ads Lokal",
-    "Teks Layanan Jelas",
-    "Nyaman Dibuka dari HP",
-    "Tombol Chat WhatsApp",
-    "Gratis Domain & Hosting 1 Tahun",
-  ],
-  en: [
-    "HVAC Contractor Websites",
-    "Local Meta Lead Ads",
-    "Done-For-You Copywriting",
-    "Fast Mobile UX",
-    "1-Tap WhatsApp & Lead Form",
-    "Free Domain & Hosting Year 1",
-  ],
-};
+const MARQUEE_ITEMS: string[] = [
+  "Website Usaha Service AC",
+  "Setup Meta Ads Lokal",
+  "Teks Layanan Jelas",
+  "Nyaman Dibuka dari HP",
+  "Tombol Chat WhatsApp",
+  "Gratis Domain & Hosting 1 Tahun",
+];
 
 export default function Hero() {
-  const { lang } = useLanguage();
   const reduced = useReducedMotion();
   const [photoFailed, setPhotoFailed] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -38,8 +25,8 @@ export default function Hero() {
     null
   );
 
-  const marqueeItems = MARQUEE_ITEMS_BY_LANG[lang];
-  const waLink = getGeneralWaLink(lang);
+  const marqueeItems = MARQUEE_ITEMS;
+  const waLink = WA_LINK_GENERAL;
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (reduced) return;
@@ -97,7 +84,7 @@ export default function Hero() {
   return (
     <section
       id="beranda"
-      aria-label={lang === "id" ? "Beranda" : "Home"}
+      aria-label="Beranda"
       className="relative overflow-hidden"
     >
       {/* Latar: grid + glow */}
@@ -124,39 +111,22 @@ export default function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>
-            {lang === "id"
-              ? "Khusus Teknisi & Usaha Service AC"
-              : "Built Exclusively for HVAC & AC Contractors"}
+            {"Khusus Teknisi & Usaha Service AC"}
           </p>
 
-          {lang === "id" ? (
-            <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
-              Biar Usaha <span className="text-accent">Service AC</span> Anda Gampang Ditemukan &{" "}
-              <span className="relative inline-block">
-                Dihubungi <span className="text-outline">Pelanggan</span>.
-                <span
-                  aria-hidden="true"
-                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
-                />
-              </span>
-            </h1>
-          ) : (
-            <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
-              Turn Local <span className="text-accent">HVAC Searches</span> Into{" "}
-              <span className="relative inline-block">
-                Booked <span className="text-outline">Service Calls</span>.
-                <span
-                  aria-hidden="true"
-                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
-                />
-              </span>
-            </h1>
-          )}
+          <h1 className="hero-in hero-d2 mt-7 font-display text-[2.35rem] font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.55rem] xl:text-[4rem]">
+            Biar Usaha <span className="text-accent">Service AC</span> Anda Gampang Ditemukan &{" "}
+            <span className="relative inline-block">
+              Dihubungi <span className="text-outline">Pelanggan</span>.
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-gradient-to-r from-accent/70 to-transparent"
+              />
+            </span>
+          </h1>
 
           <p className="hero-in hero-d3 mt-7 max-w-xl text-base leading-relaxed text-mist md:text-lg">
-            {lang === "id"
-              ? "Saya bantu buatkan website yang rapi plus setting iklan Facebook & Instagram untuk usaha service AC Anda. Selesai dalam 3 sampai 5 hari kerja, sudah beres sama domain dan hosting tahun pertama."
-              : "I build fast, conversion-focused websites and local Facebook & Instagram lead campaigns tailored for AC repair and HVAC businesses. Live in 3 to 5 business days with your first-year domain & hosting included."}
+            {"Saya bantu buatkan website yang rapi plus setting iklan Facebook & Instagram untuk usaha service AC Anda. Selesai dalam 3 sampai 5 hari kerja, sudah beres sama domain dan hosting tahun pertama."}
           </p>
 
           <div className="hero-in hero-d4 mt-10 flex flex-wrap items-center gap-4">
@@ -168,10 +138,10 @@ export default function Hero() {
               className="btn-primary"
             >
               <WhatsAppIcon className="h-4 w-4" />
-              {lang === "id" ? "Chat & Konsultasi Gratis" : "Free WhatsApp Consultation"}
+              {"Chat & Konsultasi Gratis"}
             </a>
             <a href="#paket" className="btn-ghost">
-              {lang === "id" ? "Cek Paket Mulai Rp1,5 Jt" : "View Packages from $299"}
+              Cek Paket Mulai Rp1,5 Jt
               <ArrowDown className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
@@ -181,18 +151,14 @@ export default function Hero() {
               href="#karya"
               className="group inline-flex items-center gap-2 py-2 text-sm font-medium text-mist transition-colors hover:text-accent"
             >
-              {lang === "id"
-                ? "Intip contoh tampilan website AC"
-                : "See live HVAC website layouts"}
+              Intip contoh tampilan website AC
               <ArrowRight
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 aria-hidden="true"
               />
             </a>
             <p className="mt-3 text-xs tracking-wide text-mist">
-              {lang === "id"
-                ? "Boleh tanya-tanya dulu santai di WA. Pelunasan 50% baru dibayar setelah website jadi."
-                : "No-pressure chat via WhatsApp. Pay only 50% upfront and the final 50% after you approve the live site."}
+              Boleh tanya-tanya dulu santai di WA. Pelunasan 50% baru dibayar setelah website jadi.
             </p>
           </div>
         </div>
@@ -204,7 +170,7 @@ export default function Hero() {
             className="absolute -right-3 top-24 z-30 hidden items-center gap-2 rounded-full border border-accent/35 bg-surface/95 px-3.5 py-2 text-[0.7rem] font-medium text-mist shadow-lg backdrop-blur lg:top-6 lg:inline-flex"
           >
             <Move className="h-3.5 w-3.5 text-accent" />
-            {lang === "id" ? "Tarik & goyangkan kartu" : "Drag & swing badge"}
+            {"Tarik & goyangkan kartu"}
           </span>
 
           <div className={reduced ? "" : "hero-card-float"}>
@@ -287,7 +253,7 @@ export default function Hero() {
                         src={BUSINESS.founderPhoto.url}
                         srcSet={BUSINESS.founderPhoto.srcSet}
                         sizes={BUSINESS.founderPhoto.sizes}
-                        alt={BUSINESS.founderPhoto.alt[lang]}
+                        alt={BUSINESS.founderPhoto.alt}
                         width={400}
                         height={350}
                         fetchPriority="high"
@@ -324,15 +290,15 @@ export default function Hero() {
 
                 <dl className="relative mt-6 space-y-3 border-t border-line pt-5 text-sm">
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-mist">{lang === "id" ? "Spesialis" : "Specialty"}</dt>
+                    <dt className="text-mist">Spesialis</dt>
                     <dd className="text-right font-medium">
-                      {lang === "id" ? "Website Usaha AC" : "HVAC Websites & Ads"}
+                      Website Usaha AC
                     </dd>
                   </div>
                   <div className="flex items-center justify-between gap-4">
-                    <dt className="text-mist">{lang === "id" ? "Estimasi" : "Turnaround"}</dt>
+                    <dt className="text-mist">Estimasi</dt>
                     <dd className="text-right font-medium text-accent">
-                      {lang === "id" ? "3 - 5 Hari Kerja" : "3 - 5 Business Days"}
+                      3 - 5 Hari Kerja
                     </dd>
                   </div>
                 </dl>
@@ -345,7 +311,7 @@ export default function Hero() {
                   className="relative mt-6 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent to-accent-deep py-3.5 text-sm font-bold text-[#04140c] transition-transform duration-300 hover:scale-[1.03] active:scale-95"
                 >
                   <WhatsAppIcon className="h-4 w-4" />
-                  {lang === "id" ? "NGOBROL DI WHATSAPP" : "CHAT ON WHATSAPP"}
+                  NGOBROL DI WHATSAPP
                 </a>
               </div>
             </div>

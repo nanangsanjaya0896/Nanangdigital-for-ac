@@ -5,8 +5,6 @@ import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS } from "../data/business";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
-import { useLanguage } from "../i18n/LanguageContext";
-import type { Locale } from "../i18n/LanguageContext";
 import {
   generateEventId,
   trackGaEvent,
@@ -27,39 +25,30 @@ interface PlanOption {
   value: number;
 }
 
-const PLAN_OPTIONS_BY_LANG: Record<Locale, PlanOption[]> = {
-  id: [
-    { label: "Paket Basic (Rp1.500.000)", value: 1500000 },
-    { label: "Paket Growth (Rp2.000.000)", value: 2000000 },
-    { label: "Paket Premium Custom", value: 3000000 },
-    { label: "Tanya & Konsultasi Dulu", value: 1500000 },
-  ],
-  en: [
-    { label: "Basic Package ($299 USD)", value: 299 },
-    { label: "Growth Package ($449 USD)", value: 449 },
-    { label: "Premium Custom Package", value: 799 },
-    { label: "Free Discovery Chat First", value: 299 },
-  ],
-};
+const PLAN_OPTIONS: PlanOption[] = [
+  { label: "Paket Basic (Rp1.500.000)", value: 1500000 },
+  { label: "Paket Growth (Rp2.000.000)", value: 2000000 },
+  { label: "Paket Premium Custom", value: 3000000 },
+  { label: "Tanya & Konsultasi Dulu", value: 1500000 },
+];
 
-function inferPlanOption(href: string, explicitPlan: string | null, lang: Locale): string {
-  const options = PLAN_OPTIONS_BY_LANG[lang];
+function inferPlanOption(href: string, explicitPlan: string | null): string {
+  const options = PLAN_OPTIONS;
   const combined = `${explicitPlan || ""} ${decodeURIComponent(href)}`.toLowerCase();
-  if (combined.includes("growth") || combined.includes("2.000.000") || combined.includes("$449")) {
+  if (combined.includes("growth") || combined.includes("2.000.000")) {
     return options[1].label;
   }
   if (combined.includes("premium") || combined.includes("custom")) {
     return options[2].label;
   }
-  if (combined.includes("basic") || combined.includes("1.500.000") || combined.includes("$299")) {
+  if (combined.includes("basic") || combined.includes("1.500.000")) {
     return options[0].label;
   }
   return options[3].label;
 }
 
 export default function PreWhatsAppModal() {
-  const { lang } = useLanguage();
-  const planOptions = PLAN_OPTIONS_BY_LANG[lang];
+  const planOptions = PLAN_OPTIONS;
 
   const [open, setOpen] = useState(false);
   const [targetHref, setTargetHref] = useState("");
@@ -91,12 +80,6 @@ export default function PreWhatsAppModal() {
     }
   }, []);
 
-  // Sinkronkan opsi paket default saat pengguna mengganti bahasa ID <-> EN
-  useEffect(() => {
-    setPlanInterest(PLAN_OPTIONS_BY_LANG[lang][3].label);
-    setErrorMsg("");
-  }, [lang]);
-
   // Delegasi klik global pada seluruh tautan WhatsApp (`wa.me/6285972577637`)
   useEffect(() => {
     const onDocumentClick = (e: MouseEvent) => {
@@ -119,7 +102,7 @@ export default function PreWhatsAppModal() {
         anchor.dataset.trackSource ||
         anchor.closest("section")?.id ||
         "general_whatsapp_cta";
-      const detectedPlan = inferPlanOption(href, anchor.dataset.trackPlan || null, lang);
+      const detectedPlan = inferPlanOption(href, anchor.dataset.trackPlan || null);
 
       setTargetHref(href);
       setClickSource(source);
@@ -130,23 +113,23 @@ export default function PreWhatsAppModal() {
       trackGaEvent("whatsapp_modal_open", {
         lead_source: source,
         plan_interest: detectedPlan,
-        language: lang,
+        language: "id",
       });
     };
 
     document.addEventListener("click", onDocumentClick, true);
     return () => document.removeEventListener("click", onDocumentClick, true);
-  }, [lang]);
+  }, []);
 
   const handleDirectBypass = () => {
     const eventId = generateEventId();
-    const currency = lang === "en" ? "USD" : "IDR";
-    const fallbackValue = lang === "en" ? 299 : 1500000;
+    const currency = "IDR";
+    const fallbackValue = 1500000;
 
     trackGaEvent("whatsapp_click_direct", {
       lead_source: clickSource,
       plan_interest: planInterest,
-      language: lang,
+      language: "id",
     });
     void trackMetaConversion("Contact", {
       eventId,
@@ -166,20 +149,12 @@ export default function PreWhatsAppModal() {
     const trimmedCity = city.trim();
 
     if (trimmedName.length < 2) {
-      setErrorMsg(
-        lang === "id"
-          ? "Mohon isi nama panggilan atau nama usaha AC Anda."
-          : "Please enter your name or HVAC company name."
-      );
+      setErrorMsg("Mohon isi nama panggilan atau nama usaha AC Anda.");
       return;
     }
     const digitCount = trimmedPhone.replace(/\D/g, "").length;
     if (digitCount < 8) {
-      setErrorMsg(
-        lang === "id"
-          ? "Mohon isi nomor WhatsApp aktif (minimal 8 digit) supaya mudah dihubungi kembali."
-          : "Please enter a valid active phone / WhatsApp number (at least 8 digits)."
-      );
+      setErrorMsg("Mohon isi nomor WhatsApp aktif (minimal 8 digit) supaya mudah dihubungi kembali.");
       return;
     }
 
@@ -197,9 +172,9 @@ export default function PreWhatsAppModal() {
       // Abaikan bila storage penuh
     }
 
-    const currency = lang === "en" ? "USD" : "IDR";
+    const currency = "IDR";
     const matchedOption = planOptions.find((opt) => opt.label === planInterest);
-    const value = matchedOption ? matchedOption.value : lang === "en" ? 299 : 1500000;
+    const value = matchedOption ? matchedOption.value : 1500000;
     const eventId = generateEventId();
 
     // 1. Kirim Lead ke Meta Pixel + Server CAPI dengan event_id identik + PII ter-hash (EMQ tinggi)
@@ -213,7 +188,7 @@ export default function PreWhatsAppModal() {
         fullName: trimmedName,
         phone: trimmedPhone,
         city: trimmedCity,
-        ...(lang === "id" ? { countryCode: "id" } : {}),
+        countryCode: "id",
       },
     });
 
@@ -224,33 +199,20 @@ export default function PreWhatsAppModal() {
       lead_source: clickSource,
       plan_interest: planInterest,
       city: trimmedCity || "unspecified",
-      language: lang,
+      language: "id",
     });
 
-    // 3. Susun pesan WhatsApp rapi sesuai bahasa pengunjung
-    const messageLines =
-      lang === "id"
-        ? [
-            "Halo Mas Nanang, saya mau diskusi pembuatan website usaha service AC:",
-            "",
-            `Nama / Usaha: ${trimmedName}`,
-            `No. WA Aktif: ${trimmedPhone}`,
-            ...(trimmedCity ? [`Area Layanan: ${trimmedCity}`] : []),
-            `Pilihan Paket: ${planInterest}`,
-            "",
-            "Mohon info langkah selanjutnya ya Mas. Terima kasih!",
-          ]
-        : [
-            "Hi Nanang, I'd like to discuss building a website for my HVAC / AC business:",
-            "",
-            `Name / Company: ${trimmedName}`,
-            `Phone / WhatsApp: ${trimmedPhone}`,
-            ...(trimmedCity ? [`Service Area / City: ${trimmedCity}`] : []),
-            `Package Interest: ${planInterest}`,
-            "Language: English (International Inquiry)",
-            "",
-            "Please share the next steps. Thank you!",
-          ];
+    // 3. Susun pesan WhatsApp yang rapi
+    const messageLines = [
+      "Halo Mas Nanang, saya mau diskusi pembuatan website usaha service AC:",
+      "",
+      `Nama / Usaha: ${trimmedName}`,
+      `No. WA Aktif: ${trimmedPhone}`,
+      ...(trimmedCity ? [`Area Layanan: ${trimmedCity}`] : []),
+      `Pilihan Paket: ${planInterest}`,
+      "",
+      "Mohon info langkah selanjutnya ya Mas. Terima kasih!",
+    ];
 
     const finalWaUrl = `${BUSINESS.whatsapp.url}?text=${encodeURIComponent(
       messageLines.join("\n")
@@ -289,22 +251,20 @@ export default function PreWhatsAppModal() {
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-accent">
               <WhatsAppIcon className="h-3 w-3" />
-              {lang === "id" ? "Konsultasi Langsung" : "Direct WhatsApp Chat"}
+              Konsultasi Langsung
             </span>
             <h2
               id="lead-modal-title"
               className="mt-3 font-display text-xl font-bold tracking-tight text-white sm:text-2xl"
             >
-              {lang === "id"
-                ? "Kenalan Singkat Sebelum ke WhatsApp"
-                : "Quick Intro Before Opening WhatsApp"}
+              Kenalan Singkat Sebelum ke WhatsApp
             </h2>
           </div>
 
           <button
             type="button"
             onClick={() => setOpen(false)}
-            aria-label={lang === "id" ? "Tutup jendela" : "Close dialog"}
+            aria-label="Tutup jendela"
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-mist transition-colors hover:border-accent/50 hover:text-white"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -312,9 +272,7 @@ export default function PreWhatsAppModal() {
         </div>
 
         <p className="relative mt-2 text-xs leading-relaxed text-mist sm:text-sm">
-          {lang === "id"
-            ? "Isi 10 detik supaya pesan chat Anda otomatis rapi dan saya bisa langsung menyiapkan saran sesuai area kerja usaha AC Anda."
-            : "Takes 10 seconds so your WhatsApp message is pre-formatted cleanly with your market and package details."}
+          Isi 10 detik supaya pesan chat Anda otomatis rapi dan saya bisa langsung menyiapkan saran sesuai area kerja usaha AC Anda.
         </p>
 
         <form onSubmit={handleSubmit} className="relative mt-5 space-y-4" noValidate>
@@ -323,7 +281,7 @@ export default function PreWhatsAppModal() {
               htmlFor="lead-name"
               className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
             >
-              {lang === "id" ? "Nama Anda / Nama Usaha AC *" : "Your Name / HVAC Company *"}
+              Nama Anda / Nama Usaha AC *
             </label>
             <input
               id="lead-name"
@@ -337,11 +295,7 @@ export default function PreWhatsAppModal() {
                 setFullName(e.target.value);
                 if (errorMsg) setErrorMsg("");
               }}
-              placeholder={
-                lang === "id"
-                  ? "Contoh: Pak Budi / Berkah Jaya AC"
-                  : "e.g. Mike Carter / CoolBreeze HVAC"
-              }
+              placeholder="Contoh: Pak Budi / Berkah Jaya AC"
               className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white placeholder:text-mist/50 focus:border-accent focus:outline-none"
             />
           </div>
@@ -352,7 +306,7 @@ export default function PreWhatsAppModal() {
                 htmlFor="lead-phone"
                 className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
               >
-                {lang === "id" ? "Nomor WhatsApp *" : "Phone / WhatsApp *"}
+                Nomor WhatsApp *
               </label>
               <input
                 id="lead-phone"
@@ -366,7 +320,7 @@ export default function PreWhatsAppModal() {
                   setPhone(e.target.value);
                   if (errorMsg) setErrorMsg("");
                 }}
-                placeholder={lang === "id" ? "0812xxxx" : "+1 512-555-0192"}
+                placeholder="0812xxxx"
                 className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white placeholder:text-mist/50 focus:border-accent focus:outline-none"
               />
             </div>
@@ -376,7 +330,7 @@ export default function PreWhatsAppModal() {
                 htmlFor="lead-city"
                 className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
               >
-                {lang === "id" ? "Kota / Area Kerja" : "City / Country"}
+                Kota / Area Kerja
               </label>
               <input
                 id="lead-city"
@@ -385,11 +339,7 @@ export default function PreWhatsAppModal() {
                 autoComplete="address-level2"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder={
-                  lang === "id"
-                    ? "Contoh: Bekasi / Sidoarjo"
-                    : "e.g. Austin, TX / Sydney"
-                }
+                placeholder="Contoh: Bekasi / Sidoarjo"
                 className="mt-1.5 w-full rounded-xl border border-line bg-ink px-4 py-3 text-sm text-white placeholder:text-mist/50 focus:border-accent focus:outline-none"
               />
             </div>
@@ -400,7 +350,7 @@ export default function PreWhatsAppModal() {
               htmlFor="lead-plan"
               className="block text-xs font-semibold uppercase tracking-[0.15em] text-white/90"
             >
-              {lang === "id" ? "Paket yang Diminati" : "Package Interest"}
+              Paket yang Diminati
             </label>
             <select
               id="lead-plan"
@@ -425,13 +375,13 @@ export default function PreWhatsAppModal() {
 
           <button type="submit" className="btn-primary w-full justify-center py-3.5 text-sm">
             <WhatsAppIcon className="h-4 w-4" />
-            {lang === "id" ? "Lanjut Chat ke WhatsApp" : "Continue to WhatsApp"}
+            Lanjut Chat ke WhatsApp
           </button>
 
           <div className="flex items-center justify-between gap-2 pt-1 text-xs text-mist">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-              {lang === "id" ? "Data aman & bebas spam" : "Private & spam-free"}
+              {"Data aman & bebas spam"}
             </span>
 
             {targetHref && (
@@ -443,7 +393,7 @@ export default function PreWhatsAppModal() {
                 onClick={handleDirectBypass}
                 className="inline-flex items-center gap-1 font-medium text-white/75 underline decoration-white/30 underline-offset-4 transition-colors hover:text-accent"
               >
-                {lang === "id" ? "Langsung ke WA" : "Open WA directly"}
+                Langsung ke WA
                 <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
             )}

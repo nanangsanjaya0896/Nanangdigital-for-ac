@@ -10,6 +10,10 @@
       "maxDuration": 25
     }
   },
+  "redirects": [
+    { "source": "/en", "destination": "/", "permanent": true },
+    { "source": "/en/:path*", "destination": "/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

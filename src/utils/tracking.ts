@@ -2,7 +2,7 @@
  * Utilitas pelacakan konversi terpusat NanangDigital:
  * 1. Google Analytics 4 (`G-JY9N81NCQE`)
  * 2. Meta Pixel Browser + Server Conversions API (`2971268586402489`) dengan deduplikasi `event_id` identik
- * 3. Penyimpanan `fbclid` -> cookie `_fbc` & pembacaan `_fbp` untuk Event Match Quality (EMQ) tinggi (ID & Global USD)
+ * 3. Penyimpanan `fbclid` -> cookie `_fbc` & pembacaan `_fbp` untuk Event Match Quality (EMQ) tinggi
  */
 
 export const GA4_MEASUREMENT_ID = "G-JY9N81NCQE";
@@ -28,7 +28,7 @@ export interface LeadUserData {
   phone?: string;
   city?: string;
   email?: string;
-  /** Kode negara ISO 2 huruf huruf kecil bila diketahui pasti (contoh: 'id'), kosongkan untuk trafik global */
+  /** Kode negara ISO 2 huruf huruf kecil bila diketahui pasti (contoh: 'id') */
   countryCode?: string;
 }
 
@@ -101,26 +101,20 @@ export async function sha256Hex(input: string): Promise<string> {
 
 /**
  * Normalisasi nomor WhatsApp/telepon ke format digit E.164 murni:
- * - Untuk `id`: `0859...` / `859...` -> `62859...`
- * - Untuk `en` (Global): pertahankan kode negara internasional (`+1...`, `+61...`, `+44...`, `+65...`),
- *   dan bila pengguna AS/Kanada mengetik 10 digit lokal tanpa kode negara, tambahkan `1`.
+ * - `0859...` / `859...` -> `62859...`
+ * - Nomor yang diawali `+` (kode negara lain) dipertahankan apa adanya.
  */
-export function normalizePhoneForCapi(
-  rawPhone: string,
-  locale: "id" | "en" = "id"
-): string {
+export function normalizePhoneForCapi(rawPhone: string): string {
   const hasExplicitPlus = rawPhone.trim().startsWith("+");
   let digits = rawPhone.replace(/\D/g, "");
   if (!digits) return "";
 
-  if (locale === "id" && !hasExplicitPlus) {
+  if (!hasExplicitPlus) {
     if (digits.startsWith("0")) {
       digits = `62${digits.slice(1)}`;
     } else if (digits.startsWith("8")) {
       digits = `62${digits}`;
     }
-  } else if (locale === "en" && !hasExplicitPlus && digits.length === 10) {
-    digits = `1${digits}`;
   }
 
   return digits;
@@ -165,7 +159,7 @@ export async function trackMetaConversion(
 ): Promise<string> {
   const eventId = options.eventId || generateEventId();
   const currency = options.currency || "IDR";
-  const value = options.value ?? (currency === "USD" ? 299 : 1500000);
+  const value = options.value ?? 1500000;
   const { fbc, fbp } = captureFbClickId();
 
   const customData: Record<string, unknown> = {
@@ -190,10 +184,8 @@ export async function trackMetaConversion(
   // 2. Hash PII di sisi klien sebelum dikirim ke endpoint Serverless CAPI
   const hashedUserData: Record<string, string> = {};
   const ud = options.userData;
-  const targetLocale: "id" | "en" = currency === "USD" ? "en" : "id";
-
   if (ud?.phone) {
-    const normPhone = normalizePhoneForCapi(ud.phone, targetLocale);
+    const normPhone = normalizePhoneForCapi(ud.phone);
     if (normPhone) {
       const hashed = await sha256Hex(normPhone);
       if (hashed) hashedUserData.ph = hashed;

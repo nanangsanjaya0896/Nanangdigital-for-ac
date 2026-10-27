@@ -2,7 +2,7 @@
 
 Website ini sudah disiapkan untuk **Cloudflare Pages**:
 
-* 7 halaman statis untuk SEO: `/`, `/en/`, `/panduan/`, dan 4 artikel.
+* 6 halaman statis untuk SEO: `/`, `/panduan/`, dan 4 artikel.
 * 2 fungsi server:
   * `/api/ai-chat` untuk Live AI Chat.
   * `/api/meta-capi` untuk Meta Conversions API.
@@ -70,7 +70,7 @@ Buka alamat berikut. Kalau alamat project Anda berbeda, sesuaikan dulu.
 | Alamat | Yang harus terlihat |
 | --- | --- |
 | `https://nanangdigital.pages.dev/` | Website versi Indonesia |
-| `https://nanangdigital.pages.dev/en/` | Website versi English dengan harga USD |
+| `https://nanangdigital.pages.dev/en/` | Otomatis pindah ke beranda (versi bahasa Inggris sudah dihapus) |
 | `https://nanangdigital.pages.dev/api/meta-capi` | `"ready_for_live_capi": true` |
 | `https://nanangdigital.pages.dev/api/ai-chat` | `"ai_enabled": true`, kalau `GEMINI_API_KEY` sudah diisi |
 | `https://nanangdigital.pages.dev/halaman-asal` | Halaman 404 "Halaman tidak ditemukan" |
@@ -109,6 +109,7 @@ Alamat website berubah, jadi daftarkan alamat baru di Search Console. Pakai akun
   * Jadi website tetap bisa dipindah ke Vercel kapan saja tanpa menulis ulang kode.
 * `public/_headers` berisi aturan cache file JS, CSS, dan gambar.
 * `public/_routes.json` membuat hanya alamat `/api/*` yang menjalankan fungsi server. Halaman lain disajikan langsung dari CDN, jadi tetap gratis tanpa batas.
+* `public/_redirects` mengarahkan alamat lama `/en` (versi bahasa Inggris yang sudah dihapus) ke beranda, lengkap dengan parameter iklan seperti `fbclid`.
 * Branch selain `main` otomatis mendapat alamat preview (`<hash>.nanangdigital.pages.dev`) yang tidak diindeks Google.
 * Alamat website diatur di satu tempat, yaitu `scripts/site-url.mjs`. Urutan sumbernya:
   1. `SITE_URL`, kalau diisi.

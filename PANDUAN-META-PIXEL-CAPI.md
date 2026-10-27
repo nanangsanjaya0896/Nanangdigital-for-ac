@@ -51,7 +51,7 @@ Kalau tertulis `"ready_for_live_capi": true`, berarti **Meta Pixel di browser + 
 Setiap event `Contact` dan `Lead` dikirim dua kali dengan `event_id` yang sama, dari Pixel di browser dan dari server, lalu Meta menggabungkannya (deduplikasi). Data dari server:
 
 * **Hash SHA-256 dari browser:** nomor WhatsApp (`ph`, juga dipakai sebagai `external_id`), nama depan (`fn`), nama belakang (`ln`), dan kota (`ct`). Data mentah tidak pernah dikirim; nilai yang bukan hash otomatis dibuang.
-* **Negara (`country`):** dari halaman Indonesia selalu `id`. Untuk halaman English, negara diambil dari lokasi IP pengunjung yang diberikan Cloudflare.
+* **Negara (`country`):** dari form di website selalu `id` (Indonesia). Kalau data negara dari browser tidak ada, server memakai lokasi IP pengunjung yang diberikan Cloudflare.
 * **Cookie klik iklan `fbc` dan `fbp`:** penting supaya Meta tahu lead berasal dari iklan yang mana.
 * **IP dan user agent pengunjung.**
 

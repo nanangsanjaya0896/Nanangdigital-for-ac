@@ -1,6 +1,8 @@
 # Panduan Live AI Chat (Asisten AI NanangDigital)
 
-Tombol **Tanya Asisten AI** muncul di pojok kanan bawah semua halaman (`/`, `/en/`, `/panduan/`, dan artikel). Pengunjung bisa bertanya soal paket, harga, lama pengerjaan, pembayaran, revisi, sampai iklan Meta, lalu dilanjutkan ke WhatsApp lewat form kenalan yang sudah ada (tracking Meta Pixel + CAPI dan GA4 tetap jalan).
+Tombol **Tanya Asisten AI** muncul di pojok kanan bawah semua halaman (`/`, `/panduan/`, dan artikel). Pengunjung bisa bertanya soal paket, harga, lama pengerjaan, pembayaran, revisi, sampai iklan Meta, lalu dilanjutkan ke WhatsApp lewat form kenalan yang sudah ada (tracking Meta Pixel + CAPI dan GA4 tetap jalan).
+
+Chat memakai Bahasa Indonesia dengan harga Rupiah. Jawaban bawaan selalu berbahasa Indonesia. AI generatif juga menjawab dalam Bahasa Indonesia, kecuali pengunjung jelas menulis dalam bahasa lain, dan harga tidak pernah dikonversi ke mata uang lain.
 
 Chat ini punya **dua mode** dan selalu menjawab, tidak pernah error di depan pengunjung:
 

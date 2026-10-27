@@ -2,7 +2,7 @@
 
 Website **`https://nanangdigital.pages.dev/`** (Cloudflare Pages) sudah membawa:
 
-* **Tag verifikasi Google Search Console** milik akun Google Anda (`cUtDIR_P8p7d7c7WhBW26zwoCDNGvTZuHAcGcS9X-B0`) di semua 7 halaman statis.
+* **Tag verifikasi Google Search Console** milik akun Google Anda (`cUtDIR_P8p7d7c7WhBW26zwoCDNGvTZuHAcGcS9X-B0`) di semua 6 halaman statis.
 * **Google Analytics 4 (`G-JY9N81NCQE`)** yang dimuat ringan tanpa menurunkan skor PageSpeed.
 * **`sitemap.xml` dan `robots.txt`** yang otomatis mengikuti alamat website aktif.
 
@@ -29,8 +29,8 @@ Kalau Anda memakai domain sendiri, ganti `nanangdigital.pages.dev` di panduan in
 ## Bagian 2: Kirim sitemap & minta pengindeksan
 
 1. Di menu kiri Search Console, klik **Peta Situs (Sitemaps)**.
-2. Di kolom *Tambahkan peta situs baru*, ketik `sitemap.xml`, lalu klik **Kirim**. Status akan tertulis **Sukses** (7 halaman).
-3. *(Supaya lebih cepat muncul di Google)*: klik kolom **Inspeksi URL** di bagian atas, tempel `https://nanangdigital.pages.dev/`, tekan Enter, lalu klik **Minta Pengindeksan**. Ulangi untuk `https://nanangdigital.pages.dev/en/`.
+2. Di kolom *Tambahkan peta situs baru*, ketik `sitemap.xml`, lalu klik **Kirim**. Status akan tertulis **Sukses** (6 halaman).
+3. *(Supaya lebih cepat muncul di Google)*: klik kolom **Inspeksi URL** di bagian atas, tempel `https://nanangdigital.pages.dev/`, tekan Enter, lalu klik **Minta Pengindeksan**. Ulangi untuk `https://nanangdigital.pages.dev/panduan/`.
 
 ---
 
@@ -47,5 +47,5 @@ Opsional, supaya rapi: di GA4 buka **Admin** > **Aliran data (Data streams)** > 
 1. **`page_view`**: setiap pengunjung yang membuka halaman.
 2. **`whatsapp_modal_open`**: pengunjung menekan tombol WhatsApp dan form singkat terbuka (parameter `lead_source` = tombol yang diklik, `plan_interest` = paket yang diminati, `language`).
 3. **`whatsapp_click_direct`**: pengunjung memilih langsung ke WhatsApp tanpa mengisi form.
-4. **`generate_lead`**: calon klien mengisi Nama, Nomor WA, dan Kota lalu lanjut ke WhatsApp (lengkap dengan `currency` IDR/USD dan `value`). Tandai event ini sebagai **Peristiwa Penting (Key Event)** di **Admin** > **Events**.
+4. **`generate_lead`**: calon klien mengisi Nama, Nomor WA, dan Kota lalu lanjut ke WhatsApp (lengkap dengan `currency` IDR dan `value`). Tandai event ini sebagai **Peristiwa Penting (Key Event)** di **Admin** > **Events**.
 5. **`ai_chat_open`, `ai_chat_message`, `ai_chat_reset`**: aktivitas Live AI Chat (isi percakapan tidak pernah dikirim).
