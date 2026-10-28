@@ -1,12 +1,25 @@
-# Panduan Deploy ke Cloudflare
+# Panduan Deploy ke Cloudflare + Domain nanangdigital.web.id
 
-Website ini bisa di-deploy gratis ke Cloudflare lewat **dua cara**. Keduanya sudah disiapkan dan dites:
+Alamat utama website: **`https://nanangdigital.web.id`**. Alamat ini sudah diatur di kode (`scripts/site-url.mjs`), jadi tag SEO, `sitemap.xml`, dan `robots.txt` otomatis memakai domain ini. Tidak perlu mengisi `SITE_URL` di Cloudflare.
+
+Urutan kerjanya:
+
+1. **Deploy website ke Cloudflare** (Bagian 1). Hasilnya alamat sementara, misalnya `nanangdigital-for-ac.namaakun.workers.dev`.
+2. **Sambungkan domain** `nanangdigital.web.id` dari DomaiNesia ke Cloudflare (Bagian 2). Langkah ganti nameserver boleh dikerjakan dari sekarang, sambil menunggu deploy beres.
+3. **Pasang domain ke website** dan daftarkan ke Google (Bagian 3).
+
+> Kalau di tengah jalan muncul tulisan merah atau error, foto layarnya (terutama bagian log build yang merah) lalu kirim ke saya.
+
+---
+
+## Bagian 1: Deploy website
+
+Ada **dua cara**. Keduanya sudah disiapkan dan dites. Pilih salah satu saja.
 
 | | Cara A: Workers (disarankan) | Cara B: Pages (cara lama) |
 | --- | --- | --- |
 | Posisi di dashboard | Tombol utama **Create application** | Link kecil di bagian bawah halaman Create application |
-| Alamat website | `nanangdigital-for-ac.<nama-akun>.workers.dev` | `nanangdigital-for-ac.pages.dev` |
-| Isi alamat website (`SITE_URL`) | Diisi sekali setelah deploy pertama | Otomatis |
+| Alamat sementara | `nanangdigital-for-ac.<nama-akun>.workers.dev` | `nanangdigital-for-ac.pages.dev` |
 
 Sejak 2025 Cloudflare menampilkan **Workers** sebagai pilihan utama, sedangkan **Pages** disembunyikan sebagai cara lama. Kalau Anda tidak menemukan menu Pages, itu normal. Pakai **Cara A**.
 
@@ -19,13 +32,9 @@ Isi website di kedua cara sama persis:
 
 Paket gratis Cloudflare boleh dipakai untuk website bisnis.
 
-> Kalau di tengah jalan muncul tulisan merah atau error, foto layarnya (terutama bagian log build yang merah) lalu kirim ke saya.
+### Cara A: Cloudflare Workers (disarankan)
 
----
-
-## Cara A: Cloudflare Workers (disarankan)
-
-### Langkah 1: Hubungkan repo GitHub
+**Langkah 1: Hubungkan repo GitHub**
 
 1. Login di **[dash.cloudflare.com](https://dash.cloudflare.com)**. Daftar gratis, tanpa kartu kredit.
 2. Di menu kiri, buka **Compute** > **Workers & Pages**. Di sebagian akun menunya langsung bernama **Workers & Pages**.
@@ -36,11 +45,11 @@ Paket gratis Cloudflare boleh dipakai untuk website bisnis.
    * Kalau memilih **Only select repositories**, pastikan `Nanangdigital-for-ac` dicentang.
 6. Pilih repo **`Nanangdigital-for-ac`** dari daftar.
 
-### Langkah 2: Isi pengaturan project
+**Langkah 2: Isi pengaturan project**
 
 | Kolom | Isi |
 | --- | --- |
-| **Project name** | `nanangdigital-for-ac` (harus sama persis, biasanya sudah terisi otomatis) |
+| **Project name** | `nanangdigital-for-ac` (biasanya sudah terisi otomatis) |
 | **Build command** | `npm run build` |
 | **Deploy command** | `npx wrangler deploy` (bawaan, biarkan) |
 | **Preview command** atau **Non-production branch deploy command** | biarkan bawaan |
@@ -48,33 +57,20 @@ Paket gratis Cloudflare boleh dipakai untuk website bisnis.
 
 Klik **Save and Deploy** (atau **Deploy**), lalu tunggu 2 sampai 3 menit sampai statusnya **Success**.
 
-Catatan:
-
-* Nama project dikunci di file `wrangler.jsonc`. Kalau nama di dashboard berbeda, build gagal dengan pesan *"The name in your Wrangler configuration file ... must match the name of your Worker"*.
-* Versi Node.js sudah dikunci ke 22 lewat file `.nvmrc`, jadi tidak perlu diatur.
-
-### Langkah 3: Isi alamat website (`SITE_URL`)
-
-Di Workers, Cloudflare tidak memberi tahu alamat website ke proses build. Jadi alamatnya diisi sekali secara manual. Alamat ini dipakai untuk tag SEO, `sitemap.xml`, dan `robots.txt`.
-
-1. Buka project `nanangdigital-for-ac`, lalu salin alamat website yang tampil, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`.
-2. Buka **Settings** > **Build** > **Variables and secrets** (bagian build, bukan bagian runtime), lalu klik **Add**:
-   * **Variable name:** `SITE_URL`
-   * **Value:** alamat dari poin 1
-3. Klik **Save**.
-4. Buka tab **Deployments**, klik **View build history** di bagian bawah, klik titik tiga (`...`) pada build paling atas, lalu pilih **Retry build**.
-
-Untuk memastikan alamatnya sudah benar, buka log build. Harus ada baris seperti ini:
+Di log build harus ada baris ini:
 
 ```text
-✓ Alamat website (SITE_URL): https://nanangdigital-for-ac.namaakun.workers.dev [sumber: SITE_URL]
+✓ Alamat website (SITE_URL): https://nanangdigital.web.id [sumber: domain utama di scripts/site-url.mjs]
 ```
 
-Kalau masih muncul tulisan `⚠ SITE_URL belum diisi`, ulangi langkah ini.
+Catatan:
 
-### Langkah 4: Pasang token rahasia
+* Sebaiknya nama project `nanangdigital-for-ac`, sama dengan file `wrangler.jsonc`. Kalau terlanjur memakai nama lain, Cloudflare tetap deploy memakai nama dari dashboard, lalu bisa membuat Pull Request otomatis untuk menyamakan nama. Kabari saya kalau itu terjadi.
+* Versi Node.js sudah dikunci ke 22 lewat file `.nvmrc`, jadi tidak perlu diatur.
 
-1. Di project, buka **Settings** > **Variables and Secrets** (bagian runtime), lalu klik **Add**.
+**Langkah 3: Pasang token rahasia**
+
+1. Di project, buka **Settings** > **Variables and Secrets**, lalu klik **Add**.
 2. Tambahkan variabel berikut. Pilih tipe **Secret** supaya isinya tersimpan sebagai rahasia.
 
 | Nama | Tipe | Isi | Kapan perlu |
@@ -86,11 +82,7 @@ Kalau masih muncul tulisan `⚠ SITE_URL belum diisi`, ulangi langkah ini.
 
 > Jangan pernah memberi awalan `VITE_` pada token atau API key, dan jangan menaruhnya di file kode. Dengan cara di atas, rahasia hanya tersimpan di server Cloudflare dan tidak pernah terkirim ke browser pengunjung.
 
-Kalau Google Search Console memberi kode verifikasi yang berbeda, isi `VITE_GSC_VERIFICATION` di bagian **Build** (seperti `SITE_URL` di Langkah 3), lalu **Retry build**.
-
----
-
-## Cara B: Cloudflare Pages (cara lama)
+### Cara B: Cloudflare Pages (cara lama)
 
 Pakai cara ini hanya kalau Anda lebih suka Pages atau sudah terlanjur membuat project Pages.
 
@@ -108,17 +100,15 @@ Pakai cara ini hanya kalau Anda lebih suka Pages atau sudah terlanjur membuat pr
 | **Build output directory** | `dist` |
 | **Root directory** | biarkan kosong |
 
-5. Klik **Save and Deploy**. Alamat website (`SITE_URL`) otomatis mengikuti alamat `.pages.dev` dari Cloudflare.
+5. Klik **Save and Deploy**.
 6. Pasang token: **Settings** > **Variables and Secrets** > **Add**. Isi `META_CAPI_ACCESS_TOKEN` dan `GEMINI_API_KEY`, klik **Encrypt**, lalu **Save**.
 7. Token baru aktif setelah deploy ulang. Buka tab **Deployments**, klik titik tiga (`...`) pada deployment paling atas, lalu pilih **Retry deployment**.
 
 Di log build Pages akan muncul tulisan *"A wrangler.toml file was found but it does not appear to be valid ... Skipping file and continuing"*. Itu normal. File `wrangler.jsonc` memang khusus untuk Cara A, dan Pages tetap deploy seperti biasa.
 
----
+### Cek website sudah jalan
 
-## Cek website sudah jalan
-
-Ganti `ALAMAT` dengan alamat website Anda (contoh `https://nanangdigital-for-ac.namaakun.workers.dev`).
+Buka alamat sementara dari Cloudflare (ganti `ALAMAT`, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`). Setelah domain tersambung, cek lagi dengan `https://nanangdigital.web.id`.
 
 | Alamat | Yang harus terlihat |
 | --- | --- |
@@ -128,29 +118,73 @@ Ganti `ALAMAT` dengan alamat website Anda (contoh `https://nanangdigital-for-ac.
 | `ALAMAT/api/ai-chat` | `"ai_enabled": true`, kalau `GEMINI_API_KEY` sudah diisi |
 | `ALAMAT/halaman-asal` | Halaman 404 "Halaman tidak ditemukan" |
 
-## Google Search Console dan sitemap
+---
 
-1. Buka **[search.google.com/search-console](https://search.google.com/search-console)**, klik **Tambahkan properti**, pilih **Awalan URL**, lalu ketik alamat website Anda.
+## Bagian 2: Sambungkan domain nanangdigital.web.id ke Cloudflare
+
+Bagian ini boleh dikerjakan dari sekarang, tidak perlu menunggu deploy berhasil. Domain `.web.id` bisa dipasang di Cloudflare paket gratis.
+
+Sebelum mulai, cek di MyDomaiNesia:
+
+* Status domain sudah **Active**. Kalau DomaiNesia meminta upload KTP atau dokumen, selesaikan dulu.
+* **DNSSEC tidak aktif**. Kalau aktif, matikan dulu. Kalau DNSSEC masih aktif, Cloudflare gagal memverifikasi domain.
+
+**Langkah 1: Tambahkan domain di Cloudflare**
+
+1. Di dashboard Cloudflare, buka menu kiri **Domains** > **Overview**, lalu klik **Add domain** (di sebagian tampilan **Onboard a domain** atau **Connect a domain**).
+2. Ketik `nanangdigital.web.id` (tanpa `www`), lalu klik **Continue**.
+3. Pilih paket **Free**, lalu lanjutkan.
+4. Di halaman daftar DNS hasil scan, cukup klik **Continue** (atau **Continue to activation**). Domain baru, jadi daftarnya memang boleh kosong.
+5. Cloudflare menampilkan **2 nameserver**, misalnya `ada.ns.cloudflare.com` dan `bob.ns.cloudflare.com`. Salin keduanya. Nama nameserver tiap akun berbeda, jadi pakai yang muncul di layar Anda.
+
+**Langkah 2: Ganti nameserver di DomaiNesia**
+
+1. Login di **[my.domainesia.com](https://my.domainesia.com)**.
+2. Buka menu **Domains**, lalu klik `nanangdigital.web.id`.
+3. Buka tab **Nameserver**, lalu pilih **Use Custom Nameserver**.
+4. Hapus nameserver lama. Isi **Nameserver 1** dan **Nameserver 2** dengan 2 nameserver dari Cloudflare.
+5. Klik **Change Nameserver**.
+
+**Langkah 3: Tunggu sampai Active**
+
+1. Kembali ke Cloudflare, lalu klik **I updated my nameservers** (atau **Check nameservers**).
+2. Tunggu status domain berubah dari **Pending** menjadi **Active**. Biasanya 1 sampai 2 jam, paling lama 24 jam. Cloudflare mengirim email kalau sudah aktif.
+
+---
+
+## Bagian 3: Pasang domain ke website
+
+Kerjakan setelah deploy di Bagian 1 berhasil **dan** domain di Bagian 2 sudah **Active**.
+
+**Langkah 1: Tambahkan custom domain**
+
+* **Kalau memakai Cara A (Workers):** buka project `nanangdigital-for-ac` > **Settings** > **Domains & Routes** > **Add** > **Custom domain**. Ketik `nanangdigital.web.id`, lalu klik **Add domain**. Ulangi untuk `www.nanangdigital.web.id`.
+* **Kalau memakai Cara B (Pages):** buka project > **Custom domains** > **Set up a domain**. Ketik `nanangdigital.web.id`, klik **Continue**, lalu **Activate domain**. Ulangi untuk `www.nanangdigital.web.id`.
+
+Cloudflare otomatis membuat pengaturan DNS dan sertifikat HTTPS. Tunggu beberapa menit sampai statusnya **Active**, lalu buka `https://nanangdigital.web.id`.
+
+**Langkah 2: Arahkan www ke alamat utama (disarankan)**
+
+Supaya Google hanya melihat satu alamat:
+
+1. Di Cloudflare, buka **Domains** > `nanangdigital.web.id` > **Rules** > **Redirect Rules**.
+2. Klik **Create rule**, lalu pilih template **Redirect from WWW to root**.
+3. Klik **Deploy**.
+
+Setelah itu `www.nanangdigital.web.id` otomatis pindah ke `nanangdigital.web.id`.
+
+**Langkah 3: Daftarkan ke Google Search Console**
+
+1. Buka **[search.google.com/search-console](https://search.google.com/search-console)**, klik **Tambahkan properti**, pilih **Awalan URL**, lalu ketik `https://nanangdigital.web.id/`.
 2. Pilih metode **Tag HTML**. Website ini sudah memasang tag verifikasi akun Google Anda (`cUtDIR_P8p7d7c7WhBW26zwoCDNGvTZuHAcGcS9X-B0`), jadi biasanya cukup klik **Verifikasi**.
-3. Kalau Google menampilkan kode yang berbeda, isi kodenya ke variabel `VITE_GSC_VERIFICATION` (Cara A: bagian Build lalu **Retry build**. Cara B: Variables and Secrets lalu **Retry deployment**), lalu klik **Verifikasi** lagi.
+3. Kalau Google menampilkan kode yang berbeda, kirim kodenya ke saya supaya dipasang di website. Bisa juga diisi sendiri ke variabel `VITE_GSC_VERIFICATION`: di Workers lewat **Settings** > **Build** > **Variables and secrets** lalu **Retry build**, di Pages lewat **Variables and Secrets** lalu **Retry deployment**.
 4. Setelah terverifikasi, buka menu **Peta Situs**, ketik `sitemap.xml`, lalu klik **Kirim**.
 
 Panduan lengkap Search Console dan GA4 ada di [`PANDUAN-GSC-DAN-GA4.md`](./PANDUAN-GSC-DAN-GA4.md).
 
-## Pakai domain sendiri (opsional)
+**Langkah 4: Perbarui link di tempat lain**
 
-**Cara A (Workers):**
-
-1. Domain harus memakai DNS Cloudflare. Tambahkan domain lewat **Add a domain** di dashboard Cloudflare, lalu ganti nameserver di tempat Anda membeli domain sesuai petunjuk Cloudflare.
-2. Di project, buka **Settings** > **Domains & Routes** > **Add** > **Custom domain**, lalu ketik domain Anda (misalnya `nanangdigital.com`).
-3. Ubah build variable `SITE_URL` menjadi `https://nanangdigital.com`, lalu **Retry build**.
-
-**Cara B (Pages):**
-
-1. Di project, buka **Custom domains** > **Set up a custom domain**, lalu ikuti petunjuk DNS dari Cloudflare.
-2. Tambahkan variabel `SITE_URL` berisi `https://nanangdigital.com` (tanpa Encrypt), lalu **Retry deployment**.
-
-Setelah itu, daftarkan domain baru di Google Search Console.
+Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook Page, WhatsApp Business, dan iklan Meta.
 
 ---
 
@@ -160,14 +194,14 @@ Setelah itu, daftarkan domain baru di Google Search Console.
 | --- | --- |
 | Tidak ada pilihan **Pages** | Normal, tampilan baru Cloudflare. Pakai Cara A |
 | Repo `Nanangdigital-for-ac` tidak muncul di daftar | Di GitHub buka **Settings** > **Applications** > **Installed GitHub Apps** > **Cloudflare Workers and Pages** > **Configure**. Di **Repository access**, pilih **All repositories** atau tambahkan repo ini, lalu **Save**. Kembali ke Cloudflare dan muat ulang halaman |
-| Error *"The name in your Wrangler configuration file (nanangdigital-for-ac) must match the name of your Worker"* | Nama project di dashboard harus `nanangdigital-for-ac`. Buat ulang project dengan nama itu, atau kirim nama project Anda ke saya supaya file `wrangler.jsonc` disesuaikan |
 | Error *"Missing entry-point to Worker script or to assets directory"* | Build memakai kode lama yang belum punya `wrangler.jsonc`. Pastikan branch `main` sudah terbaru, lalu **Retry build** |
-| Cloudflare membuat Pull Request otomatis berisi konfigurasi Workers | Jangan di-merge, cukup tutup. Repo ini sudah punya konfigurasi sendiri |
+| Cloudflare membuat Pull Request otomatis berisi konfigurasi Workers | Jangan di-merge dulu. Kabari saya supaya dicek |
 | Error *"npm ci can only install packages when your package.json and package-lock.json ... are in sync"* | Kirim screenshot log ke saya |
 | Build sukses tapi `/api/meta-capi` tidak ditemukan | Pastikan Deploy command `npx wrangler deploy`, bukan `npx wrangler pages deploy` |
-| Log build menampilkan `⚠ SITE_URL belum diisi` | Isi build variable `SITE_URL` (Cara A, Langkah 3) |
 | `/api/meta-capi` masih `"ready_for_live_capi": false` | Token belum diisi sebagai Secret. Di Cara B, jangan lupa **Retry deployment** setelah mengisi |
 | `/api/ai-chat` masih `"ai_enabled": false` padahal key sudah diisi | Cek ejaan `GEMINI_API_KEY`. Pengunjung dari Inggris dan Eropa memang dijawab mode bawaan selama memakai free tier Gemini |
+| Domain masih **Pending** di Cloudflare lebih dari 24 jam | Cek lagi 2 nameserver di DomaiNesia (harus sama persis dengan yang di Cloudflare) dan pastikan DNSSEC tidak aktif |
+| `nanangdigital.web.id` tidak bisa ditambahkan sebagai custom domain | Domain harus sudah **Active** di Cloudflare, di akun yang sama dengan project website |
 | Muncul build untuk branch selain `main` (misalnya branch revisi) | Itu build preview dan tidak mengubah website utama. Kalau tidak perlu, matikan di **Settings** > **Build** > **Branch control** dengan menonaktifkan build untuk non-production branch |
 
 ## Batas paket gratis
@@ -175,9 +209,14 @@ Setelah itu, daftarkan domain baru di Google Search Console.
 * **Halaman website** (HTML, gambar, JS, CSS): gratis tanpa batas, di Workers maupun Pages.
 * **Fungsi server** `/api/ai-chat` dan `/api/meta-capi`: gratis 100.000 request per hari. Fungsi hanya dipanggil saat chat dipakai dan saat event Meta dikirim, jadi pemakaiannya jauh di bawah batas.
 * **Build:** Workers 3.000 menit per bulan (satu build sekitar 1 sampai 2 menit). Pages 500 build per bulan.
+* **Domain:** DNS dan sertifikat HTTPS dari Cloudflare gratis. Yang dibayar hanya perpanjangan domain tahunan di DomaiNesia.
 
 ## Catatan teknis
 
+* **Alamat website** diatur di `scripts/site-url.mjs` lewat `PRIMARY_SITE_URL` (`https://nanangdigital.web.id`). Kalau suatu hari pindah domain, cukup ganti di sana lalu deploy ulang. Urutan sumbernya:
+  1. Variabel `SITE_URL`, kalau diisi (hanya untuk keperluan khusus).
+  2. `PRIMARY_SITE_URL`.
+  3. Kalau `PRIMARY_SITE_URL` dikosongkan: alamat dari Cloudflare Pages (`CF_PAGES_URL`) atau Vercel, lalu cadangan `https://nanangdigital.pages.dev`.
 * **`wrangler.jsonc`**: konfigurasi Cara A.
   * Halaman dari folder `dist` disajikan langsung dari CDN.
   * Hanya `/api/*` yang menjalankan Worker (`run_worker_first`).
@@ -186,9 +225,6 @@ Setelah itu, daftarkan domain baru di Google Search Console.
 * **`functions/api/*.js`**: fungsi server untuk Cara B. Logika intinya ada di `server/`, dipakai bersama oleh Workers, Pages, Vercel (`api/*.js`), dan Live Preview lokal.
 * **`public/_headers`** (cache file) dan **`public/_redirects`** (alamat lama `/en` ke beranda) dibaca oleh Workers maupun Pages.
 * **`public/_routes.json`** hanya untuk Pages. Di Workers file ini tidak ikut diunggah karena tercantum di `public/.assetsignore`.
-* **Alamat website** diatur di `scripts/site-url.mjs`. Urutan sumbernya:
-  1. `SITE_URL`, kalau diisi.
-  2. Alamat dari Cloudflare Pages (`CF_PAGES_URL`), kalau build berjalan di Pages.
-  3. Bawaan: `https://nanangdigital.pages.dev`. Di Workers, log build memberi peringatan kalau `SITE_URL` belum diisi.
+* Asisten AI dan Meta CAPI otomatis berjalan di domain mana pun (`nanangdigital.web.id`, `www`, maupun alamat sementara), tanpa pengaturan tambahan.
 * **Tes di komputer sendiri** (meniru Cloudflare Workers): `npm run build`, lalu `npx wrangler dev`.
 * Versi Wrangler dikunci di `package.json`, jadi build di Cloudflare selalu memakai versi yang sama dengan yang sudah dites.

@@ -6,17 +6,24 @@
  * website cukup diatur di satu tempat.
  *
  * Urutan prioritas:
- * 1. Environment Variable `SITE_URL` (atau `VITE_SITE_URL`). Isi ini kalau memakai domain sendiri,
- *    contoh: `https://nanangdigital.com`.
- * 2. Otomatis di Cloudflare Pages: `CF_PAGES_URL` (selalu berbentuk https://<hash>.<project>.pages.dev)
- *    diubah menjadi alamat produksi https://<project>.pages.dev.
- * 3. Otomatis di Vercel: `VERCEL_PROJECT_PRODUCTION_URL`.
- * 4. Bawaan: https://nanangdigital.pages.dev
+ * 1. Environment Variable `SITE_URL` (atau `VITE_SITE_URL`). Hanya untuk keperluan khusus, misalnya
+ *    mengetes alamat lain. Biasanya tidak perlu diisi.
+ * 2. Domain utama di file ini: `PRIMARY_SITE_URL` (https://nanangdigital.web.id). Berlaku di semua
+ *    hosting (Cloudflare Workers, Cloudflare Pages, Vercel), termasuk alamat preview, jadi Google
+ *    selalu diarahkan ke domain utama.
+ * 3. Kalau `PRIMARY_SITE_URL` dikosongkan: otomatis di Cloudflare Pages lewat `CF_PAGES_URL`
+ *    (https://<hash>.<project>.pages.dev diubah menjadi https://<project>.pages.dev).
+ * 4. Otomatis di Vercel: `VERCEL_PROJECT_PRODUCTION_URL`.
+ * 5. Cadangan terakhir: https://nanangdigital.pages.dev
  *
- * Di Cloudflare Workers (Workers Builds) alamat website tidak dikirim otomatis ke proses build,
- * jadi `SITE_URL` wajib diisi sebagai Build variable. Kalau belum diisi, log build menampilkan peringatan.
+ * Di Cloudflare Workers (Workers Builds) alamat website tidak dikirim otomatis ke proses build.
+ * Kalau `PRIMARY_SITE_URL` dikosongkan dan `SITE_URL` belum diisi, log build menampilkan peringatan.
  */
 
+/** Domain utama website. Ganti di sini kalau pindah domain, lalu deploy ulang. */
+export const PRIMARY_SITE_URL = "https://nanangdigital.web.id";
+
+/** Cadangan terakhir kalau domain utama dikosongkan dan hosting tidak memberi alamat. */
 export const DEFAULT_SITE_URL = "https://nanangdigital.pages.dev";
 
 /**
@@ -52,6 +59,9 @@ export function siteUrlFromCloudflarePagesUrl(raw) {
 export function resolveSiteUrlWithSource(env = process.env) {
   const explicit = normalizeSiteUrl(env.SITE_URL || env.VITE_SITE_URL);
   if (explicit) return { url: explicit, source: env.SITE_URL ? "SITE_URL" : "VITE_SITE_URL" };
+
+  const primary = normalizeSiteUrl(PRIMARY_SITE_URL);
+  if (primary) return { url: primary, source: "domain utama di scripts/site-url.mjs" };
 
   const fromCloudflare = siteUrlFromCloudflarePagesUrl(env.CF_PAGES_URL);
   if (fromCloudflare) return { url: fromCloudflare, source: "Cloudflare Pages (CF_PAGES_URL)" };

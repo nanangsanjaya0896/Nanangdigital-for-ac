@@ -22,10 +22,10 @@ Artinya, untuk menyalakan **Meta Pixel + Meta CAPI** secara penuh, Anda hanya pe
 
 ## Langkah 2: Cek apakah server CAPI sudah aktif
 
-Setelah token tersimpan, buka alamat ini di browser HP atau laptop. Ganti `ALAMAT` dengan alamat website Anda, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`:
+Setelah token tersimpan, buka alamat ini di browser HP atau laptop. Kalau domain belum tersambung, ganti `https://nanangdigital.web.id` dengan alamat sementara dari Cloudflare (misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`):
 
 ```text
-ALAMAT/api/meta-capi
+https://nanangdigital.web.id/api/meta-capi
 ```
 
 Kalau token sudah terpasang, akan tampil status berikut (isi token tidak pernah ditampilkan):

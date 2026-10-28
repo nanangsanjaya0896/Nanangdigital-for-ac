@@ -34,10 +34,10 @@ Chat ini punya **dua mode** dan selalu menjawab, tidak pernah error di depan pen
 
 ## Langkah 3: Cek apakah AI sudah aktif
 
-Buka alamat berikut di browser. Ganti `ALAMAT` dengan alamat website Anda, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`:
+Buka alamat berikut di browser. Kalau domain belum tersambung, ganti `https://nanangdigital.web.id` dengan alamat sementara dari Cloudflare (misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`):
 
 ```text
-ALAMAT/api/ai-chat
+https://nanangdigital.web.id/api/ai-chat
 ```
 
 Kalau berhasil, akan tampil seperti ini:

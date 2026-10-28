@@ -18,10 +18,10 @@ Hosting utama: **Cloudflare**, gratis dan boleh dipakai untuk website bisnis. We
 | Project name | `nanangdigital-for-ac` (harus sama dengan `wrangler.jsonc`) | bebas |
 | Build command | `npm run build` | `npm run build` |
 | Deploy command / Build output directory | `npx wrangler deploy` | `dist` |
-| Alamat website (`SITE_URL`) | Build variable, diisi sekali setelah deploy pertama | Otomatis |
+| Alamat website | Sudah diatur ke `https://nanangdigital.web.id`, tidak perlu diisi | sama |
 | Token rahasia | `META_CAPI_ACCESS_TOKEN` (wajib), `GEMINI_API_KEY` (opsional) | sama |
 
-- **Alamat website** diatur di satu tempat (`scripts/site-url.mjs`). Canonical, JSON-LD, `sitemap.xml`, dan `robots.txt` mengikuti `SITE_URL`, atau alamat `.pages.dev` otomatis kalau memakai Pages.
+- **Alamat website** diatur di satu tempat: `PRIMARY_SITE_URL` di `scripts/site-url.mjs` (`https://nanangdigital.web.id`). Canonical, JSON-LD, `sitemap.xml`, dan `robots.txt` selalu memakai domain ini, termasuk saat dibuka lewat alamat sementara `.workers.dev` atau `.pages.dev`. Cara menyambungkan domain dari DomaiNesia ke Cloudflare ada di panduan deploy.
 - **Fungsi server:** `worker/index.js` (Workers) dan `functions/api/` (Pages Functions) memanggil logika yang sama di `server/`. Logika itu juga dipakai adapter Vercel di `api/` dan Live Preview lokal, jadi website tetap bisa dideploy ke Vercel (`vercel.json`) kapan saja.
 - **`wrangler.jsonc`** membuat hanya `/api/*` yang menjalankan Worker, sehingga semua halaman tetap gratis tanpa batas (di Pages perannya dipegang **`public/_routes.json`**). **`public/_headers`** mengatur cache file JS, CSS, dan gambar. **`public/_redirects`** mengarahkan alamat lama `/en` ke beranda.
 - **Halaman 404 statis** (`dist/404.html`) memastikan alamat yang tidak ada membalas status 404 asli, bukan menampilkan beranda.
