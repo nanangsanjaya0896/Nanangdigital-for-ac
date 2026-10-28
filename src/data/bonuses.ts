@@ -1,4 +1,4 @@
-import { Lightbulb, Share2, MessageSquareText } from "lucide-react";
+import { Crown, MapPinned, Megaphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface Bonus {
@@ -10,21 +10,21 @@ export interface Bonus {
 /** Bonus gratis di semua paket. Dipakai oleh BonusSection dan basis pengetahuan Asisten AI. */
 export const BONUSES: Bonus[] = [
   {
-    icon: MessageSquareText,
-    title: "Template Balas Chat Pelanggan",
+    icon: Megaphone,
+    title: "Konsultasi Strategi Iklan Gratis",
     description:
-      "Contoh kalimat siap salin waktu balas chat tanya harga, konfirmasi jam kedatangan teknisi, sampai minta ulasan.",
+      "Ngobrol langsung soal strategi iklan Facebook & Instagram, mulai dari area yang dibidik, pesan iklan, sampai budget harian yang masuk akal untuk usaha AC Anda.",
   },
   {
-    icon: Lightbulb,
-    title: "Diskusi Arah Promosi Area Lokal",
+    icon: MapPinned,
+    title: "Panduan Optimasi Google Maps",
     description:
-      "Obrolan santai membahas cara paling masuk akal mendatangkan orderan rutin di kecamatan atau kota tempat Anda buka jasa.",
+      "Langkah praktis merapikan foto, kategori, jam buka, dan ulasan di profil Google Maps supaya usaha Anda lebih gampang ditemukan pelanggan di sekitar.",
   },
   {
-    icon: Share2,
-    title: "Perapian Profil Bio Medsos",
+    icon: Crown,
+    title: "Bonus Eksklusif Template Premium",
     description:
-      "Saran kalimat singkat untuk bio Instagram, Facebook, dan info bisnis WhatsApp supaya seragam mengarah ke website baru.",
+      "Template caption Instagram & Facebook yang sudah terbukti menarik perhatian calon pelanggan bisnis AC.",
   },
 ];

@@ -22,7 +22,7 @@ export default function BonusSection() {
               Ekstra.
             </>
           }
-          description="Biar begitu website beres, Anda juga punya bekal praktis buat meladeni chat pelanggan dan memajang link di medsos."
+          description="Biar begitu website beres, Anda juga punya bekal praktis buat beriklan, tampil di Google Maps, dan rutin posting di medsos."
         />
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">

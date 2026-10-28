@@ -158,7 +158,16 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
       ["asisten", 2], ["assistant", 2], ["robot", 2],
     ],
   },
-  { id: "bonus", keywords: [["bonus", 3.5], ["bonuses", 3.5], ["hadiah", 2], ["freebies", 3]] },
+  {
+    id: "bonus",
+    keywords: [
+      ["bonus", 3.5], ["bonuses", 3.5], ["hadiah", 2], ["freebies", 3],
+      // Nama bonus: konsultasi strategi iklan, panduan optimasi Google Maps, template caption
+      ["konsultasi strategi", 3.5], ["konsultasi iklan", 3.5], ["strategi iklan", 2],
+      ["optimasi google maps", 6], ["optimasi maps", 4], ["panduan optimasi", 4],
+      ["caption", 3.5], ["template", 3], ["template premium", 3.5],
+    ],
+  },
   {
     id: "included",
     keywords: [
@@ -494,8 +503,8 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
     case "bonus":
       return {
         text: [
-          "Semua paket dapat bonus gratis:",
-          ...BONUSES.map((bonus) => `- ${bonus.title}`),
+          `Semua paket dapat ${BONUSES.length} bonus gratis:`,
+          ...BONUSES.map((bonus) => `- ${bonus.title}: ${bonus.description}`),
         ].join("\n"),
         suggestWhatsApp: false,
         quickReplies: ["Lihat harga paket", "Cara pesan"],

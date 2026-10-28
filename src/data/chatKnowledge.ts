@@ -74,6 +74,7 @@ export function buildChatKnowledge(): string {
   lines.push(
     "- \"No Artikel\" artinya paket tidak termasuk penulisan artikel blog.",
     "- \"Gratis Meta Ads\" artinya bantuan setup iklan Facebook dan Instagram. Website tidak menyebutkan apakah saldo iklan yang dibayar ke Meta sudah termasuk, jadi hal itu dijelaskan langsung oleh Mas Nanang di WhatsApp.",
+    "- Bonus konsultasi strategi iklan berupa saran dan perencanaan iklan, bukan saldo iklan gratis.",
     "- Contoh website di bagian Karya adalah website demo buatan Mas Nanang yang sudah online, bukan proyek klien. Nama usaha, foto, testimoni, dan angka di dalam website demo hanya contoh. Untuk klien, nama usaha, warna, foto, dan tarif disesuaikan dengan usaha klien.",
     "- Website juga punya halaman Panduan berisi artikel gratis seputar promosi usaha service AC dan cara daftar di Google Maps.",
     "- Pemesanan, harga Paket Premium Custom, jadwal, dan biaya perpanjangan domain dikonfirmasi lewat tombol WhatsApp di bawah chat."
