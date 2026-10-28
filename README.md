@@ -15,6 +15,8 @@ Hosting utama: **Cloudflare**, gratis dan boleh dipakai untuk website bisnis. We
 
 Tanpa GitHub pun bisa: unduh paket siap upload **[nanangdigital-siap-upload.zip](https://github.com/nanangsanjaya0896/Nanangdigital-for-ac/releases/download/siap-upload/nanangdigital-siap-upload.zip)** (dibuat ulang otomatis setiap `main` berubah), lalu upload di Cloudflare Pages lewat **Drag and drop your files**. Lihat Cara C di panduan deploy.
 
+Kalau sambungan GitHub di Cloudflare bermasalah (misalnya **Missing git connection**), deploy otomatis tetap bisa lewat GitHub Actions (`.github/workflows/deploy-cloudflare.yml`). Caranya cukup isi secret `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` di GitHub. Lihat Cara D di panduan deploy.
+
 | Pengaturan | Workers (disarankan) | Pages |
 | --- | --- | --- |
 | Project name | `nanangdigital-for-ac` (harus sama dengan `wrangler.jsonc`) | bebas |
