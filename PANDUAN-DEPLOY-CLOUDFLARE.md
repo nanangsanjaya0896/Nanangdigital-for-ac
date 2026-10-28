@@ -14,16 +14,20 @@ Urutan kerjanya:
 
 ## Bagian 1: Deploy website
 
-Ada **dua cara**. Keduanya sudah disiapkan dan dites. Pilih salah satu saja.
+Ada **tiga cara**. Semuanya sudah disiapkan dan dites. Pilih salah satu saja.
 
-| | Cara A: Workers (disarankan) | Cara B: Pages (cara lama) |
-| --- | --- | --- |
-| Posisi di dashboard | Tombol utama **Create application** | Link kecil di bagian bawah halaman Create application |
-| Alamat sementara | `nanangdigital-for-ac.<nama-akun>.workers.dev` | `nanangdigital-for-ac.pages.dev` |
+| | Cara A: Workers + GitHub (disarankan) | Cara B: Pages + GitHub | Cara C: Pages upload manual |
+| --- | --- | --- | --- |
+| File yang diupload | Tidak ada, diambil otomatis dari GitHub | Tidak ada, diambil otomatis dari GitHub | Hanya 1 file: `nanangdigital-siap-upload.zip` |
+| Update website | Otomatis setiap ada perubahan | Otomatis setiap ada perubahan | Upload ulang zip terbaru |
+| Posisi di dashboard | Tombol utama **Create application** | Link kecil di bagian bawah halaman Create application | Sama dengan Cara B, lalu pilih **Drag and drop your files** |
+| Alamat sementara | `nanangdigital-for-ac.<nama-akun>.workers.dev` | `nanangdigital-for-ac.pages.dev` | `nanangdigital-for-ac.pages.dev` |
 
 Sejak 2025 Cloudflare menampilkan **Workers** sebagai pilihan utama, sedangkan **Pages** disembunyikan sebagai cara lama. Kalau Anda tidak menemukan menu Pages, itu normal. Pakai **Cara A**.
 
-Isi website di kedua cara sama persis:
+> **Jangan upload file kode dari GitHub** (folder `src`, `package.json`, dan sebagainya) ke Cloudflare. Itu bahan mentah yang belum dirakit, jadi website akan kosong atau error. Di Cara A dan B tidak ada file yang perlu diupload. Di Cara C, yang diupload hanya file zip siap pakai.
+
+Isi website di ketiga cara sama persis:
 
 * 6 halaman statis untuk SEO: `/`, `/panduan/`, dan 4 artikel.
 * 2 fungsi server:
@@ -106,6 +110,40 @@ Pakai cara ini hanya kalau Anda lebih suka Pages atau sudah terlanjur membuat pr
 
 Di log build Pages akan muncul tulisan *"A wrangler.toml file was found but it does not appear to be valid ... Skipping file and continuing"*. Itu normal. File `wrangler.jsonc` memang khusus untuk Cara A, dan Pages tetap deploy seperti biasa.
 
+### Cara C: Cloudflare Pages lewat upload manual (tanpa GitHub)
+
+Pakai cara ini kalau menyambungkan GitHub terus gagal. Yang diupload **hanya 1 file**, yaitu `nanangdigital-siap-upload.zip`.
+
+**Langkah 1: Unduh paket siap upload**
+
+Unduh di sini: **[nanangdigital-siap-upload.zip](https://github.com/nanangsanjaya0896/Nanangdigital-for-ac/releases/download/siap-upload/nanangdigital-siap-upload.zip)**
+
+* Tidak perlu diekstrak. Langsung upload file zip-nya.
+* Paket ini dibuat ulang otomatis setiap kali website diperbarui, jadi link di atas selalu berisi versi terbaru.
+* Isinya website yang sudah jadi: semua halaman, gambar, file tampilan, sitemap, halaman 404, aturan cache dan redirect, plus `_worker.js` yang menjalankan Asisten AI dan Meta CAPI.
+
+**Langkah 2: Upload ke Cloudflare**
+
+1. Buka **Workers & Pages** > **Create application**.
+2. Gulir ke paling bawah, lalu klik link kecil **Looking to deploy Pages? Get started** (atau **Continue to Pages**).
+3. Pilih **Drag and drop your files** (di sebagian tampilan **Upload assets**).
+4. Isi **Project name** dengan `nanangdigital-for-ac`, lalu klik **Create project**.
+5. Seret file `nanangdigital-siap-upload.zip` ke kotak upload. Tunggu sampai semua file selesai terunggah, lalu klik **Deploy site**.
+
+**Langkah 3: Pasang token rahasia**
+
+1. Di project, buka **Settings** > **Variables and Secrets** > **Add**. Isi `META_CAPI_ACCESS_TOKEN` dan `GEMINI_API_KEY`, klik **Encrypt**, lalu **Save**.
+2. Token baru aktif setelah upload ulang. Buka tab **Deployments** > **Create deployment**, pilih **Production**, upload lagi file zip yang sama, lalu klik **Save and Deploy**.
+
+**Setiap ada perubahan website**
+
+Unduh lagi file zip dari link di Langkah 1, lalu upload lewat **Deployments** > **Create deployment** seperti Langkah 3 poin 2.
+
+Catatan:
+
+* Project upload manual tidak bisa diubah menjadi project GitHub. Kalau nanti ingin update otomatis (Cara A atau B), buat project baru, lalu pindahkan domainnya.
+* Domain `nanangdigital.web.id` dipasang dengan cara yang sama seperti Cara B (lihat Bagian 3).
+
 ### Cek website sudah jalan
 
 Buka alamat sementara dari Cloudflare (ganti `ALAMAT`, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`). Setelah domain tersambung, cek lagi dengan `https://nanangdigital.web.id`.
@@ -159,7 +197,7 @@ Kerjakan setelah deploy di Bagian 1 berhasil **dan** domain di Bagian 2 sudah **
 **Langkah 1: Tambahkan custom domain**
 
 * **Kalau memakai Cara A (Workers):** buka project `nanangdigital-for-ac` > **Settings** > **Domains & Routes** > **Add** > **Custom domain**. Ketik `nanangdigital.web.id`, lalu klik **Add domain**. Ulangi untuk `www.nanangdigital.web.id`.
-* **Kalau memakai Cara B (Pages):** buka project > **Custom domains** > **Set up a domain**. Ketik `nanangdigital.web.id`, klik **Continue**, lalu **Activate domain**. Ulangi untuk `www.nanangdigital.web.id`.
+* **Kalau memakai Cara B atau Cara C (Pages):** buka project > **Custom domains** > **Set up a domain**. Ketik `nanangdigital.web.id`, klik **Continue**, lalu **Activate domain**. Ulangi untuk `www.nanangdigital.web.id`.
 
 Cloudflare otomatis membuat pengaturan DNS dan sertifikat HTTPS. Tunggu beberapa menit sampai statusnya **Active**, lalu buka `https://nanangdigital.web.id`.
 
@@ -193,6 +231,8 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
 | Gejala | Solusi |
 | --- | --- |
 | Tidak ada pilihan **Pages** | Normal, tampilan baru Cloudflare. Pakai Cara A |
+| Website tampil kosong, putih, atau error setelah upload manual | Kemungkinan yang diupload file kode dari GitHub. Upload ulang memakai file `nanangdigital-siap-upload.zip` (Cara C) |
+| Ada file bertanda merah saat upload manual | Upload ulang seluruh file zip lewat **Create deployment** |
 | Repo `Nanangdigital-for-ac` tidak muncul di daftar | Di GitHub buka **Settings** > **Applications** > **Installed GitHub Apps** > **Cloudflare Workers and Pages** > **Configure**. Di **Repository access**, pilih **All repositories** atau tambahkan repo ini, lalu **Save**. Kembali ke Cloudflare dan muat ulang halaman |
 | Error *"Missing entry-point to Worker script or to assets directory"* | Build memakai kode lama yang belum punya `wrangler.jsonc`. Pastikan branch `main` sudah terbaru, lalu **Retry build** |
 | Cloudflare membuat Pull Request otomatis berisi konfigurasi Workers | Jangan di-merge dulu. Kabari saya supaya dicek |
@@ -226,5 +266,8 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
 * **`public/_headers`** (cache file) dan **`public/_redirects`** (alamat lama `/en` ke beranda) dibaca oleh Workers maupun Pages.
 * **`public/_routes.json`** hanya untuk Pages. Di Workers file ini tidak ikut diunggah karena tercantum di `public/.assetsignore`.
 * Asisten AI dan Meta CAPI otomatis berjalan di domain mana pun (`nanangdigital.web.id`, `www`, maupun alamat sementara), tanpa pengaturan tambahan.
+* **Paket upload manual (Cara C)**: `npm run build:upload` membuat `nanangdigital-siap-upload.zip` lewat `scripts/package-direct-upload.mjs`.
+  * Isinya folder `dist` ditambah `_worker.js`, hasil bundel `worker/pages-advanced.js`. Upload manual di dashboard tidak bisa membawa folder `functions/`, tetapi bisa membawa `_worker.js`.
+  * Workflow `.github/workflows/paket-upload-cloudflare.yml` membuat ulang paket ini setiap kali `main` berubah dan memasangnya di rilis `siap-upload`.
 * **Tes di komputer sendiri** (meniru Cloudflare Workers): `npm run build`, lalu `npx wrangler dev`.
 * Versi Wrangler dikunci di `package.json`, jadi build di Cloudflare selalu memakai versi yang sama dengan yang sudah dites.

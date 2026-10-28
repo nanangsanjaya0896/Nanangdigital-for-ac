@@ -1,0 +1,62 @@
+# Membuat paket website siap upload ke Cloudflare Pages (cara upload manual / drag and drop)
+# setiap kali branch main berubah, lalu memasangnya di halaman Releases dengan nama tetap:
+# https://github.com/nanangsanjaya0896/Nanangdigital-for-ac/releases/download/siap-upload/nanangdigital-siap-upload.zip
+#
+# Kalau website di-deploy lewat GitHub (Cara A atau Cara B di PANDUAN-DEPLOY-CLOUDFLARE.md),
+# paket ini tidak dipakai dan workflow ini boleh diabaikan.
+name: Paket upload Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paket-upload-cloudflare
+  cancel-in-progress: true
+
+jobs:
+  paket:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Pasang dependensi
+        run: npm ci
+
+      - name: Build website dan buat paket zip
+        run: npm run build:upload
+
+      - name: Perbarui rilis "siap-upload"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES_FILE="$(mktemp)"
+          cat > "$NOTES_FILE" <<EOF
+          Paket website NanangDigital siap upload ke Cloudflare Pages (cara upload manual).
+
+          Dibuat otomatis dari commit ${GITHUB_SHA::7} pada $(TZ=Asia/Jakarta date '+%d-%m-%Y %H:%M') WIB.
+
+          Cara pakai:
+          1. Unduh file nanangdigital-siap-upload.zip di bawah. Tidak perlu diekstrak.
+          2. Di Cloudflare: Workers & Pages > Create application > link "Looking to deploy Pages? Get started" > Drag and drop your files.
+          3. Seret file zip ini ke kotak upload, lalu klik Deploy site.
+
+          Untuk update berikutnya: buka project di Cloudflare > Create deployment, lalu upload file zip terbaru dari halaman ini.
+          Panduan lengkap: PANDUAN-DEPLOY-CLOUDFLARE.md (Cara C).
+          EOF
+          gh release delete siap-upload --yes --cleanup-tag || true
+          gh release create siap-upload nanangdigital-siap-upload.zip \
+            --target "$GITHUB_SHA" \
+            --title "Website siap upload ke Cloudflare Pages" \
+            --notes-file "$NOTES_FILE" \
+            --latest

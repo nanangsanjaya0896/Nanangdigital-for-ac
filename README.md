@@ -13,6 +13,8 @@ Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang San
 
 Hosting utama: **Cloudflare**, gratis dan boleh dipakai untuk website bisnis. Website ini siap di-deploy lewat **Cloudflare Workers** (tombol utama di dashboard Cloudflare sekarang) maupun **Cloudflare Pages** (cara lama). Panduan lengkap langkah demi langkah ada di [`PANDUAN-DEPLOY-CLOUDFLARE.md`](./PANDUAN-DEPLOY-CLOUDFLARE.md).
 
+Tanpa GitHub pun bisa: unduh paket siap upload **[nanangdigital-siap-upload.zip](https://github.com/nanangsanjaya0896/Nanangdigital-for-ac/releases/download/siap-upload/nanangdigital-siap-upload.zip)** (dibuat ulang otomatis setiap `main` berubah), lalu upload di Cloudflare Pages lewat **Drag and drop your files**. Lihat Cara C di panduan deploy.
+
 | Pengaturan | Workers (disarankan) | Pages |
 | --- | --- | --- |
 | Project name | `nanangdigital-for-ac` (harus sama dengan `wrangler.jsonc`) | bebas |

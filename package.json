@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "node scripts/sync-chat-knowledge.mjs && vite build && NODE_ENV=production node scripts/prerender.mjs",
     "preview": "vite preview",
-    "sync:chat": "node scripts/sync-chat-knowledge.mjs"
+    "sync:chat": "node scripts/sync-chat-knowledge.mjs",
+    "build:upload": "npm run build && node scripts/package-direct-upload.mjs"
   },
   "dependencies": {
     "clsx": "2.1.1",
@@ -23,6 +24,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.1",
+    "esbuild": "0.27.7",
     "tailwindcss": "4.1.17",
     "typescript": "5.9.3",
     "vite": "7.3.2",
