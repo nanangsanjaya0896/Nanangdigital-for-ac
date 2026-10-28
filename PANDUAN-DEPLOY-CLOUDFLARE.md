@@ -25,6 +25,8 @@ Ada **tiga cara**. Semuanya sudah disiapkan dan dites. Pilih salah satu saja.
 
 Sejak 2025 Cloudflare menampilkan **Workers** sebagai pilihan utama, sedangkan **Pages** disembunyikan sebagai cara lama. Kalau Anda tidak menemukan menu Pages, itu normal. Pakai **Cara A**.
 
+Kalau sambungan GitHub di Cloudflare bermasalah (misalnya muncul tanda merah **Missing git connection**), coba dulu [perbaikannya](#memperbaiki-missing-git-connection). Kalau tetap gagal, pakai **Cara C** (upload zip) atau **Cara D** (deploy otomatis lewat GitHub Actions). Kedua cara itu tidak butuh sambungan GitHub di Cloudflare.
+
 > **Jangan upload file kode dari GitHub** (folder `src`, `package.json`, dan sebagainya) ke Cloudflare. Itu bahan mentah yang belum dirakit, jadi website akan kosong atau error. Di Cara A dan B tidak ada file yang perlu diupload. Di Cara C, yang diupload hanya file zip siap pakai.
 
 Isi website di ketiga cara sama persis:
@@ -144,6 +146,54 @@ Catatan:
 * Project upload manual tidak bisa diubah menjadi project GitHub. Kalau nanti ingin update otomatis (Cara A atau B), buat project baru, lalu pindahkan domainnya.
 * Domain `nanangdigital.web.id` dipasang dengan cara yang sama seperti Cara B (lihat Bagian 3).
 
+### Cara D: Deploy otomatis lewat GitHub Actions (tanpa sambungan GitHub di Cloudflare)
+
+Pakai cara ini kalau sambungan GitHub di Cloudflare terus gagal, tetapi Anda ingin website tetap ter-update otomatis. Di sini GitHub sendiri yang mengirim website ke Cloudflare memakai token. Hasilnya sama dengan Cara A (Workers), dan workflow-nya sudah disiapkan di repo (`.github/workflows/deploy-cloudflare.yml`).
+
+**Langkah 1: Buat API token di Cloudflare**
+
+1. Di dashboard Cloudflare, klik ikon profil di kanan atas, lalu pilih **My Profile** > **API Tokens**.
+2. Klik **Create Token**, cari template **Edit Cloudflare Workers**, lalu klik **Use template**.
+3. Di **Account Resources**, pilih akun Anda. Di **Zone Resources**, pilih **All zones**.
+4. Klik **Continue to summary**, lalu **Create Token**.
+5. Salin token yang muncul. Token hanya ditampilkan sekali. Jangan kirim token ini ke siapa pun, termasuk lewat chat.
+
+**Langkah 2: Salin Account ID**
+
+Buka **Workers & Pages**. Di panel kanan (**Account details**), salin **Account ID**.
+
+**Langkah 3: Simpan keduanya di GitHub**
+
+1. Buka repo **Nanangdigital-for-ac** di GitHub, lalu **Settings** > **Secrets and variables** > **Actions**.
+2. Klik **New repository secret**. Isi **Name** `CLOUDFLARE_API_TOKEN` dan **Secret** dengan token dari Langkah 1, lalu klik **Add secret**.
+3. Klik **New repository secret** lagi. Isi **Name** `CLOUDFLARE_ACCOUNT_ID` dan **Secret** dengan Account ID dari Langkah 2, lalu klik **Add secret**.
+
+**Langkah 4: Jalankan deploy pertama**
+
+1. Di repo GitHub, buka tab **Actions**, pilih **Deploy ke Cloudflare (otomatis)**, lalu klik **Run workflow** > **Run workflow**.
+2. Tunggu sekitar 1 sampai 2 menit sampai muncul centang hijau. Website muncul di **Workers & Pages** dengan nama `nanangdigital-for-ac`.
+
+Setelah itu, setiap perubahan website otomatis ter-deploy. Token rahasia website (`META_CAPI_ACCESS_TOKEN`, `GEMINI_API_KEY`) dipasang seperti Cara A Langkah 3, dan domain dipasang seperti Cara A di Bagian 3.
+
+Catatan:
+
+* Kalau sebelumnya sudah ada project bertanda **Missing git connection**, hapus project itu dulu (**Settings** > paling bawah > **Delete**), supaya hanya ada satu jalur deploy.
+* Kalau log deploy meminta *"register a workers.dev subdomain"*, buka **Workers & Pages** sekali, lalu atur subdomain di panel **Account details**.
+
+### Memperbaiki Missing git connection
+
+Tanda merah **Missing git connection** artinya Cloudflare belum mendapat izin membaca repo GitHub Anda. Ini masalah sambungan akun, bukan kode website.
+
+1. Buka **[github.com/settings/installations](https://github.com/settings/installations)** dengan akun GitHub `nanangsanjaya0896`.
+2. Cari **Cloudflare Workers and Pages**, lalu klik **Configure**.
+   * Kalau ada: di **Repository access**, pilih **All repositories**, lalu **Save**. Kalau setelah itu masih merah, gulir ke paling bawah dan klik **Uninstall**.
+   * Kalau tidak ada: berarti izinnya belum pernah terpasang. Lanjut ke langkah 3.
+3. Di Cloudflare, hapus project yang bertanda merah (**Settings** > paling bawah > **Delete**).
+4. Buat ulang lewat **Create application** > **GitHub**. Kalau diminta, klik **Connect GitHub** atau **+ Add account**, pilih akun `nanangsanjaya0896`, pilih **All repositories**, lalu **Install & Authorize**.
+5. Pilih repo `Nanangdigital-for-ac` dan isi pengaturan seperti Cara A Langkah 2.
+
+Tips: pakai jendela penyamaran (incognito) dan izinkan pop-up. Satu akun GitHub sebaiknya hanya tersambung ke satu akun Cloudflare. Kalau masih gagal juga, kemungkinan sedang ada gangguan di sisi Cloudflare. Pakai Cara C atau Cara D.
+
 ### Cek website sudah jalan
 
 Buka alamat sementara dari Cloudflare (ganti `ALAMAT`, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev`). Setelah domain tersambung, cek lagi dengan `https://nanangdigital.web.id`.
@@ -231,6 +281,8 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
 | Gejala | Solusi |
 | --- | --- |
 | Tidak ada pilihan **Pages** | Normal, tampilan baru Cloudflare. Pakai Cara A |
+| Tanda merah **Missing git connection** | Cloudflare belum mendapat izin membaca GitHub. Ikuti [Memperbaiki Missing git connection](#memperbaiki-missing-git-connection). Kalau tetap gagal, pakai Cara C atau Cara D |
+| Workflow **Deploy ke Cloudflare (otomatis)** hanya menulis "Deploy otomatis belum aktif" | Normal selama secret `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` belum diisi (Cara D) |
 | Website tampil kosong, putih, atau error setelah upload manual | Kemungkinan yang diupload file kode dari GitHub. Upload ulang memakai file `nanangdigital-siap-upload.zip` (Cara C) |
 | Ada file bertanda merah saat upload manual | Upload ulang seluruh file zip lewat **Create deployment** |
 | Repo `Nanangdigital-for-ac` tidak muncul di daftar | Di GitHub buka **Settings** > **Applications** > **Installed GitHub Apps** > **Cloudflare Workers and Pages** > **Configure**. Di **Repository access**, pilih **All repositories** atau tambahkan repo ini, lalu **Save**. Kembali ke Cloudflare dan muat ulang halaman |
@@ -269,5 +321,6 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
 * **Paket upload manual (Cara C)**: `npm run build:upload` membuat `nanangdigital-siap-upload.zip` lewat `scripts/package-direct-upload.mjs`.
   * Isinya folder `dist` ditambah `_worker.js`, hasil bundel `worker/pages-advanced.js`. Upload manual di dashboard tidak bisa membawa folder `functions/`, tetapi bisa membawa `_worker.js`.
   * Workflow `.github/workflows/paket-upload-cloudflare.yml` membuat ulang paket ini setiap kali `main` berubah dan memasangnya di rilis `siap-upload`.
+* **Deploy otomatis lewat GitHub Actions (Cara D)**: `.github/workflows/deploy-cloudflare.yml` menjalankan `npm run build` lalu `npx wrangler deploy` setiap kali `main` berubah. Workflow ini hanya aktif kalau secret `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` sudah diisi.
 * **Tes di komputer sendiri** (meniru Cloudflare Workers): `npm run build`, lalu `npx wrangler dev`.
 * Versi Wrangler dikunci di `package.json`, jadi build di Cloudflare selalu memakai versi yang sama dengan yang sudah dites.

@@ -1,0 +1,59 @@
+# Deploy otomatis ke Cloudflare Workers dari GitHub Actions (Cara D di PANDUAN-DEPLOY-CLOUDFLARE.md).
+#
+# Cara ini TIDAK butuh sambungan GitHub di dashboard Cloudflare, jadi tetap jalan walaupun
+# Cloudflare menampilkan "Missing git connection". Yang dibutuhkan hanya 2 secret di GitHub:
+#   CLOUDFLARE_API_TOKEN  : API token Cloudflare (template "Edit Cloudflare Workers")
+#   CLOUDFLARE_ACCOUNT_ID : Account ID Cloudflare
+# Selama 2 secret itu belum diisi, workflow ini hanya memberi catatan dan tidak melakukan apa-apa.
+name: Deploy ke Cloudflare (otomatis)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Cek secret Cloudflare
+        id: cek
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice title=Deploy otomatis belum aktif::Isi secret CLOUDFLARE_API_TOKEN dan CLOUDFLARE_ACCOUNT_ID di GitHub (Settings > Secrets and variables > Actions). Lihat PANDUAN-DEPLOY-CLOUDFLARE.md, Cara D."
+            echo "aktif=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "aktif=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.cek.outputs.aktif == 'true'
+
+      - uses: actions/setup-node@v7
+        if: steps.cek.outputs.aktif == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Pasang dependensi
+        if: steps.cek.outputs.aktif == 'true'
+        run: npm ci
+
+      - name: Build website
+        if: steps.cek.outputs.aktif == 'true'
+        run: npm run build
+
+      - name: Deploy ke Cloudflare Workers
+        if: steps.cek.outputs.aktif == 'true'
+        run: npx wrangler deploy
