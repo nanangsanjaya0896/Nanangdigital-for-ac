@@ -6,17 +6,17 @@ Website NanangDigital di Cloudflare sudah membawa:
 * **Google Analytics 4 (`G-JY9N81NCQE`)** yang dimuat ringan tanpa menurunkan skor PageSpeed.
 * **`sitemap.xml` dan `robots.txt`** yang otomatis mengikuti alamat website aktif.
 
-Di panduan ini, `ALAMAT` berarti alamat website Anda, misalnya `https://nanangdigital-for-ac.namaakun.workers.dev` (Cloudflare Workers), `https://nanangdigital-for-ac.pages.dev` (Cloudflare Pages), atau domain sendiri. Pastikan `SITE_URL` sudah sesuai dengan alamat itu, lihat [`PANDUAN-DEPLOY-CLOUDFLARE.md`](./PANDUAN-DEPLOY-CLOUDFLARE.md).
+Alamat utama website: **`https://nanangdigital.web.id`**. Daftarkan domain ini ke Search Console **setelah domain tersambung** ke website (lihat Bagian 2 dan 3 di [`PANDUAN-DEPLOY-CLOUDFLARE.md`](./PANDUAN-DEPLOY-CLOUDFLARE.md)). Alamat sementara `.workers.dev` atau `.pages.dev` tidak perlu didaftarkan, karena semua halaman sudah menunjuk ke domain utama.
 
 ---
 
 ## Bagian 1: Verifikasi Google Search Console
 
 1. Buka **[search.google.com/search-console](https://search.google.com/search-console)** dan login dengan **akun Google yang sama** seperti sebelumnya.
-2. Klik **Tambahkan properti**, lalu pilih kotak kanan **Awalan URL (URL prefix)**. Jangan pilih *Domain*, karena subdomain `.workers.dev` dan `.pages.dev` bukan milik Anda sendiri.
+2. Klik **Tambahkan properti**, lalu pilih kotak kanan **Awalan URL (URL prefix)**. Pilihan *Domain* juga bisa (verifikasi lewat DNS di Cloudflare), tetapi *Awalan URL* paling cepat karena tag verifikasinya sudah terpasang.
 3. Ketik alamat lengkap (diakhiri garis miring) lalu klik **Lanjutkan**:
    ```text
-   ALAMAT/
+   https://nanangdigital.web.id/
    ```
 4. Di jendela verifikasi, buka **Metode verifikasi lainnya** > **Tag HTML**.
 5. Bandingkan kode yang ditampilkan Google dengan kode yang sudah terpasang di website:
@@ -30,7 +30,7 @@ Di panduan ini, `ALAMAT` berarti alamat website Anda, misalnya `https://nanangdi
 
 1. Di menu kiri Search Console, klik **Peta Situs (Sitemaps)**.
 2. Di kolom *Tambahkan peta situs baru*, ketik `sitemap.xml`, lalu klik **Kirim**. Status akan tertulis **Sukses** (6 halaman).
-3. *(Supaya lebih cepat muncul di Google)*: klik kolom **Inspeksi URL** di bagian atas, tempel `ALAMAT/`, tekan Enter, lalu klik **Minta Pengindeksan**. Ulangi untuk `ALAMAT/panduan/`.
+3. *(Supaya lebih cepat muncul di Google)*: klik kolom **Inspeksi URL** di bagian atas, tempel `https://nanangdigital.web.id/`, tekan Enter, lalu klik **Minta Pengindeksan**. Ulangi untuk `https://nanangdigital.web.id/panduan/`.
 
 ---
 
@@ -38,7 +38,7 @@ Di panduan ini, `ALAMAT` berarti alamat website Anda, misalnya `https://nanangdi
 
 ID pengukuran **`G-JY9N81NCQE`** sudah tertanam di kode (`index.html` dan `src/utils/tracking.ts`), jadi data langsung masuk ke properti GA4 Anda begitu website live. Tidak perlu mengisi Environment Variable apa pun.
 
-Opsional, supaya rapi: di GA4 buka **Admin** > **Aliran data (Data streams)** > pilih aliran web, lalu ubah **URL aliran** menjadi alamat website Anda. Ini hanya label; pengumpulan data tetap jalan tanpa diubah.
+Opsional, supaya rapi: di GA4 buka **Admin** > **Aliran data (Data streams)** > pilih aliran web, lalu ubah **URL aliran** menjadi `https://nanangdigital.web.id`. Ini hanya label; pengumpulan data tetap jalan tanpa diubah.
 
 > Kalau suatu hari ingin memakai ID GA4 yang lain, ID tersebut perlu diganti di kode (`index.html` dan `src/utils/tracking.ts`).
 
