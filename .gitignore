@@ -7,3 +7,5 @@ dist
 .env.*.local
 .wrangler
 .dev.vars*
+upload
+nanangdigital-siap-upload.zip
