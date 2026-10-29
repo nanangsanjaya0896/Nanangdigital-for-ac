@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { ArrowUp } from "lucide-react";
 import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
+import { useImageFallback } from "../hooks/useImageFallback";
 import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 import { SEO_ARTICLES } from "../data/articles";
 
@@ -20,7 +20,7 @@ const FOOT_NAV_RIGHT: readonly { readonly id: string; readonly label: string }[]
 ];
 
 export default function Footer() {
-  const [logoFailed, setLogoFailed] = useState(false);
+  const { failed: logoFailed, ref: logoRef, onError: onLogoError } = useImageFallback();
 
   const footNavLeft = FOOT_NAV_LEFT;
   const footNavRight = FOOT_NAV_RIGHT;
@@ -47,13 +47,14 @@ export default function Footer() {
             >
               {!logoFailed && (
                 <img
+                  ref={logoRef}
                   src={BUSINESS.logoUrl}
                   alt={`Logo ${BUSINESS.brand}`}
                   width={56}
                   height={56}
                   loading="lazy"
                   decoding="async"
-                  onError={() => setLogoFailed(true)}
+                  onError={onLogoError}
                   className="h-12 w-auto max-w-[11rem] rounded-xl border border-white/10 bg-white/[0.03] object-contain shadow-[0_8px_24px_rgba(0,0,0,0.45)] md:h-14"
                 />
               )}

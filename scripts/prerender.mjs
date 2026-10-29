@@ -197,6 +197,9 @@ async function runPrerender() {
     }
   );
 
+  // JavaScript aplikasi baru dimuat setelah tampilan pertama tergambar (lihat buildAppLoader)
+  baseTemplate = deferAppScripts(baseTemplate);
+
   // 1. Prerender Landing Page Utama (/)
   const homeHtml = baseTemplate.replace(
     '<div id="root"></div>',
@@ -295,6 +298,59 @@ ${sitemapEntries
   console.log(`✓ Alamat website (SITE_URL): ${SITE_ORIGIN} [sumber: ${siteUrlSource}]`);
   const siteWarning = siteUrlWarning({ ...env, ...process.env });
   if (siteWarning) console.warn(siteWarning);
+}
+
+/**
+ * Ganti tag <script type="module"> dan <link rel="modulepreload"> buatan Vite dengan pemuat kecil di
+ * akhir <body>. Isi halaman (HTML + CSS inline) langsung tergambar dulu, baru JavaScript aplikasi
+ * diunduh dan dijalankan. Hasilnya angka FCP/LCP di PageSpeed stabil dan tidak ikut menunggu
+ * JavaScript, sementara pengunjung tidak merasakan bedanya (selisih sekitar satu frame).
+ * @param {string} html
+ */
+function deferAppScripts(html) {
+  const entryRe = /<script type="module" crossorigin src="(\/assets\/[^"]+\.js)"><\/script>\s*/;
+  const preloadRe = /<link rel="modulepreload" crossorigin href="(\/assets\/[^"]+\.js)">\s*/g;
+  const entry = html.match(entryRe);
+  if (!entry) {
+    throw new Error("Tag <script type=\"module\"> buatan Vite tidak ditemukan di dist/index.html");
+  }
+  const preloads = [...html.matchAll(preloadRe)].map((m) => m[1]);
+  let out = html.replace(entryRe, "").replace(preloadRe, "");
+  out = out.replace("</body>", `${buildAppLoader(entry[1], preloads)}\n  </body>`);
+  return out;
+}
+
+/**
+ * @param {string} entrySrc
+ * @param {string[]} preloadHrefs
+ */
+function buildAppLoader(entrySrc, preloadHrefs) {
+  return `    <script>
+      (function () {
+        var mulai = false;
+        function muatAplikasi() {
+          if (mulai) return;
+          mulai = true;
+          ${JSON.stringify(preloadHrefs)}.forEach(function (href) {
+            var l = document.createElement("link");
+            l.rel = "modulepreload";
+            l.crossOrigin = "";
+            l.href = href;
+            document.head.appendChild(l);
+          });
+          var s = document.createElement("script");
+          s.type = "module";
+          s.crossOrigin = "";
+          s.src = ${JSON.stringify(entrySrc)};
+          document.head.appendChild(s);
+        }
+        // Setelah frame pertama tergambar. Cadangan 1,5 detik untuk tab yang dibuka di latar belakang.
+        requestAnimationFrame(function () {
+          setTimeout(muatAplikasi, 0);
+        });
+        setTimeout(muatAplikasi, 1500);
+      })();
+    </script>`;
 }
 
 /** @param {string} dir */

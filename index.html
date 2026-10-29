@@ -37,29 +37,9 @@
       content="Website resmi &amp; setup iklan lokal khusus usaha service AC. Paket mulai Rp1.500.000 sudah termasuk domain, hosting, SSL, dan Google Maps."
     />
 
-    <!-- Preload font utama (self-hosted WOFF2) & preconnect Cloudinary untuk Mobile LCP kencang -->
-    <link
-      rel="preload"
-      href="/fonts/plus-jakarta-sans-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/space-grotesk-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
-    <link
-      rel="preload"
-      as="image"
-      href="https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1"
-      imagesrcset="https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_360,c_limit/photo1 360w, https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1 560w, https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_760,c_limit/photo1 760w"
-      imagesizes="(max-width: 640px) 300px, 340px"
-    />
+    <!-- Foto founder dan logo dari Cloudinary: sambungan disiapkan lebih awal. Foto tidak di-preload karena
+         sudah ada di HTML hasil prerender (langsung ditemukan browser) dan di HP letaknya di bawah layar pertama. -->
+    <link rel="preconnect" href="https://res.cloudinary.com" />
 
     <!-- Data Terstruktur Schema.org (Layanan + Katalog Paket + FAQPage) -->
     <script type="application/ld+json">
@@ -155,6 +135,7 @@
       html {
         background-color: #0d1116;
       }
+      .tampil-tanpa-js .reveal,
       .tampil-tanpa-js [style*="opacity:0"] {
         opacity: 1 !important;
         transform: none !important;
@@ -162,6 +143,7 @@
     </style>
     <noscript>
       <style>
+        .reveal,
         [style*="opacity:0"] {
           opacity: 1 !important;
           transform: none !important;
@@ -174,7 +156,8 @@
       }, 3000);
     </script>
 
-    <!-- Google Analytics 4 (G-JY9N81NCQE) + Meta Pixel (2971268586402489) dimuat ringan tanpa menghambat Mobile PageSpeed -->
+    <!-- Google Analytics 4 (G-JY9N81NCQE) + Meta Pixel (2971268586402489) dimuat ringan tanpa menghambat Mobile PageSpeed.
+         Antrean gtag() dan fbq() langsung aktif, jadi event yang terjadi sebelum skrip selesai dimuat tetap terkirim. -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -214,11 +197,14 @@
           document.head.appendChild(fbScript);
         }
 
-        ["pointerdown", "keydown", "scroll", "touchstart"].forEach(function (ev) {
+        // Dimuat begitu pengunjung mulai berinteraksi (sentuh, scroll, klik, ketik, gerak mouse),
+        // atau paling lambat 6 detik setelah halaman selesai dimuat. Skrip GA4 dan Pixel cukup berat
+        // (sekitar 400 KB), jadi tidak ikut berebut dengan tampilan awal di HP.
+        ["pointerdown", "pointermove", "keydown", "scroll", "touchstart", "wheel"].forEach(function (ev) {
           window.addEventListener(ev, loadExternalTrackers, { once: true, passive: true });
         });
         window.addEventListener("load", function () {
-          setTimeout(loadExternalTrackers, 2600);
+          setTimeout(loadExternalTrackers, 6000);
         });
       })();
     </script>

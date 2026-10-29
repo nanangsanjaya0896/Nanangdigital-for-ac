@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { MotionConfig } from "framer-motion";
+import { Suspense, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProblemSection from "./components/ProblemSection";
@@ -25,6 +25,15 @@ import { captureFbClickId } from "./utils/tracking";
 export interface AppProps {
   /** Digunakan oleh skrip prerender statis untuk `/`, `/panduan/`, dan `/panduan/<slug>/` */
   initialPath?: string;
+}
+
+/**
+ * Pembungkus bagian di bawah layar pertama. HTML-nya sudah lengkap dari prerender, jadi React
+ * cukup "menghidupkan" (hydrate) tiap bagian satu per satu di waktu luang browser. Hasilnya tidak
+ * ada satu tugas JavaScript panjang yang membuat HP terasa macet (Total Blocking Time rendah).
+ */
+function Bagian({ children }: { children: ReactNode }) {
+  return <Suspense fallback={null}>{children}</Suspense>;
 }
 
 function resolveRoute(pathname: string): { isPanduan: boolean; slug?: string } {
@@ -67,7 +76,7 @@ export default function App({ initialPath }: AppProps = {}) {
   }, []);
 
   return (
-    <MotionConfig reducedMotion="user">
+    <>
       {route.isPanduan ? (
         <PanduanPage article={matchedArticle} slug={route.slug} />
       ) : (
@@ -75,26 +84,54 @@ export default function App({ initialPath }: AppProps = {}) {
           <Navbar />
           <main id="konten" tabIndex={-1}>
             <Hero />
-            <ProblemSection />
-            <SolutionSection />
-            <FounderSection />
-            <WorksSection />
-            <LayananSection />
-            <FeaturesSection />
-            <PricingSection />
-            <ProcessSection />
-            <BonusSection />
-            <TrustSection />
-            <FAQSection />
-            <FinalCTASection />
+            <Bagian>
+              <ProblemSection />
+            </Bagian>
+            <Bagian>
+              <SolutionSection />
+            </Bagian>
+            <Bagian>
+              <FounderSection />
+            </Bagian>
+            <Bagian>
+              <WorksSection />
+            </Bagian>
+            <Bagian>
+              <LayananSection />
+            </Bagian>
+            <Bagian>
+              <FeaturesSection />
+            </Bagian>
+            <Bagian>
+              <PricingSection />
+            </Bagian>
+            <Bagian>
+              <ProcessSection />
+            </Bagian>
+            <Bagian>
+              <BonusSection />
+            </Bagian>
+            <Bagian>
+              <TrustSection />
+            </Bagian>
+            <Bagian>
+              <FAQSection />
+            </Bagian>
+            <Bagian>
+              <FinalCTASection />
+            </Bagian>
           </main>
-          <Footer />
+          <Bagian>
+            <Footer />
+          </Bagian>
         </>
       )}
 
       <StickyWhatsApp />
-      <AIChatWidget />
+      <Bagian>
+        <AIChatWidget />
+      </Bagian>
       <PreWhatsAppModal />
-    </MotionConfig>
+    </>
   );
 }

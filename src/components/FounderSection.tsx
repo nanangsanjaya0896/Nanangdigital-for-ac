@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Compass, ListChecks, Hand, MessageCircle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
+import { useImageFallback } from "../hooks/useImageFallback";
 import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 
 interface Approach {
@@ -42,7 +42,7 @@ const APPROACHES: Approach[] = [
 const SKILL_CHIPS: string[] = ["Website Usaha AC", "Landing Page", "Copywriting", "Meta Ads"];
 
 export default function FounderSection() {
-  const [photoFailed, setPhotoFailed] = useState(false);
+  const { failed: photoFailed, ref: photoRef, onError: onPhotoError } = useImageFallback();
 
   const approaches = APPROACHES;
   const skillChips = SKILL_CHIPS;
@@ -77,13 +77,14 @@ export default function FounderSection() {
                 <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#101820] to-[#0d1a15]">
                   {!photoFailed ? (
                     <img
+                      ref={photoRef}
                       src={BUSINESS.founderPhoto.avatarUrl}
                       alt={BUSINESS.founderPhoto.alt}
                       width={80}
                       height={80}
                       loading="lazy"
                       decoding="async"
-                      onError={() => setPhotoFailed(true)}
+                      onError={onPhotoError}
                       className="h-full w-full object-cover object-center"
                     />
                   ) : (
