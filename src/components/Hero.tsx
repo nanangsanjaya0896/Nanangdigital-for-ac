@@ -170,7 +170,7 @@ export default function Hero() {
         <div className="relative mx-auto w-full max-w-[21rem] lg:max-w-[23rem]">
           <span
             aria-hidden="true"
-            className="absolute -right-3 top-24 z-30 hidden items-center gap-2 rounded-full border border-accent/35 bg-surface/95 px-3.5 py-2 text-[0.7rem] font-medium text-mist shadow-lg backdrop-blur lg:top-6 lg:inline-flex"
+            className="absolute -right-3 top-24 z-30 hidden items-center gap-2 rounded-full border border-accent/35 bg-surface/95 px-3.5 py-2 text-[0.7rem] font-medium text-mist shadow-lg lg:top-6 lg:inline-flex"
           >
             <Move className="h-3.5 w-3.5 text-accent" />
             {"Tarik & goyangkan kartu"}
@@ -212,8 +212,9 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Kartu ID */}
-              <div className="relative overflow-hidden rounded-[1.75rem] border border-accent/30 bg-surface/95 p-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8),0_0_40px_-18px_rgba(0,223,143,0.28)] backdrop-blur-xl sm:p-7">
+              {/* Kartu ID. Latar 95% pekat, jadi tanpa backdrop-blur: tampilan sama, tapi jauh lebih ringan
+                  digambar browser (kartu terus berayun, efek blur di belakangnya dihitung ulang tiap frame). */}
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-accent/30 bg-surface/95 p-6 shadow-[0_30px_80px_-15px_rgba(0,0,0,0.8),0_0_40px_-18px_rgba(0,223,143,0.28)] sm:p-7">
                 <div
                   aria-hidden="true"
                   className="mx-auto mb-4 flex h-2.5 w-14 items-center justify-center rounded-full border border-white/15 bg-ink shadow-inner"

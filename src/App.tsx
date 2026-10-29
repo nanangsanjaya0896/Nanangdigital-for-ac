@@ -28,9 +28,9 @@ export interface AppProps {
 }
 
 /**
- * Pembungkus bagian di bawah layar pertama. HTML-nya sudah lengkap dari prerender, jadi React
- * cukup "menghidupkan" (hydrate) tiap bagian satu per satu di waktu luang browser. Hasilnya tidak
- * ada satu tugas JavaScript panjang yang membuat HP terasa macet (Total Blocking Time rendah).
+ * Pembungkus tiap bagian halaman. HTML-nya sudah lengkap dari prerender, jadi React cukup
+ * "menghidupkan" (hydrate) tiap bagian satu per satu di waktu luang browser. Hasilnya tidak ada
+ * satu tugas JavaScript panjang yang membuat HP atau laptop lama terasa macet (Total Blocking Time rendah).
  */
 function Bagian({ children }: { children: ReactNode }) {
   return <Suspense fallback={null}>{children}</Suspense>;
@@ -81,9 +81,13 @@ export default function App({ initialPath }: AppProps = {}) {
         <PanduanPage article={matchedArticle} slug={route.slug} />
       ) : (
         <>
-          <Navbar />
+          <Bagian>
+            <Navbar />
+          </Bagian>
           <main id="konten" tabIndex={-1}>
-            <Hero />
+            <Bagian>
+              <Hero />
+            </Bagian>
             <Bagian>
               <ProblemSection />
             </Bagian>

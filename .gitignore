@@ -9,3 +9,5 @@ dist
 .dev.vars*
 upload
 nanangdigital-siap-upload.zip
+# Dibuat otomatis saat build (HTML beranda untuk Worker)
+worker/halaman-utama.generated.js

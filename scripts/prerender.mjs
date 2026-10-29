@@ -1,6 +1,7 @@
 process.env.NODE_ENV = "production";
 
 import fs from "node:fs";
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as viteBuild, loadEnv } from "vite";
@@ -206,6 +207,7 @@ async function runPrerender() {
     `<div id="root">${renderToString(React.createElement(App, { initialPath: "/" }))}</div>`
   );
   fs.writeFileSync(indexPath, homeHtml, "utf8");
+  writeWorkerHomePage(homeHtml);
 
   // 2. Prerender Halaman Indeks Panduan (/panduan/)
   const hubDir = path.join(distDir, "panduan");
@@ -298,6 +300,27 @@ ${sitemapEntries
   console.log(`✓ Alamat website (SITE_URL): ${SITE_ORIGIN} [sumber: ${siteUrlSource}]`);
   const siteWarning = siteUrlWarning({ ...env, ...process.env });
   if (siteWarning) console.warn(siteWarning);
+}
+
+/**
+ * Salin HTML beranda ke modul JavaScript yang ikut dibundel ke Worker (`worker/index.js`).
+ *
+ * Kenapa: file statis di Cloudflare Workers disimpan terpusat lalu di-cache per lokasi. Lokasi yang
+ * belum pernah menyimpan halaman (misalnya Hong Kong atau Yogyakarta untuk website yang belum ramai)
+ * butuh sekitar 1,5 detik untuk mengambilnya dulu. Kode Worker sendiri sudah tersebar di semua lokasi
+ * sejak deploy, jadi kalau beranda dikirim langsung dari Worker, responsnya selalu cepat di mana pun.
+ * Ini yang paling berpengaruh ke skor PageSpeed desktop (FCP/LCP sangat ketat, di bawah 1 detik).
+ * @param {string} html
+ */
+function writeWorkerHomePage(html) {
+  const etag = `"nd-${crypto.createHash("sha1").update(html).digest("hex").slice(0, 16)}"`;
+  const target = path.join(rootDir, "worker", "halaman-utama.generated.js");
+  const source = `// Dibuat otomatis oleh scripts/prerender.mjs saat \`npm run build\`. Jangan diubah manual.
+// HTML beranda (sama persis dengan dist/index.html) yang dikirim langsung oleh worker/index.js.
+export const HOME_ETAG = ${JSON.stringify(etag)};
+export const HOME_HTML = ${JSON.stringify(html)};
+`;
+  fs.writeFileSync(target, source, "utf8");
 }
 
 /**

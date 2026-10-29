@@ -16,8 +16,11 @@
     "directory": "./dist",
     // Alamat yang tidak ada menampilkan dist/404.html dengan status 404
     "not_found_handling": "404-page",
-    // Hanya /api/* yang menjalankan Worker. Halaman lain langsung dari CDN (gratis tanpa batas)
-    "run_worker_first": ["/api/*"]
+    // Dipakai worker/index.js untuk meneruskan permintaan lain ke static assets
+    "binding": "ASSETS",
+    // Hanya beranda (/) dan /api/* yang menjalankan Worker. Halaman lain langsung dari CDN (gratis tanpa batas).
+    // Beranda dikirim dari Worker supaya tetap cepat di lokasi Cloudflare yang belum menyimpan cache.
+    "run_worker_first": ["/", "/api/*"]
   },
   // Variabel biasa yang diisi di dashboard tidak terhapus saat deploy berikutnya
   "keep_vars": true,
