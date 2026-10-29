@@ -248,7 +248,9 @@ Kerjakan setelah deploy di Bagian 1 berhasil **dan** domain di Bagian 2 sudah **
 
 **Langkah 1: Tambahkan custom domain**
 
-* **Kalau memakai Cara A (Workers):** buka project `nanangdigital-for-ac` > **Settings** > **Domains & Routes** > **Add** > **Custom domain**. Ketik `nanangdigital.web.id`, lalu klik **Add domain**. Ulangi untuk `www.nanangdigital.web.id`.
+* **Kalau memakai Cara A (Workers):** buka project `nanangdigital-for-ac` > **Settings** > **Domains & Routes** > **Add** > **Custom domain**.
+  * Kalau muncul kotak **Connect to nanangdigital.web.id** dengan kolom `.nanangdigital.web.id` dan tulisan *"Leave empty for root domain"*: **biarkan kolomnya kosong**, lalu klik tombol konfirmasinya (**Connect** atau **Add domain**). Itu memasang alamat utama `nanangdigital.web.id`. Ulangi, lalu ketik `www` di kolom itu untuk `www.nanangdigital.web.id`. Jangan mengetik `nanangdigital.web.id` di kolom tersebut, karena hasilnya menjadi `nanangdigital.web.id.nanangdigital.web.id`.
+  * Kalau yang muncul kolom alamat lengkap: ketik `nanangdigital.web.id`, lalu klik **Add domain**. Ulangi untuk `www.nanangdigital.web.id`.
 * **Kalau memakai Cara B atau Cara C (Pages):** buka project > **Custom domains** > **Set up a domain**. Ketik `nanangdigital.web.id`, klik **Continue**, lalu **Activate domain**. Ulangi untuk `www.nanangdigital.web.id`.
 
 Cloudflare otomatis membuat pengaturan DNS dan sertifikat HTTPS. Tunggu beberapa menit sampai statusnya **Active**, lalu buka `https://nanangdigital.web.id`.
