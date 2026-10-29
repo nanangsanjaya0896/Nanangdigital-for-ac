@@ -14,14 +14,15 @@ Urutan kerjanya:
 
 ## Bagian 1: Deploy website
 
-Ada **tiga cara**. Semuanya sudah disiapkan dan dites. Pilih salah satu saja.
+Ada **empat cara**. Pilih salah satu saja, jangan dua sekaligus.
 
-| | Cara A: Workers + GitHub (disarankan) | Cara B: Pages + GitHub | Cara C: Pages upload manual |
-| --- | --- | --- | --- |
-| File yang diupload | Tidak ada, diambil otomatis dari GitHub | Tidak ada, diambil otomatis dari GitHub | Hanya 1 file: `nanangdigital-siap-upload.zip` |
-| Update website | Otomatis setiap ada perubahan | Otomatis setiap ada perubahan | Upload ulang zip terbaru |
-| Posisi di dashboard | Tombol utama **Create application** | Link kecil di bagian bawah halaman Create application | Sama dengan Cara B, lalu pilih **Drag and drop your files** |
-| Alamat sementara | `nanangdigital-for-ac.<nama-akun>.workers.dev` | `nanangdigital-for-ac.pages.dev` | `nanangdigital-for-ac.pages.dev` |
+| | Cara A: Workers + GitHub (disarankan) | Cara B: Pages + GitHub | Cara C: Pages upload manual | Cara D: GitHub Actions |
+| --- | --- | --- | --- | --- |
+| Butuh sambungan GitHub di Cloudflare | Ya | Ya | Tidak | Tidak |
+| File yang diupload | Tidak ada, diambil otomatis dari GitHub | Tidak ada, diambil otomatis dari GitHub | Hanya 1 file: `nanangdigital-siap-upload.zip` | Tidak ada, dikirim otomatis oleh GitHub |
+| Update website | Otomatis setiap ada perubahan | Otomatis setiap ada perubahan | Upload ulang zip terbaru | Otomatis setiap ada perubahan |
+| Posisi di dashboard | Tombol utama **Create application** | Link kecil di bagian bawah halaman Create application | Sama dengan Cara B, lalu pilih **Drag and drop your files** | Tidak perlu membuat project, cukup membuat API token |
+| Alamat sementara | `nanangdigital-for-ac.<nama-akun>.workers.dev` | `<nama-project>.pages.dev` | `<nama-project>.pages.dev` | `nanangdigital-for-ac.<nama-akun>.workers.dev` |
 
 Sejak 2025 Cloudflare menampilkan **Workers** sebagai pilihan utama, sedangkan **Pages** disembunyikan sebagai cara lama. Kalau Anda tidak menemukan menu Pages, itu normal. Pakai **Cara A**.
 
@@ -29,7 +30,7 @@ Kalau sambungan GitHub di Cloudflare bermasalah (misalnya muncul tanda merah **M
 
 > **Jangan upload file kode dari GitHub** (folder `src`, `package.json`, dan sebagainya) ke Cloudflare. Itu bahan mentah yang belum dirakit, jadi website akan kosong atau error. Di Cara A dan B tidak ada file yang perlu diupload. Di Cara C, yang diupload hanya file zip siap pakai.
 
-Isi website di ketiga cara sama persis:
+Isi website di keempat cara sama persis:
 
 * 6 halaman statis untuk SEO: `/`, `/panduan/`, dan 4 artikel.
 * 2 fungsi server:
@@ -131,6 +132,7 @@ Unduh di sini: **[nanangdigital-siap-upload.zip](https://github.com/nanangsanjay
 3. Pilih **Drag and drop your files** (di sebagian tampilan **Upload assets**).
 4. Isi **Project name** dengan `nanangdigital-for-ac`, lalu klik **Create project**.
 5. Seret file `nanangdigital-siap-upload.zip` ke kotak upload. Tunggu sampai semua file selesai terunggah, lalu klik **Deploy site**.
+6. Cek alamat yang muncul. Kalau berakhiran `.pages.dev`, berarti sudah benar. Kalau berakhiran `.workers.dev`, berarti yang terbuat Worker biasa (lewat tombol upload di halaman Workers), sehingga Asisten AI dan Meta CAPI tidak jalan penuh. Hapus project itu, lalu ulangi lewat link Pages di poin 2.
 
 **Langkah 3: Pasang token rahasia**
 
@@ -282,6 +284,8 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
 | --- | --- |
 | Tidak ada pilihan **Pages** | Normal, tampilan baru Cloudflare. Pakai Cara A |
 | Tanda merah **Missing git connection** | Cloudflare belum mendapat izin membaca GitHub. Ikuti [Memperbaiki Missing git connection](#memperbaiki-missing-git-connection). Kalau tetap gagal, pakai Cara C atau Cara D |
+| Alamat `.pages.dev` menampilkan **Error 522** | Project sudah dibuat, tetapi belum ada deploy yang berhasil. Buka project > **Deployments**. Kalau ada deploy berstatus **Failed**, kirim screenshot log build-nya ke saya. Kalau belum ada deploy sama sekali, deploy berjalan otomatis saat ada perubahan berikutnya di branch `main` (kabari saya supaya saya picu) |
+| Ada dua project untuk website yang sama (misalnya satu Pages dan satu Workers) | Pakai satu saja. Hapus yang tidak dipakai (**Settings** > paling bawah > **Delete**) supaya domain hanya terpasang di satu tempat |
 | Workflow **Deploy ke Cloudflare (otomatis)** hanya menulis "Deploy otomatis belum aktif" | Normal selama secret `CLOUDFLARE_API_TOKEN` dan `CLOUDFLARE_ACCOUNT_ID` belum diisi (Cara D) |
 | Website tampil kosong, putih, atau error setelah upload manual | Kemungkinan yang diupload file kode dari GitHub. Upload ulang memakai file `nanangdigital-siap-upload.zip` (Cara C) |
 | Ada file bertanda merah saat upload manual | Upload ulang seluruh file zip lewat **Create deployment** |
