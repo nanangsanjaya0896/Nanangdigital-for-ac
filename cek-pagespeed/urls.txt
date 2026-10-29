@@ -1,3 +1,0 @@
-# SEMENTARA: preview branch (beranda dari Worker) dibanding domain live
-preview-desktop|https://arena-ded5308d-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev/|3|desktop
-preview-mobile|https://arena-ded5308d-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev/|3|mobile
