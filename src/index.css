@@ -33,7 +33,9 @@ html {
 }
 
 body {
-  background-color: var(--color-ink);
+  /* Nilai cadangan #0d1116 dipakai browser lama yang tidak membaca variabel tema Tailwind,
+     supaya halaman tidak menjadi putih dengan teks putih. */
+  background-color: var(--color-ink, #0d1116);
   color: #ffffff;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
