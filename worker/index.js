@@ -7,23 +7,13 @@
  *   beranda selalu cepat di mana pun, termasuk di lokasi yang belum pernah menyimpan halaman di cache.
  * - Halaman lain, gambar, JS, dan CSS di `dist/` disajikan langsung oleh Cloudflare sebagai
  *   static assets (gratis tanpa batas, tidak memanggil Worker ini).
- * - Alamat `/api/*` menjalankan logika API, lihat `run_worker_first` di `wrangler.jsonc`.
- *   Logika API memakai fungsi yang sama dengan Cloudflare Pages Functions (`functions/api/*.js`),
- *   jadi hasilnya identik di Workers maupun Pages.
+ * - Alamat `/api/*` menjalankan logika API (`worker/api.js`), lihat `run_worker_first` di `wrangler.jsonc`.
  *
  * Token rahasia (`META_CAPI_ACCESS_TOKEN`, `GEMINI_API_KEY`) dibaca dari Settings > Variables and
  * Secrets di dashboard Worker (`env`), tidak pernah dikirim ke browser.
  */
-import { onRequest as aiChat } from "../functions/api/ai-chat.js";
-import { onRequest as metaCapi } from "../functions/api/meta-capi.js";
-import { jsonResponse } from "../server/cloudflare-utils.js";
+import { handleApi } from "./api.js";
 import { HOME_ETAG, HOME_HTML } from "./halaman-utama.generated.js";
-
-/** @type {Record<string, (context: { request: Request; env: Record<string, any>; waitUntil: (promise: Promise<unknown>) => void }) => Promise<Response>>} */
-const API_ROUTES = {
-  "/api/ai-chat": aiChat,
-  "/api/meta-capi": metaCapi,
-};
 
 /**
  * @param {Request} request
@@ -53,23 +43,17 @@ export default {
    * @param {{ waitUntil: (promise: Promise<unknown>) => void }} ctx
    */
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+    const { pathname } = new URL(request.url);
 
-    if (url.pathname === "/" && HOME_HTML && (request.method === "GET" || request.method === "HEAD")) {
+    if (pathname === "/api" || pathname.startsWith("/api/")) {
+      return handleApi(request, env, ctx);
+    }
+
+    if (pathname === "/" && HOME_HTML && (request.method === "GET" || request.method === "HEAD")) {
       return homeResponse(request);
     }
 
-    const pathname = url.pathname.replace(/\/+$/, "");
-    const handler = API_ROUTES[pathname];
-    if (handler) {
-      return handler({ request, env, waitUntil: (promise) => ctx.waitUntil(promise) });
-    }
-
-    // Selain API (misalnya beranda dengan metode lain): serahkan ke static assets
-    if (env.ASSETS && !pathname.startsWith("/api")) {
-      return env.ASSETS.fetch(request);
-    }
-
-    return jsonResponse({ ok: false, error: "Not Found" }, 404);
+    // Selain itu (misalnya beranda dengan metode lain): serahkan ke static assets
+    return env.ASSETS.fetch(request);
   },
 };

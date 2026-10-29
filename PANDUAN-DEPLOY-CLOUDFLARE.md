@@ -307,7 +307,7 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
 ## Batas paket gratis
 
 * **Halaman website** (HTML, gambar, JS, CSS): gratis tanpa batas, di Workers maupun Pages.
-* **Fungsi server** `/api/ai-chat` dan `/api/meta-capi`: gratis 100.000 request per hari. Fungsi hanya dipanggil saat chat dipakai dan saat event Meta dikirim, jadi pemakaiannya jauh di bawah batas.
+* **Worker** (beranda `/` serta fungsi server `/api/ai-chat` dan `/api/meta-capi`): gratis 100.000 request per hari. Satu kali beranda dibuka dihitung 1 request, chat dan event Meta juga dihitung. Untuk website usaha, pemakaiannya jauh di bawah batas.
 * **Build:** Workers 3.000 menit per bulan (satu build sekitar 1 sampai 2 menit). Pages 500 build per bulan.
 * **Domain:** DNS dan sertifikat HTTPS dari Cloudflare gratis. Yang dibayar hanya perpanjangan domain tahunan di DomaiNesia.
 
@@ -318,10 +318,12 @@ Ganti link website ke `https://nanangdigital.web.id` di bio Instagram, Facebook 
   2. `PRIMARY_SITE_URL`.
   3. Kalau `PRIMARY_SITE_URL` dikosongkan: alamat dari Cloudflare Pages (`CF_PAGES_URL`) atau Vercel, lalu cadangan `https://nanangdigital.pages.dev`.
 * **`wrangler.jsonc`**: konfigurasi Cara A.
-  * Halaman dari folder `dist` disajikan langsung dari CDN.
-  * Hanya `/api/*` yang menjalankan Worker (`run_worker_first`).
+  * Halaman dari folder `dist` disajikan langsung dari CDN, kecuali beranda.
+  * Hanya beranda `/` dan `/api/*` yang menjalankan Worker (`run_worker_first`).
   * Alamat yang tidak ada membalas `404.html` dengan status 404 (`not_found_handling`).
-* **`worker/index.js`**: Worker untuk `/api/ai-chat` dan `/api/meta-capi`. Isinya memanggil fungsi yang sama dengan Pages Functions di `functions/api/*.js`, jadi hasilnya identik di kedua cara.
+* **`worker/index.js`**: Worker untuk beranda dan `/api/*`.
+  * Beranda dikirim langsung dari Worker. HTML-nya dibuat saat build (`worker/halaman-utama.generated.js`, sama persis dengan `dist/index.html`, tidak disimpan di Git). Alasannya: file statis disimpan terpusat lalu di-cache per lokasi Cloudflare, dan lokasi yang belum menyimpannya (misalnya Hong Kong atau Yogyakarta) butuh sekitar 1,5 detik untuk mengambil halaman. Kode Worker sudah tersebar di semua lokasi sejak deploy, jadi beranda tetap cepat di mana pun. Ini menjaga skor PageSpeed desktop tetap stabil.
+  * `/api/ai-chat` dan `/api/meta-capi` ada di `worker/api.js`, memanggil fungsi yang sama dengan Pages Functions di `functions/api/*.js`, jadi hasilnya identik di kedua cara.
 * **`functions/api/*.js`**: fungsi server untuk Cara B. Logika intinya ada di `server/`, dipakai bersama oleh Workers, Pages, Vercel (`api/*.js`), dan Live Preview lokal.
 * **`public/_headers`** (cache file) dan **`public/_redirects`** (alamat lama `/en` ke beranda) dibaca oleh Workers maupun Pages.
 * **`public/_routes.json`** hanya untuk Pages. Di Workers file ini tidak ikut diunggah karena tercantum di `public/.assetsignore`.
