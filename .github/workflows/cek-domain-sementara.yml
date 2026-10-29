@@ -1,6 +1,6 @@
 # Workflow SEMENTARA untuk memeriksa apa yang tampil di nanangdigital.web.id.
-# Hanya mencetak header HTTP, jenis file, dan daftar NAMA file (tanpa isi atau nilai rahasia).
-# File ini dihapus lagi setelah pengecekan selesai.
+# Hanya mencatat header HTTP, jenis file, dan daftar NAMA file (tanpa isi atau nilai rahasia).
+# Hasilnya dikirim sebagai anotasi (notice). File ini dihapus lagi setelah pengecekan selesai.
 name: Cek domain (sementara)
 
 on:
@@ -15,78 +15,100 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Header beberapa alamat
-        run: |
-          for u in \
-            https://nanangdigital.web.id/ \
-            https://nanangdigital.web.id/index.html \
-            https://nanangdigital.web.id/panduan/ \
-            https://nanangdigital.web.id/api/meta-capi \
-            https://nanangdigital.web.id/sitemap.xml \
-            http://nanangdigital.web.id/ \
-            https://www.nanangdigital.web.id/ \
-            https://nanangdigital-for-ac.wong-moghey.workers.dev/ ; do
-            echo "=================== $u"
-            curl -sS -I --max-time 20 "$u" || echo "(gagal dibuka)"
-          done
-
-      - name: Unduh isi beranda nanangdigital.web.id
-        run: |
-          curl -sS --max-time 90 -o beranda.bin -D beranda.headers https://nanangdigital.web.id/
-          ls -la beranda.bin
-          file beranda.bin
-          sha256sum beranda.bin
-          echo "--- header"
-          cat beranda.headers
-
-      - name: Daftar isi arsip (nama file saja)
+      - name: Siapkan alat
         run: |
           sudo apt-get install -y -qq unrar >/dev/null 2>&1 || sudo apt-get install -y -qq libarchive-tools >/dev/null 2>&1 || true
           pip install --quiet rarfile
+
+      - name: Periksa nanangdigital.web.id
+        run: |
           python3 - <<'PY'
+          import hashlib
           import re
-          import rarfile
+          import subprocess
+
+          def notice(title, text):
+              text = text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::notice title={title}::{text}")
+
+          urls = [
+              "https://nanangdigital.web.id/",
+              "https://nanangdigital.web.id/index.html",
+              "https://nanangdigital.web.id/panduan/",
+              "https://nanangdigital.web.id/api/meta-capi",
+              "https://nanangdigital.web.id/sitemap.xml",
+              "http://nanangdigital.web.id/",
+              "https://www.nanangdigital.web.id/",
+              "https://nanangdigital-for-ac.wong-moghey.workers.dev/",
+          ]
+          keep = re.compile(r"^(HTTP/|content-type|content-length|content-disposition|location|server|cf-ray|cf-cache-status|x-|access-control|referrer-policy|last-modified|etag|via|platform|panel)", re.I)
+          lines = []
+          for u in urls:
+              r = subprocess.run(["curl", "-sS", "-I", "--max-time", "20", u], capture_output=True, text=True)
+              heads = [h.strip() for h in r.stdout.splitlines() if keep.match(h.strip())]
+              lines.append(f"## {u}")
+              lines.extend(heads or [f"(gagal: {r.stderr.strip()[:200]})"])
+          notice("Header HTTP", "\n".join(lines))
+
+          subprocess.run(["curl", "-sS", "--max-time", "90", "-o", "beranda.bin", "https://nanangdigital.web.id/"])
+          data = open("beranda.bin", "rb").read()
+          ftype = subprocess.run(["file", "-b", "beranda.bin"], capture_output=True, text=True).stdout.strip()
+          notice("Isi beranda", f"ukuran {len(data)} byte | jenis: {ftype} | sha256 {hashlib.sha256(data).hexdigest()[:16]}")
 
           try:
+              import rarfile
               rf = rarfile.RarFile("beranda.bin")
-          except Exception as exc:  # bukan arsip RAR
-              print("Bukan arsip RAR yang bisa dibaca:", exc)
+          except Exception as exc:
+              notice("Arsip", f"Bukan arsip RAR yang bisa dibaca: {exc}")
               raise SystemExit(0)
 
           infos = rf.infolist()
           files = [i for i in infos if not i.is_dir()]
-          print("Jumlah entri:", len(infos), "| file:", len(files))
           tops = sorted({re.split(r"[\\/]", i.filename)[0] for i in infos})
-          print("Folder/file di tingkat teratas:", tops)
-          for i in infos:
-              print(("DIR " if i.is_dir() else "    ") + f"{i.file_size:>10}  {i.filename}")
-
+          nm = [i for i in infos if re.search(r"(^|[\\/])node_modules([\\/]|$)", i.filename)]
+          gitdir = [i for i in infos if re.search(r"(^|[\\/])\.git([\\/]|$)", i.filename)]
           pola = re.compile(r"(^|[\\/])(\.env(\.(?!example$)[^\\/]*)?|\.dev\.vars[^\\/]*|\.npmrc|[^\\/]*\.pem|id_rsa[^\\/]*)$")
           sensitif = [i for i in files if pola.search(i.filename)]
-          git_config = [i.filename for i in files if re.search(r"(^|[\\/])\.git[\\/]config$", i.filename)]
-          print("FILE SENSITIF:", [i.filename for i in sensitif] or "tidak ada")
-          print(".git/config ikut terarsip:", git_config or "tidak")
 
-          # Untuk file sensitif: hanya cetak NAMA variabel dan PANJANG nilainya, bukan nilainya.
+          ringkas = [
+              f"entri {len(infos)} | file {len(files)} | entri node_modules {len(nm)} | entri .git {len(gitdir)}",
+              f"tingkat teratas: {tops}",
+              f"file sensitif: {[i.filename for i in sensitif] or 'tidak ada'}",
+          ]
+          # Untuk file sensitif hanya dicatat NAMA variabel dan PANJANG nilainya, bukan nilainya.
           for i in sensitif:
               try:
-                  data = rf.read(i).decode("utf-8", "replace")
+                  isi = rf.read(i).decode("utf-8", "replace")
               except Exception as exc:
-                  print("==", i.filename, "tidak bisa dibaca:", exc)
+                  ringkas.append(f"{i.filename}: tidak bisa dibaca ({exc})")
                   continue
-              print("==", i.filename)
-              for line in data.splitlines():
+              pasangan = []
+              for line in isi.splitlines():
                   m = re.match(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$", line)
                   if m:
                       nilai = m.group(2).strip().strip('"').strip("'")
-                      print(f"   {m.group(1)} = <{len(nilai)} karakter>")
+                      pasangan.append(f"{m.group(1)}=<{len(nilai)} karakter>")
+              ringkas.append(f"{i.filename}: {', '.join(pasangan) or '(tidak ada variabel)'}")
+          for i in files:
+              if re.search(r"(^|[\\/])\.git[\\/]config$", i.filename):
+                  try:
+                      isi = rf.read(i).decode("utf-8", "replace")
+                      kred = bool(re.search(r"https://[^/\s@]+@", isi))
+                      ringkas.append(f"{i.filename}: URL remote berisi kredensial = {'YA' if kred else 'tidak'}")
+                  except Exception as exc:
+                      ringkas.append(f"{i.filename}: tidak bisa dibaca ({exc})")
+          notice("Ringkasan arsip", "\n".join(ringkas))
 
-          for i in git_config:
-              try:
-                  data = rf.read(i).decode("utf-8", "replace")
-              except Exception as exc:
-                  print("==", i, "tidak bisa dibaca:", exc)
-                  continue
-              ada_token = bool(re.search(r"https://[^/\s:@]+(:[^@\s]+)?@github\.com", data))
-              print("==", i, "| URL remote berisi token/kredensial:", "YA" if ada_token else "tidak")
+          daftar = [f"{'DIR ' if i.is_dir() else ''}{i.file_size} {i.filename}" for i in infos
+                    if not re.search(r"(^|[\\/])(node_modules|\.git)[\\/]", i.filename)]
+          potong, buf = [], ""
+          for baris in daftar:
+              if len(buf) + len(baris) > 3500:
+                  potong.append(buf)
+                  buf = ""
+              buf += baris + "\n"
+          if buf:
+              potong.append(buf)
+          for n, isi in enumerate(potong[:7], 1):
+              notice(f"Daftar file {n}/{len(potong)}", isi)
           PY
