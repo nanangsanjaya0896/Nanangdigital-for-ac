@@ -1,43 +1,58 @@
-# Waktu respons dari berbagai negara (Globalping) | 2026-10-29T15:04:13.631Z
+# Waktu respons dari berbagai negara (Globalping) | 2026-10-29T15:23:10.858Z
+Host: arena-ded5308d-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev
 
-## putaran-1 (/)
+## putaran-1 / (/)
 | probe | kota | status | dns | tcp | tls | ttfb | download | total | colo |
 |---|---|---|---|---|---|---|---|---|---|
-| ID Indonesia Network  | Jakarta | 200 | 20 | 2 | 15 | 554 | 8 | 599 | CGK |
-| ID Media Sarana Data | Yogyakarta | failed | - | - | - | - | - | 6001 |  |
-| ID JARINGANKU SARANA  | Pati | 200 | 29 | 161 | 169 | 280 | 2 | 641 | MRS |
-| SG LeaseWeb | Singapore | 200 | 144 | 171 | 230 | 484 | 11 | 1040 | MRS |
-| SG Oracle | Singapore | 200 | 37 | 156 | 180 | 292 | 0 | 665 | FRA |
-| TW Data Communication | Taipei | 200 | 20 | 299 | 305 | 362 | 1 | 987 | ARN |
-| JP xTom | Tokyo | 200 | 12 | 1 | 7 | 46 | 1 | 67 | NRT |
-| HK Prinode | Hong Kong | 200 | 14 | 2 | 17 | 45 | 4 | 82 | HKG |
-| US HostPapa | Buffalo | 200 | 30 | 20 | 30 | 66 | 3 | 149 | STL |
-| US HostPapa | Los Angeles | 200 | 16 | 2 | 15 | 68 | 2 | 103 | LAX |
+| ID JARINGANKU SARANA  | Pati | 200 | 43 | 198 | 216 | 287 | 0 | 744 | SJC |
+| ID Varnion Technology | Denpasar | 200 | 34 | 68 | 97 | 236 | 2 | 437 | HKG |
+| ID Wow Internet Indon | Jakarta | 200 | 13 | 150 | 172 | 384 | 2 | 721 | MRS |
+| SG LeaseWeb | Singapore | 200 | 28 | 83 | 97 | 253 | 1 | 462 | KIX |
+| SG Oracle | Singapore | 200 | 17 | 2 | 13 | 173 | 1 | 206 | SIN |
+| TW Data Communication | Taipei | 200 | 62 | 126 | 152 | 283 | 1 | 624 | SJC |
+| JP Oracle | Tokyo | 200 | 32 | 2 | 14 | 165 | 2 | 215 | NRT |
+| HK LeaseWeb | Hong Kong | 200 | 37 | 52 | 115 | 166 | 38 | 408 | HKG |
+| US HostPapa | Buffalo | 200 | 78 | 24 | 56 | 154 | 6 | 318 | YYZ |
+| US HostPapa | Los Angeles | 200 | 19 | 2 | 21 | 349 | 1 | 392 | LAX |
 
-## putaran-2 (/)
+## putaran-1 /panduan/ (/panduan/)
 | probe | kota | status | dns | tcp | tls | ttfb | download | total | colo |
 |---|---|---|---|---|---|---|---|---|---|
-| ID Cybertechtonic Pra | Jakarta | 200 | 22 | 246 | 274 | 308 | 2 | 852 | FRA |
-| ID Jujur Amanah Barok | Garut | 200 | 53 | 257 | 274 | 315 | 1 | 900 | CDG |
+| ID XL Axiata | Jakarta | 502 | 11 | 7 | 45 | 12 | 1 | 76 |  |
+| ID BIZNET NETWORKS | Denpasar | 200 | 451 | 177 | 195 | 307 | 2 | 1132 | MRS |
 | ID Media Sarana Data | Yogyakarta | failed | - | - | - | - | - | 5999 |  |
-| SG LeaseWeb | Singapore | 200 | 99 | 51 | 91 | 102 | 37 | 380 | HKG |
-| SG Oracle | Singapore | 200 | 43 | 83 | 94 | 126 | 1 | 347 | KIX |
-| TW Data Communication | Taipei | 200 | 19 | 128 | 139 | 167 | 1 | 454 | SJC |
-| JP Oracle | Tokyo | 200 | 54 | 1 | 17 | 76 | 1 | 149 | NRT |
-| HK Alibaba (US) Techn | Hong Kong | 200 | 8 | 2 | 12 | 91 | 1 | 114 | HKG |
-| US HostPapa | Buffalo | 200 | 1 | 114 | 127 | 153 | 2 | 397 | ARN |
-| US HostPapa | Los Angeles | 200 | 7 | 2 | 13 | 79 | 2 | 103 | LAX |
+| SG LeaseWeb | Singapore | 200 | 35 | 35 | 57 | 486 | 1 | 614 | HKG |
+| SG xTom | Singapore | 200 | 34 | 229 | 242 | 317 | 1 | 823 | CDG |
+| TW Data Communication | Taipei | 200 | 26 | 126 | 141 | 273 | 0 | 566 | SJC |
+| JP xTom | Tokyo | 200 | 23 | 2 | 24 | 203 | 3 | 255 | NRT |
+| HK Prinode | Hong Kong | 200 | 20 | 1 | 19 | 535 | 4 | 579 | HKG |
+| US HostPapa | Buffalo | 200 | 79 | 13 | 110 | 214 | 4 | 420 | ORD |
+| US HostPapa | Los Angeles | 200 | 34 | 2 | 31 | 130 | 3 | 200 | LAX |
 
-## aset-js (/assets/vendor-react-6RWF-rzJ.js)
+## putaran-2 / (/)
 | probe | kota | status | dns | tcp | tls | ttfb | download | total | colo |
 |---|---|---|---|---|---|---|---|---|---|
-| ID BIZNET NETWORKS | Denpasar | 200 | 33 | 224 | 219 | 281 | 548 | 1305 | CDG |
-| ID Telekomunikasi Ind | Jakarta | 200 | 22 | 155 | 161 | 252 | 0 | 590 | MRS |
-| ID JARINGANKU SARANA  | Pati | 200 | 205 | 90 | 96 | 168 | 0 | 559 | NRT |
-| SG LeaseWeb | Singapore | 200 | 9 | 1 | 14 | 57 | 1 | 82 | SIN |
-| SG OVH | Singapore | 200 | 5 | 232 | 241 | 279 | 0 | 757 | CDG |
-| TW Data Communication | Taichung | 200 | 56 | 131 | 142 | 213 | 1 | 543 | SJC |
-| JP Oracle | Tokyo | 200 | 14 | 2 | 73 | 107 | 29 | 225 | NRT |
-| HK Alibaba (US) Techn | Hong Kong | 200 | 8 | 2 | 10 | 77 | 1 | 98 | HKG |
-| US HostPapa | Buffalo | 200 | 31 | 141 | 126 | 147 | 2 | 447 | ARN |
-| US HostPapa | Los Angeles | 200 | 18 | 2 | 22 | 86 | 6 | 134 | LAX |
+| ID Indonesia Network  | Jakarta | 200 | 12 | 1 | 26 | 90 | 8 | 137 | CGK |
+| ID Media Sarana Data | Yogyakarta | 200 | 27 | 5 | 39 | 147 | 3 | 221 | JOG |
+| ID Varnion Technology | Denpasar | 200 | 2 | 70 | 102 | 289 | 3 | 466 | HKG |
+| SG LeaseWeb | Singapore | 200 | 25 | 3 | 17 | 71 | 4 | 120 | SIN |
+| SG OVH | Singapore | 200 | 22 | 186 | 205 | 343 | 1 | 757 | SJC |
+| TW Data Communication | Taipei | 200 | 21 | 126 | 136 | 182 | 2 | 467 | SJC |
+| JP Oracle | Tokyo | 200 | 13 | 2 | 19 | 46 | 2 | 82 | NRT |
+| HK Alibaba (US) Techn | Hong Kong | 200 | 21 | 4 | 29 | 177 | 9 | 240 | HKG |
+| US HostPapa | Buffalo | 200 | 39 | 30 | 56 | 85 | 4 | 214 | YYZ |
+| US HostPapa | Los Angeles | 200 | 49 | 2 | 21 | 107 | 3 | 182 | LAX |
+
+## putaran-2 /panduan/ (/panduan/)
+| probe | kota | status | dns | tcp | tls | ttfb | download | total | colo |
+|---|---|---|---|---|---|---|---|---|---|
+| ID HUAWEI CLOUDS | Jakarta | 200 | 41 | 66 | 87 | 130 | 70 | 394 | HKG |
+| ID JARINGANKU SARANA  | Pati | 200 | 9 | 54 | 72 | 181 | 0 | 316 | HKG |
+| ID Jujur Amanah Barok | Garut | 200 | 12 | 154 | 215 | 221 | 1 | 603 | MRS |
+| SG LeaseWeb | Singapore | 200 | 31 | 176 | 192 | 245 | 1 | 645 | SJC |
+| SG xTom | Singapore | 200 | 21 | 2 | 21 | 347 | 1 | 392 | SIN |
+| TW Data Communication | Taichung | 200 | 36 | 128 | 155 | 282 | 0 | 601 | SJC |
+| JP Oracle | Tokyo | 200 | 19 | 2 | 18 | 49 | 1 | 89 | NRT |
+| HK Prinode | Hong Kong | 200 | 23 | 1 | 41 | 110 | 2 | 177 | HKG |
+| US HostPapa | Buffalo | 200 | 28 | 14 | 40 | 159 | 5 | 246 | ORD |
+| US HostPapa | Los Angeles | 200 | 17 | 3 | 36 | 95 | 15 | 166 | LAX |
