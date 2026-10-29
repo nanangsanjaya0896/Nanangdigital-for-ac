@@ -1,5 +1,0 @@
-# SEMENTARA: daftar alamat yang diukur. Format: label|url|jumlah_run|mobile atau desktop
-# putaran 2: kode baru (preview) dibanding kode lama (live)
-preview-baru|https://arena-24a34400-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev/|5|mobile
-live-lama|https://nanangdigital.web.id/|5|mobile
-preview-baru-desktop|https://arena-24a34400-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev/|3|desktop
