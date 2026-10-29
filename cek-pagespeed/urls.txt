@@ -1,2 +1,1 @@
-# SEMENTARA: daftar alamat yang diukur. Format: label|url|jumlah_run|mobile atau desktop|pengali_cpu (opsional)
-live-desktop|https://nanangdigital.web.id/|2|desktop
+# SEMENTARA: putaran ini hanya Globalping (cek apakah cache masih hangat setelah sekitar 20 menit)
