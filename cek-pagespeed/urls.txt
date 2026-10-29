@@ -1,0 +1,6 @@
+# SEMENTARA: daftar alamat yang diukur. Format: label|url|jumlah_run|mobile atau desktop
+# putaran 1: kondisi awal
+live-domain|https://nanangdigital.web.id/|5|mobile
+workers-dev-produksi|https://nanangdigital-for-ac.wong-moghey.workers.dev/|5|mobile
+preview-branch|https://arena-24a34400-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev/|3|mobile
+live-domain-desktop|https://nanangdigital.web.id/|3|desktop
