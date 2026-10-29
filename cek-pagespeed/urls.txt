@@ -1,3 +1,2 @@
 # SEMENTARA: daftar alamat yang diukur. Format: label|url|jumlah_run|mobile atau desktop|pengali_cpu (opsional)
-live-desktop|https://nanangdigital.web.id/|3|desktop
-live-desktop-cpu-lambat|https://nanangdigital.web.id/|3|desktop|2.5
+live-desktop|https://nanangdigital.web.id/|2|desktop

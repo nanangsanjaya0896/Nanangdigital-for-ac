@@ -39,7 +39,7 @@ jobs:
         continue-on-error: true
         env:
           OUT_DIR: ${{ github.workspace }}/cek-pagespeed
-          PSI_RUNS: desktop,desktop,mobile
+          PSI_RUNS: https://nanangdigital.web.id>desktop,https://nanangdigital-for-ac.wong-moghey.workers.dev/>desktop,https://nanangdigital.web.id/>desktop,https://nanangdigital.web.id/>mobile
         run: cd /tmp/pp && timeout 900 node psi-ui.mjs
 
       - name: Jalankan Lighthouse

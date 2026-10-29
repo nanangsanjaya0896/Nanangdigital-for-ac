@@ -3,8 +3,11 @@
 import puppeteer from "puppeteer-core";
 import fs from "node:fs";
 
-const TARGET = "https://nanangdigital.web.id/";
-const runs = (process.env.PSI_RUNS || "desktop,desktop,mobile").split(",");
+// Format PSI_RUNS: url>form,url>form
+const runs = (process.env.PSI_RUNS || "https://nanangdigital.web.id>desktop").split(",").map((x) => {
+  const [url, form] = x.split(">");
+  return { url, form };
+});
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const out = [`# Hasil PageSpeed Insights (pagespeed.web.dev) | ${new Date().toISOString()}`];
 
@@ -15,7 +18,7 @@ const browser = await puppeteer.launch({
 });
 
 for (let i = 0; i < runs.length; i++) {
-  const form = runs[i];
+  const { url: TARGET, form } = runs[i];
   const label = `psi-${form}-${i + 1}`;
   const page = await browser.newPage();
   await page.setViewport({ width: 1400, height: 1100 });
@@ -27,7 +30,10 @@ for (let i = 0; i < runs.length; i++) {
       () => {
         const panels = [...document.querySelectorAll('[role="tabpanel"]')].filter((p) => p.offsetParent !== null);
         const root = panels[0] || document.body;
-        return root.querySelectorAll(".lh-metric__value").length >= 5 || /error|Error/.test(root.querySelector(".lh-error, .error")?.textContent || "");
+        return (
+          root.querySelectorAll(".lh-metric__value").length >= 5 ||
+          /Unable to resolve|Something went wrong|error occurred|Lighthouse returned error|timed out/i.test(document.body.innerText)
+        );
       },
       { timeout: 180000, polling: 2000 }
     );
@@ -40,7 +46,7 @@ for (let i = 0; i < runs.length; i++) {
       const gauge = root.querySelector(".lh-gauge__percentage")?.textContent;
       return { href: location.href, gauge, metrics, text: root.innerText };
     });
-    out.push(`\n## ${label}\n${data.href}\nSkor: ${data.gauge}\n${data.metrics.map((m) => "- " + m).join("\n")}`);
+    out.push(`\n## ${label} (${TARGET})\n${data.href}\nSkor: ${data.gauge}\n${data.metrics.map((m) => "- " + m).join("\n")}`);
     console.log(`::notice::${label}: skor ${data.gauge} | ${data.metrics.join(" ; ").slice(0, 900)}`);
     out.push("\n```\n" + data.text.slice(0, 45000) + "\n```");
     await page.screenshot({ path: `${process.env.OUT_DIR || "cek-pagespeed"}/${label}.png`, fullPage: false });
