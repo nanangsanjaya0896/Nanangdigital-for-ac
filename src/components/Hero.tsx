@@ -4,6 +4,7 @@ import { ArrowDown, ArrowRight, Move } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 import { useReducedMotion } from "../hooks/useReducedMotion";
+import { useImageFallback } from "../hooks/useImageFallback";
 
 const MARQUEE_ITEMS: string[] = [
   "Website Usaha Service AC",
@@ -16,7 +17,7 @@ const MARQUEE_ITEMS: string[] = [
 
 export default function Hero() {
   const reduced = useReducedMotion();
-  const [photoFailed, setPhotoFailed] = useState(false);
+  const { failed: photoFailed, ref: photoRef, onError: onPhotoError } = useImageFallback();
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
   const [dragging, setDragging] = useState(false);
@@ -252,15 +253,15 @@ export default function Hero() {
                   {!photoFailed ? (
                     <>
                       <img
+                        ref={photoRef}
                         src={BUSINESS.founderPhoto.url}
                         srcSet={BUSINESS.founderPhoto.srcSet}
                         sizes={BUSINESS.founderPhoto.sizes}
                         alt={BUSINESS.founderPhoto.alt}
                         width={400}
                         height={350}
-                        fetchPriority="high"
                         decoding="async"
-                        onError={() => setPhotoFailed(true)}
+                        onError={onPhotoError}
                         className="absolute inset-0 h-full w-full object-cover object-[50%_22%]"
                       />
                       <span

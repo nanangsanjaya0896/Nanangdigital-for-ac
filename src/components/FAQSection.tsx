@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
@@ -59,24 +58,23 @@ export default function FAQSection() {
                       </span>
                     </button>
 
-                    <AnimatePresence initial={false}>
-                      {isOpen && (
-                        <motion.div
-                          id={`faq-panel-${item.id}`}
-                          role="region"
-                          aria-labelledby={`faq-btn-${item.id}`}
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <p className="pb-7 pr-4 text-sm leading-relaxed text-mist sm:pr-12 md:text-base">
-                            {item.answer}
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    {/* Buka tutup halus dengan CSS grid (0fr ke 1fr), tanpa library animasi.
+                        Jawaban yang tertutup tetap ada di HTML (bagus untuk SEO) tapi tidak bisa difokus. */}
+                    <div
+                      id={`faq-panel-${item.id}`}
+                      role="region"
+                      aria-labelledby={`faq-btn-${item.id}`}
+                      inert={!isOpen}
+                      className={`grid transition-[grid-template-rows,opacity] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <div className="min-h-0 overflow-hidden">
+                        <p className="pb-7 pr-4 text-sm leading-relaxed text-mist sm:pr-12 md:text-base">
+                          {item.answer}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </Reveal>
               );

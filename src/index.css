@@ -164,6 +164,30 @@ footer[id] {
   animation-delay: 0.16s;
 }
 
+/* ---------- Scroll reveal (komponen Reveal) ----------
+   Muncul pelan sambil naik saat masuk layar. Dipicu atribut data-tampil dari IntersectionObserver,
+   murni CSS transition sehingga tidak perlu library animasi (JavaScript lebih kecil, skor PageSpeed naik). */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-y, 40px), 0);
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+
+.reveal[data-tampil] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Tanpa geser dan tanpa jeda, hanya muncul pelan 0,3 detik */
+  .reveal {
+    transform: none;
+    transition: opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+}
+
 /* Animasi ayunan bandul kartu ID & kilau kaca berjalan murni di GPU compositor */
 @keyframes hero-pendulum {
   0%,
