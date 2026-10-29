@@ -149,6 +149,31 @@
       }
     </script>
 
+    <!-- Cadangan tampilan: kalau JavaScript tidak jalan, gagal, atau sangat lambat (HP lama, sinyal lemah),
+         bagian yang menunggu animasi muncul tetap ditampilkan sehingga halaman tidak terlihat kosong. -->
+    <style>
+      html {
+        background-color: #0d1116;
+      }
+      .tampil-tanpa-js [style*="opacity:0"] {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    </style>
+    <noscript>
+      <style>
+        [style*="opacity:0"] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
+    <script>
+      setTimeout(function () {
+        if (!window.__ndSiap) document.documentElement.className += " tampil-tanpa-js";
+      }, 3000);
+    </script>
+
     <!-- Google Analytics 4 (G-JY9N81NCQE) + Meta Pixel (2971268586402489) dimuat ringan tanpa menghambat Mobile PageSpeed -->
     <script>
       window.dataLayer = window.dataLayer || [];
