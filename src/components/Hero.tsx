@@ -29,7 +29,9 @@ export default function Hero() {
   const waLink = WA_LINK_GENERAL;
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (reduced) return;
+    // Tarik kartu tetap aktif walau animasi di perangkat dimatikan: gerakannya dikendalikan
+    // pengunjung sendiri, dan label "Tarik & goyangkan kartu" selalu tampil di desktop.
+    // Yang dimatikan untuk perangkat seperti itu hanya gerakan otomatis (ayunan, kilau, miring saat hover).
     if ((e.target as HTMLElement).closest("a, button")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setDragging(true);
