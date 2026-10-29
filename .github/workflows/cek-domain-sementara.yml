@@ -1,0 +1,92 @@
+# Workflow SEMENTARA untuk memeriksa apa yang tampil di nanangdigital.web.id.
+# Hanya mencetak header HTTP, jenis file, dan daftar NAMA file (tanpa isi atau nilai rahasia).
+# File ini dihapus lagi setelah pengecekan selesai.
+name: Cek domain (sementara)
+
+on:
+  push:
+    branches: [arena/ee6d04ca-nanangdigital-for-ac]
+
+permissions:
+  contents: read
+
+jobs:
+  cek:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Header beberapa alamat
+        run: |
+          for u in \
+            https://nanangdigital.web.id/ \
+            https://nanangdigital.web.id/index.html \
+            https://nanangdigital.web.id/panduan/ \
+            https://nanangdigital.web.id/api/meta-capi \
+            https://nanangdigital.web.id/sitemap.xml \
+            http://nanangdigital.web.id/ \
+            https://www.nanangdigital.web.id/ \
+            https://nanangdigital-for-ac.wong-moghey.workers.dev/ ; do
+            echo "=================== $u"
+            curl -sS -I --max-time 20 "$u" || echo "(gagal dibuka)"
+          done
+
+      - name: Unduh isi beranda nanangdigital.web.id
+        run: |
+          curl -sS --max-time 90 -o beranda.bin -D beranda.headers https://nanangdigital.web.id/
+          ls -la beranda.bin
+          file beranda.bin
+          sha256sum beranda.bin
+          echo "--- header"
+          cat beranda.headers
+
+      - name: Daftar isi arsip (nama file saja)
+        run: |
+          sudo apt-get install -y -qq unrar >/dev/null 2>&1 || sudo apt-get install -y -qq libarchive-tools >/dev/null 2>&1 || true
+          pip install --quiet rarfile
+          python3 - <<'PY'
+          import re
+          import rarfile
+
+          try:
+              rf = rarfile.RarFile("beranda.bin")
+          except Exception as exc:  # bukan arsip RAR
+              print("Bukan arsip RAR yang bisa dibaca:", exc)
+              raise SystemExit(0)
+
+          infos = rf.infolist()
+          files = [i for i in infos if not i.is_dir()]
+          print("Jumlah entri:", len(infos), "| file:", len(files))
+          tops = sorted({re.split(r"[\\/]", i.filename)[0] for i in infos})
+          print("Folder/file di tingkat teratas:", tops)
+          for i in infos:
+              print(("DIR " if i.is_dir() else "    ") + f"{i.file_size:>10}  {i.filename}")
+
+          pola = re.compile(r"(^|[\\/])(\.env(\.(?!example$)[^\\/]*)?|\.dev\.vars[^\\/]*|\.npmrc|[^\\/]*\.pem|id_rsa[^\\/]*)$")
+          sensitif = [i for i in files if pola.search(i.filename)]
+          git_config = [i.filename for i in files if re.search(r"(^|[\\/])\.git[\\/]config$", i.filename)]
+          print("FILE SENSITIF:", [i.filename for i in sensitif] or "tidak ada")
+          print(".git/config ikut terarsip:", git_config or "tidak")
+
+          # Untuk file sensitif: hanya cetak NAMA variabel dan PANJANG nilainya, bukan nilainya.
+          for i in sensitif:
+              try:
+                  data = rf.read(i).decode("utf-8", "replace")
+              except Exception as exc:
+                  print("==", i.filename, "tidak bisa dibaca:", exc)
+                  continue
+              print("==", i.filename)
+              for line in data.splitlines():
+                  m = re.match(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$", line)
+                  if m:
+                      nilai = m.group(2).strip().strip('"').strip("'")
+                      print(f"   {m.group(1)} = <{len(nilai)} karakter>")
+
+          for i in git_config:
+              try:
+                  data = rf.read(i).decode("utf-8", "replace")
+              except Exception as exc:
+                  print("==", i, "tidak bisa dibaca:", exc)
+                  continue
+              ada_token = bool(re.search(r"https://[^/\s:@]+(:[^@\s]+)?@github\.com", data))
+              print("==", i, "| URL remote berisi token/kredensial:", "YA" if ada_token else "tidak")
+          PY
