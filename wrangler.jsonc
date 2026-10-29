@@ -23,5 +23,9 @@
   "keep_vars": true,
   "observability": {
     "enabled": true
-  }
+  },
+  // Wajib untuk build preview (branch selain main). Workers Builds menjalankan `npx wrangler preview`,
+  // dan perintah itu gagal kalau blok ini tidak ada. Boleh kosong karena Worker ini tidak memakai
+  // binding. Website utama (branch main) tidak terpengaruh.
+  "previews": {}
 }
