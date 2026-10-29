@@ -1,0 +1,54 @@
+# SEMENTARA: lihat rincian skor PageSpeed Insights (desktop) dan ukur ulang dengan Lighthouse. Akan dihapus lagi.
+name: Cek PageSpeed (sementara)
+
+on:
+  push:
+    branches: [arena/ded5308d-nanangdigital-for-ac]
+    paths:
+      - cek-pagespeed/urls.txt
+      - cek-pagespeed/psi-ui.mjs
+      - .github/workflows/cek-pagespeed-sementara.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  checks: read
+
+concurrency:
+  group: cek-pagespeed-sementara
+  cancel-in-progress: true
+
+jobs:
+  ukur:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Pasang Lighthouse dan puppeteer-core
+        run: |
+          npm i -g lighthouse@13.6.0
+          mkdir -p /tmp/pp && cd /tmp/pp && npm init -y >/dev/null && npm i puppeteer-core@24 >/dev/null
+          cp "$GITHUB_WORKSPACE/cek-pagespeed/psi-ui.mjs" /tmp/pp/
+
+      - name: Buka pagespeed.web.dev seperti pengguna biasa
+        continue-on-error: true
+        env:
+          OUT_DIR: ${{ github.workspace }}/cek-pagespeed
+          PSI_RUNS: desktop,desktop,mobile
+        run: cd /tmp/pp && timeout 900 node psi-ui.mjs
+
+      - name: Jalankan Lighthouse
+        run: node cek-pagespeed/run.mjs
+
+      - name: Simpan hasil ke branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cek-pagespeed/hasil.md cek-pagespeed/psi.md cek-pagespeed/*.png 2>/dev/null || true
+          git commit -m "Sementara: hasil cek PageSpeed" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done
