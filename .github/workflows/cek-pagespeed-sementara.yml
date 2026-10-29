@@ -6,7 +6,7 @@ on:
     branches: [arena/ded5308d-nanangdigital-for-ac]
     paths:
       - cek-pagespeed/urls.txt
-      - cek-pagespeed/psi-ui.mjs
+      - cek-pagespeed/globalping.mjs
       - .github/workflows/cek-pagespeed-sementara.yml
   workflow_dispatch:
 
@@ -35,12 +35,11 @@ jobs:
           mkdir -p /tmp/pp && cd /tmp/pp && npm init -y >/dev/null && npm i puppeteer-core@24 >/dev/null
           cp "$GITHUB_WORKSPACE/cek-pagespeed/psi-ui.mjs" /tmp/pp/
 
-      - name: Buka pagespeed.web.dev seperti pengguna biasa
+      - name: Ukur waktu respons dari berbagai negara (Globalping)
         continue-on-error: true
         env:
           OUT_DIR: ${{ github.workspace }}/cek-pagespeed
-          PSI_RUNS: https://nanangdigital.web.id>desktop,https://nanangdigital-for-ac.wong-moghey.workers.dev/>desktop,https://nanangdigital.web.id/>desktop,https://nanangdigital.web.id/>mobile
-        run: cd /tmp/pp && timeout 900 node psi-ui.mjs
+        run: timeout 300 node cek-pagespeed/globalping.mjs
 
       - name: Jalankan Lighthouse
         run: node cek-pagespeed/run.mjs
@@ -49,6 +48,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add cek-pagespeed/hasil.md cek-pagespeed/psi.md cek-pagespeed/*.png 2>/dev/null || true
+          git add cek-pagespeed/hasil.md cek-pagespeed/globalping.md 2>/dev/null || true
           git commit -m "Sementara: hasil cek PageSpeed" || exit 0
           for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done
