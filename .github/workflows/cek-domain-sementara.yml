@@ -1,0 +1,83 @@
+# Workflow SEMENTARA untuk memeriksa nanangdigital.web.id setelah domain dipasang.
+# Hanya membaca halaman publik (status, header, tag SEO, sertifikat). Hasilnya berupa anotasi.
+# File ini dihapus lagi setelah pengecekan selesai.
+name: Cek domain (sementara)
+
+on:
+  push:
+    branches: [arena/1c1a9eaf-nanangdigital-for-ac]
+
+permissions:
+  contents: read
+
+jobs:
+  cek:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Periksa nanangdigital.web.id
+        run: |
+          python3 - <<'PY'
+          import re
+          import subprocess
+
+          def notice(title, text):
+              text = text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+              print(f"::notice title={title}::{text}")
+
+          def head(url):
+              r = subprocess.run(["curl", "-sS", "-I", "--max-time", "20", url], capture_output=True, text=True)
+              keep = re.compile(r"^(HTTP/|location|content-type|cache-control|strict-transport-security|x-content-type-options|referrer-policy|x-frame-options|permissions-policy|cf-cache-status)", re.I)
+              out = [h.strip() for h in r.stdout.splitlines() if keep.match(h.strip())]
+              return out or [f"(gagal: {r.stderr.strip()[:160]})"]
+
+          urls = [
+              "http://nanangdigital.web.id/",
+              "https://nanangdigital.web.id/",
+              "https://nanangdigital.web.id/en/",
+              "https://nanangdigital.web.id/halaman-asal",
+              "https://nanangdigital.web.id/robots.txt",
+              "https://nanangdigital.web.id/api/ai-chat",
+              "http://www.nanangdigital.web.id/",
+              "https://www.nanangdigital.web.id/",
+          ]
+          baris = []
+          for u in urls:
+              baris.append(f"## {u}")
+              baris.extend(head(u))
+          html = subprocess.run(["curl", "-sS", "--max-time", "20", "https://nanangdigital.web.id/"], capture_output=True, text=True).stdout
+          aset = re.findall(r'(?:src|href)="(/assets/[^"]+\.(?:js|css))"', html)
+          if aset:
+              u = "https://nanangdigital.web.id" + aset[0]
+              baris.append(f"## {u}")
+              baris.extend(head(u))
+          notice("Status dan header", "\n".join(baris))
+
+          def meta(pola):
+              m = re.search(pola, html, re.I)
+              return m.group(1) if m else "TIDAK ADA"
+
+          pola_title = r"<title>([^<]+)</title>"
+          pola_canonical = r"<link[^>]+rel=.canonical.[^>]+href=.([^'\" >]+)"
+          pola_ogurl = r"<meta[^>]+property=.og:url.[^>]+content=.([^'\" >]+)"
+          pola_gsc = r"<meta[^>]+name=.google-site-verification.[^>]+content=.([^'\" >]+)"
+          seo = [
+              "title: " + meta(pola_title),
+              "canonical: " + meta(pola_canonical),
+              "og:url: " + meta(pola_ogurl),
+              "google-site-verification: " + meta(pola_gsc),
+              "GA4 G-JY9N81NCQE ada: " + str("G-JY9N81NCQE" in html),
+              "Meta Pixel 2971268586402489 ada: " + str("2971268586402489" in html),
+              "ukuran HTML: " + str(len(html)) + " byte",
+          ]
+          robots = subprocess.run(["curl", "-sS", "--max-time", "20", "https://nanangdigital.web.id/robots.txt"], capture_output=True, text=True).stdout
+          seo.append("robots.txt:\n" + robots.strip()[:600])
+          notice("Tag SEO dan robots", "\n".join(seo))
+
+          cert = subprocess.run(
+              "echo | openssl s_client -connect nanangdigital.web.id:443 -servername nanangdigital.web.id 2>/dev/null"
+              " | openssl x509 -noout -issuer -subject -dates -ext subjectAltName",
+              shell=True, capture_output=True, text=True,
+          ).stdout
+          notice("Sertifikat HTTPS", cert.strip() or "(gagal membaca sertifikat)")
+          PY
