@@ -32,11 +32,26 @@ jobs:
       - name: Pasang Lighthouse
         run: npm i -g lighthouse@13.6.0
 
+      - name: Tunggu build preview Cloudflare untuk commit ini selesai
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 40); do
+            st=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs" --jq '[.check_runs[] | select(.name | startswith("Workers Builds")) | .status + ":" + (.conclusion // "-")] | join(",")' || true)
+            echo "percobaan $i: $st"
+            case "$st" in *completed*) break;; esac
+            sleep 15
+          done
+          sleep 20
+
       - name: Ukur waktu respons dari berbagai negara (Globalping)
         continue-on-error: true
         env:
           OUT_DIR: ${{ github.workspace }}/cek-pagespeed
-        run: timeout 300 node cek-pagespeed/globalping.mjs
+          TARGET_HOST: arena-ded5308d-nanangdigital-for-ac-nanangdigital-for-ac.wong-moghey.workers.dev
+          PATHS: /,/panduan/
+          ROUNDS: "2"
+        run: timeout 600 node cek-pagespeed/globalping.mjs
 
       - name: Jalankan Lighthouse
         run: node cek-pagespeed/run.mjs

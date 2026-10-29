@@ -4,10 +4,11 @@ import fs from "node:fs";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const out = [`# Waktu respons dari berbagai negara (Globalping) | ${new Date().toISOString()}`];
 
+const HOST = process.env.TARGET_HOST || "nanangdigital.web.id";
 async function measure(label, path) {
   const body = {
     type: "http",
-    target: "nanangdigital.web.id",
+    target: HOST,
     locations: [
       { country: "ID", limit: 3 },
       { country: "SG", limit: 2 },
@@ -46,9 +47,15 @@ async function measure(label, path) {
   }
 }
 
-await measure("putaran-1", "/");
-await sleep(3000);
-await measure("putaran-2", "/");
-await measure("aset-js", "/assets/vendor-react-6RWF-rzJ.js");
+// PATHS: daftar path dipisah koma, diukur bergantian supaya kondisi cache-nya sebanding
+const paths = (process.env.PATHS || "/").split(",");
+const rounds = Number(process.env.ROUNDS || 2);
+out.push(`Host: ${HOST}`);
+for (let r = 1; r <= rounds; r++) {
+  for (const p of paths) {
+    await measure(`putaran-${r} ${p}`, p);
+    await sleep(2000);
+  }
+}
 fs.writeFileSync(`${process.env.OUT_DIR || "cek-pagespeed"}/globalping.md`, out.join("\n") + "\n");
 console.log(out.join("\n"));
