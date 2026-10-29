@@ -29,11 +29,8 @@ jobs:
         with:
           node-version: 22
 
-      - name: Pasang Lighthouse dan puppeteer-core
-        run: |
-          npm i -g lighthouse@13.6.0
-          mkdir -p /tmp/pp && cd /tmp/pp && npm init -y >/dev/null && npm i puppeteer-core@24 >/dev/null
-          cp "$GITHUB_WORKSPACE/cek-pagespeed/psi-ui.mjs" /tmp/pp/
+      - name: Pasang Lighthouse
+        run: npm i -g lighthouse@13.6.0
 
       - name: Ukur waktu respons dari berbagai negara (Globalping)
         continue-on-error: true
