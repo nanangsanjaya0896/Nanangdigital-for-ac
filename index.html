@@ -14,7 +14,12 @@
     />
     <link rel="canonical" href="%SITE_URL%/" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Favicon dari logo ND: SVG untuk browser modern (ikut mode gelap), ICO cadangan untuk Google & browser lama,
+         ikon PNG untuk layar utama iPhone dan Android -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Open Graph / WhatsApp / Media Sosial -->
     <meta property="og:type" content="website" />
