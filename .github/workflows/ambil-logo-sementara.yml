@@ -1,0 +1,39 @@
+# SEMENTARA: unduh logo dari Cloudinary untuk dibuat favicon. Akan dihapus lagi.
+name: Ambil logo (sementara)
+
+on:
+  push:
+    branches: [arena/5d9b0b6e-nanangdigital-for-ac]
+    paths:
+      - .github/workflows/ambil-logo-sementara.yml
+
+permissions:
+  contents: write
+
+jobs:
+  ambil:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Unduh logo dan foto
+        run: |
+          mkdir -p cek-logo
+          curl -sSL -o cek-logo/logo-asli.jpg "https://res.cloudinary.com/col2kwnv/image/upload/Logo_Nanang_Digital.jpg"
+          curl -sSL -o cek-logo/logo.png "https://res.cloudinary.com/col2kwnv/image/upload/f_png/Logo_Nanang_Digital.jpg"
+          curl -sSL -o cek-logo/logo-512.png "https://res.cloudinary.com/col2kwnv/image/upload/f_png,w_512,h_512,c_pad,b_rgb:0d1116/Logo_Nanang_Digital.jpg"
+          file cek-logo/* || true
+          ls -la cek-logo
+          python3 -c "
+          import struct,sys
+          for f in ['cek-logo/logo.png','cek-logo/logo-512.png']:
+              d=open(f,'rb').read(24)
+              print(f, struct.unpack('>II', d[16:24]) if d[:8]==b'\x89PNG\r\n\x1a\n' else 'bukan png')
+          "
+      - name: Simpan ke branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cek-logo
+          git commit -m "Sementara: logo dari Cloudinary" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done
