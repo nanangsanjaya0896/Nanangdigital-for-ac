@@ -394,6 +394,8 @@ function build404Html() {
     <meta name="theme-color" content="#0f1115" />
     <meta name="color-scheme" content="dark" />
     <title>Halaman tidak ditemukan | NanangDigital</title>
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <style>
       * { box-sizing: border-box; }
       body {
