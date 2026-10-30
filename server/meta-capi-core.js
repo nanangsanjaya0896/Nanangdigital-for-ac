@@ -10,7 +10,10 @@
  * maupun Node.js 20+, jadi tidak perlu flag `nodejs_compat` di Cloudflare.
  */
 
-const GRAPH_API_VERSION = "v21.0";
+// Versi Graph API untuk Conversions API. Khusus CAPI, Meta mengikuti jadwal Graph API (tiap versi didukung minimal
+// 2 tahun). v21.0 berakhir 21 Januari 2027, jadi dipakai v26.0 (rilis 29 Juli 2026). Cek jadwalnya di
+// https://developers.facebook.com/docs/graph-api/changelog/versions sebelum mengganti.
+const GRAPH_API_VERSION = "v26.0";
 export const DEFAULT_META_DATASET_ID = "2971268586402489";
 const ALLOWED_EVENTS = new Set(["PageView", "Lead", "Contact", "ViewContent"]);
 

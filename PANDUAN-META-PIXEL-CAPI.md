@@ -43,7 +43,7 @@ Kalau token sudah terpasang, akan tampil status berikut (isi token tidak pernah 
 
 Kalau tertulis `"ready_for_live_capi": true`, berarti **Meta Pixel di browser + CAPI di server sudah menyala penuh**.
 
-*(Penting: kalau tadi Anda mengisi `META_TEST_EVENT_CODE` untuk tes, hapus variabel tersebut lalu **Retry deployment** sekali lagi sebelum menyalakan iklan sungguhan.)*
+*(Penting: kalau tadi Anda mengisi `META_TEST_EVENT_CODE` untuk tes, hapus variabel tersebut sebelum menyalakan iklan sungguhan. Di Workers cukup hapus lalu klik **Deploy**. Di Pages, setelah dihapus lakukan **Retry deployment** sekali lagi.)*
 
 ---
 
