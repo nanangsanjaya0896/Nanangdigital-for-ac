@@ -1,4 +1,4 @@
-# SEMENTARA: unduh logo dari Cloudinary untuk dibuat favicon. Akan dihapus lagi.
+# SEMENTARA: unduh logo dari Cloudinary untuk dibuat favicon. Akan dihapus lagi. (percobaan 2)
 name: Ambil logo (sementara)
 
 on:
@@ -24,6 +24,7 @@ jobs:
           curl -sSL -o cek-logo/logo-512.png "https://res.cloudinary.com/col2kwnv/image/upload/f_png,w_512,h_512,c_pad,b_rgb:0d1116/Logo_Nanang_Digital.jpg"
           file cek-logo/* || true
           ls -la cek-logo
+          for f in cek-logo/*; do echo "::notice::$(file -b "$f" | cut -c1-120) | $(stat -c %s "$f") byte | $f"; done
           python3 -c "
           import struct,sys
           for f in ['cek-logo/logo.png','cek-logo/logo-512.png']:
@@ -34,6 +35,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add cek-logo
-          git commit -m "Sementara: logo dari Cloudinary" || exit 0
-          for i in 1 2 3; do git pull --rebase -q && git push -q && break; sleep 5; done
+          git add -f cek-logo
+          git status --short | head -5
+          echo "::notice::status: $(git status --short | tr '\n' ' ')"
+          git commit -m "Sementara: logo dari Cloudinary" || { echo "::notice::tidak ada yang di-commit"; exit 0; }
+          git push 2>&1 | tail -3 && echo "::notice::push selesai"
