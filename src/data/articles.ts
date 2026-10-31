@@ -199,7 +199,7 @@ export const SEO_ARTICLES: SeoArticle[] = [
         heading: "Pilihan Paket Sesuai Tahap Usaha Anda Saat Ini",
         paragraphs: [
           "Kalau fokus Anda saat ini baru ingin punya halaman profil resmi di Google plus Google Maps dan Live Chat AI, Paket Basic (Rp1.500.000) sudah sangat cukup dan lengkap.",
-          "Namun kalau Anda ingin sekalian langsung dipasangkan Google Search Console, Google Analytics, Pixel tracking, serta setup kampanye iklan lokal supaya telepon cepat berdering, Paket Growth (Rp2.000.000) adalah pilihan paling hemat.",
+          "Namun kalau Anda ingin sekalian langsung dipasangkan Google Search Console, Google Analytics, Pixel tracking, artikel SEO, serta setup kampanye iklan lokal supaya telepon cepat berdering, Paket Growth (Rp2.000.000) adalah pilihan paling hemat.",
         ],
       },
     ],
