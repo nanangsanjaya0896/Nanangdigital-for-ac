@@ -37,6 +37,7 @@ type IntentId =
   | "basic"
   | "growth"
   | "premium"
+  | "artikel"
   | "ads"
   | "google"
   | "process"
@@ -107,6 +108,8 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
   { id: "basic", keywords: [["basic", 3], ["termurah", 2.5], ["paling murah", 2.5], ["cheapest", 2.5], ["~1 500 000", 3]] },
   { id: "growth", keywords: [["growth", 3], ["~2 000 000", 3], ["paling populer", 2.5], ["most popular", 2.5]] },
   { id: "premium", keywords: [["premium", 3], ["custom", 2.5], ["kustom", 2.5], ["paling lengkap", 2.5], ["most complete", 2.5]] },
+  // Bobot 3,5 supaya "Paket Growth dapat artikel?" dijawab soal artikel, bukan daftar isi paket
+  { id: "artikel", keywords: [["~artikel", 3.5], ["blog", 3], ["article", 3.5], ["articles", 3.5], ["konten seo", 3.5]] },
   {
     id: "ads",
     keywords: [
@@ -379,6 +382,28 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
     case "premium":
       return planDetail(findPlan(intent));
 
+    case "artikel": {
+      // Diambil dari daftar fasilitas paket, jadi otomatis ikut kalau isi paket diubah
+      const articleFeatures = plans.map((plan) => ({
+        plan,
+        feature: plan.features.find((feature) => /artikel/i.test(feature) && !/^no\s/i.test(feature)),
+      }));
+      const lines = articleFeatures.map(({ plan, feature }) => `- ${plan.name}: ${feature ?? "Belum termasuk artikel"}`);
+      const countDiscussed = articleFeatures.some(({ feature }) => feature && !/\d/.test(feature));
+      return {
+        text: [
+          "Artikel SEO adalah tulisan di website Anda yang membantu usaha lebih mudah ditemukan orang lewat pencarian Google.",
+          "",
+          ...lines,
+          ...(countDiscussed ? ["", "Jumlah dan topik artikelnya dibahas langsung dengan Mas Nanang di WhatsApp."] : []),
+          "",
+          "Mau lihat contoh tulisannya? Ada artikel gratis seputar promosi usaha AC di halaman Panduan.",
+        ].join("\n"),
+        suggestWhatsApp: true,
+        quickReplies: ["Isi Paket Growth", "Lihat harga paket"],
+      };
+    }
+
     case "compare":
       return {
         text: [
@@ -454,7 +479,7 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
 
     case "google":
       return {
-        text: "Semua paket sudah termasuk pembuatan akun Google My Business (Google Maps) supaya usaha Anda lebih mudah ditemukan warga sekitar. Paket Growth dan Premium Custom juga dapat setup Google Search Console dan Google Analytics untuk memantau pengunjung website.\n\nAda juga artikel gratis cara daftar usaha AC di Google Maps di halaman Panduan.",
+        text: "Semua paket sudah termasuk pembuatan akun Google My Business (Google Maps) supaya usaha Anda lebih mudah ditemukan warga sekitar. Paket Growth dan Premium Custom juga dapat setup Google Search Console dan Google Analytics untuk memantau pengunjung website, serta artikel SEO supaya website lebih mudah muncul di pencarian Google.\n\nAda juga artikel gratis cara daftar usaha AC di Google Maps di halaman Panduan.",
         suggestWhatsApp: false,
         quickReplies: ["Bedanya Basic dan Growth?", "Lihat harga paket"],
       };

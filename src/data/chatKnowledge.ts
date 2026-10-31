@@ -72,7 +72,7 @@ export function buildChatKnowledge(): string {
 
   lines.push("", "CATATAN PENTING:");
   lines.push(
-    "- \"No Artikel\" artinya paket tidak termasuk penulisan artikel blog.",
+    "- \"No Artikel\" di Paket Basic artinya paket tidak termasuk penulisan artikel blog. Paket Growth sudah termasuk artikel SEO (tulisan di website klien supaya lebih mudah ditemukan lewat Google), jumlah dan topiknya dibahas langsung dengan Mas Nanang di WhatsApp. Di Paket Premium Custom, artikel SEO disesuaikan dengan permintaan.",
     "- \"Gratis Meta Ads\" artinya bantuan setup iklan Facebook dan Instagram. Website tidak menyebutkan apakah saldo iklan yang dibayar ke Meta sudah termasuk, jadi hal itu dijelaskan langsung oleh Mas Nanang di WhatsApp.",
     "- Bonus konsultasi strategi iklan berupa saran dan perencanaan iklan, bukan saldo iklan gratis.",
     "- Contoh website di bagian Karya adalah website demo buatan Mas Nanang yang sudah online, bukan proyek klien. Nama usaha, foto, testimoni, dan angka di dalam website demo hanya contoh. Untuk klien, nama usaha, warna, foto, dan tarif disesuaikan dengan usaha klien.",

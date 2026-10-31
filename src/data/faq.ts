@@ -9,7 +9,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "paket",
     question: "Apa saja yang sudah didapat kalau pesan paket website di sini?",
     answer:
-      "Semua paket sudah termasuk pembuatan website responsif, copywriting high convert, CTA Form WhatsApp, Free SSL (HTTPS), Live Chat AI, domain & hosting gratis 1 tahun, Akun Google My Business (Google Maps), serta Gratis Meta Ads. Khusus Paket Growth dan Paket Premium Custom juga sudah termasuk setup Google Search Console, Google Analytics, Pixel tracking, dan materi iklan kreatif.",
+      "Semua paket sudah termasuk pembuatan website responsif, copywriting high convert, CTA Form WhatsApp, Free SSL (HTTPS), Live Chat AI, domain & hosting gratis 1 tahun, Akun Google My Business (Google Maps), serta Gratis Meta Ads. Khusus Paket Growth dan Paket Premium Custom juga sudah termasuk artikel SEO, setup Google Search Console, Google Analytics, Pixel tracking, dan materi iklan kreatif.",
   },
   {
     id: "waktu",
