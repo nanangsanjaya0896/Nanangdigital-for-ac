@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
-import Logo from "./Logo";
+import BrandLogo from "./BrandLogo";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useFocusTrap } from "../hooks/useFocusTrap";
@@ -69,7 +69,7 @@ export default function Navbar() {
             aria-label="NanangDigital, kembali ke beranda"
             className="shrink-0 py-2 lg:justify-self-start"
           >
-            <Logo className="text-xl md:text-2xl" />
+            <BrandLogo className="h-[2.625rem] w-[8.75rem] md:h-12 md:w-40" />
           </a>
 
           {/* Menu desktop rata tengah sehingga kiri & kanan tetap seimbang */}
@@ -134,7 +134,7 @@ export default function Navbar() {
           />
 
           <div className="relative flex h-20 items-center justify-between px-4 sm:px-6">
-            <Logo className="text-xl" />
+            <BrandLogo label="NanangDigital" className="h-[2.625rem] w-[8.75rem]" />
             <button
               type="button"
               onClick={() => closeMenu(true)}
