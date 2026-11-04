@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Clock } from "lucide-react";
-import Logo from "./Logo";
+import BrandLogo from "./BrandLogo";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS, WA_LINK_GENERAL, waUrl } from "../data/business";
 import { SEO_ARTICLES, findArticleBySlug } from "../data/articles";
@@ -42,7 +42,7 @@ export default function PanduanPage({ article: initialArticle, slug }: PanduanPa
             aria-label="NanangDigital, kembali ke halaman utama"
             className="py-2"
           >
-            <Logo className="text-xl md:text-2xl" />
+            <BrandLogo className="h-[2.625rem] w-[8.75rem] md:h-12 md:w-40" />
           </a>
 
           <nav
