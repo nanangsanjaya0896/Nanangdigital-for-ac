@@ -8,3 +8,10 @@
 # Gambar portofolio & Open Graph: cache 30 hari, diperbarui di latar belakang
 /images/*
   Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+# Ringkasan website untuk asisten AI (llms.txt): boleh dibaca siapa saja, tapi tidak perlu ikut
+# tampil di hasil pencarian Google karena isinya sama dengan halaman-halaman website.
+/llms.txt
+  X-Robots-Tag: noindex
+/llms-full.txt
+  X-Robots-Tag: noindex

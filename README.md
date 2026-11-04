@@ -44,6 +44,14 @@ Kalau sambungan GitHub di Cloudflare bermasalah (misalnya **Missing git connecti
 - **Google Analytics 4 (`G-JY9N81NCQE`):** Melacak tampilan halaman dan konversi `generate_lead` lengkap dengan nilai paket dalam Rupiah (`IDR`).
 - **Meta Pixel + Server Conversions API (`2971268586402489`):** Deduplikasi `event_id` identik antara browser dan fungsi server `/api/meta-capi`. Data pengunjung di-hash SHA-256 di browser, lalu server meneruskan hash tersebut beserta `fbc`/`fbp`, IP, user agent, dan negara pengunjung ke Meta. Cukup isi variabel rahasia `META_CAPI_ACCESS_TOKEN` di dashboard Cloudflare. Panduan: [`PANDUAN-META-PIXEL-CAPI.md`](./PANDUAN-META-PIXEL-CAPI.md).
 
+## AEO & GEO (Mesin Jawaban & AI Generatif)
+
+- **Data terstruktur JSON-LD** (Organization, Person, WebSite, Service + paket harga, FAQPage, BlogPosting, BreadcrumbList) dibuat otomatis saat build dari `src/seo/schema.ts`, memakai data yang sama dengan isi halaman.
+- **Artikel Panduan** punya kotak *Jawaban singkat*, tanya jawab, penulis, tanggal diperbarui, dan sumber resmi. Beranda punya 11 FAQ.
+- **`robots.txt`** mengizinkan mesin pencari dan crawler AI (ChatGPT, Claude, Perplexity, Gemini, Copilot, dan lainnya), plus **`/llms.txt`** dan **`/llms-full.txt`** untuk asisten AI.
+- **IndexNow**: setiap `main` berubah, GitHub Actions (`.github/workflows/indexnow.yml`) memberi tahu Bing soal halaman yang berubah.
+- Langkah yang perlu dilakukan pemilik (Search Console, Bing Webmaster Tools, Cloudflare, Google Business Profile) dan cara mengecek hasilnya ada di [`PANDUAN-AEO-GEO.md`](./PANDUAN-AEO-GEO.md).
+
 ## Menjalankan Proyek Secara Lokal
 
 ```bash

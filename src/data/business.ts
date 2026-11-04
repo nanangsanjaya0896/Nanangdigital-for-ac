@@ -4,9 +4,19 @@
  */
 export const BUSINESS = {
   brand: "NanangDigital",
+  /** Penulisan lain nama brand (sesuai tulisan di logo), dipakai data terstruktur supaya mesin pencari tahu ini brand yang sama. */
+  alternateName: "Nanang Digital",
   founder: "Nanang Sanjaya",
   role: "Founder & Web Strategist",
   niche: "usaha service AC dan cuci AC rumahan",
+  /** Satu kalimat jati diri brand: dipakai data terstruktur, llms.txt, dan kotak penulis di artikel. */
+  summary:
+    "NanangDigital adalah jasa pembuatan website dan setup iklan Meta Ads (Facebook dan Instagram) khusus usaha service AC dan cuci AC rumahan di Indonesia, dikerjakan langsung oleh Nanang Sanjaya.",
+  /** Profil singkat penulis artikel Panduan (E-E-A-T). */
+  authorBio:
+    "Membuat website, landing page, copywriting, dan setup iklan Meta Ads khusus untuk usaha service AC dan cuci AC rumahan. Setiap website dikerjakan sendiri, mulai dari menyusun isi halaman sampai online dan siap dipakai beriklan.",
+  /** Wilayah layanan: semua koordinasi lewat WhatsApp, jadi bisa melayani usaha di kota mana pun di Indonesia. */
+  areaServed: "Indonesia",
   founderPhoto: {
     url: "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1",
     srcSet:

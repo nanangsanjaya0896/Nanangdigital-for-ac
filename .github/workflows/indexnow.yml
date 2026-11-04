@@ -1,0 +1,35 @@
+# Memberi tahu Bing (dan mesin pencari lain yang memakai IndexNow) setiap kali isi website berubah,
+# supaya halaman baru atau yang diperbarui lebih cepat dibaca. Bing juga dipakai Copilot dan menjadi
+# salah satu sumber mesin jawaban AI. Tidak butuh secret apa pun: kuncinya publik di
+# scripts/indexnow-key.mjs dan file kuncinya ikut ter-deploy di https://nanangdigital.web.id/<kunci>.txt
+name: Kabari Bing lewat IndexNow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "index.html"
+      - "public/**"
+      - "scripts/prerender.mjs"
+      - "scripts/indexnow-key.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: true
+
+jobs:
+  kabari:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Tunggu deploy Cloudflare selesai lalu kirim daftar halaman ke IndexNow
+        run: node scripts/indexnow.mjs
