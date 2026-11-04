@@ -35,28 +35,32 @@ export default function FAQSection() {
               return (
                 <Reveal key={item.id} delay={i * 0.05}>
                   <div>
-                    <button
-                      type="button"
-                      id={`faq-btn-${item.id}`}
-                      aria-expanded={isOpen}
-                      aria-controls={`faq-panel-${item.id}`}
-                      onClick={() => setOpenId(isOpen ? null : item.id)}
-                      className="flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:text-accent md:py-7"
-                    >
-                      <span className="font-display text-base font-semibold tracking-tight sm:text-lg md:text-xl">
-                        {item.question}
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
-                          isOpen
-                            ? "rotate-45 border-accent bg-accent text-[#04140c]"
-                            : "border-line text-mist"
-                        }`}
+                    {/* Pola accordion WAI-ARIA: tombol di dalam heading, jadi pertanyaan terbaca sebagai judul
+                        oleh pembaca layar, mesin pencari, dan agen AI */}
+                    <h3>
+                      <button
+                        type="button"
+                        id={`faq-btn-${item.id}`}
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-panel-${item.id}`}
+                        onClick={() => setOpenId(isOpen ? null : item.id)}
+                        className="flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:text-accent md:py-7"
                       >
-                        <Plus className="h-4 w-4" />
-                      </span>
-                    </button>
+                        <span className="font-display text-base font-semibold tracking-tight sm:text-lg md:text-xl">
+                          {item.question}
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                            isOpen
+                              ? "rotate-45 border-accent bg-accent text-[#04140c]"
+                              : "border-line text-mist"
+                          }`}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </span>
+                      </button>
+                    </h3>
 
                     {/* Buka tutup halus dengan CSS grid (0fr ke 1fr), tanpa library animasi.
                         Jawaban yang tertutup tetap ada di HTML (bagus untuk SEO) tapi tidak bisa difokus. */}

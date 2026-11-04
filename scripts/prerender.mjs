@@ -2,12 +2,14 @@ process.env.NODE_ENV = "production";
 
 import fs from "node:fs";
 import crypto from "node:crypto";
+import { execSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as viteBuild, loadEnv } from "vite";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { resolveSiteUrlWithSource, siteUrlWarning } from "./site-url.mjs";
+import { INDEXNOW_KEY } from "./indexnow-key.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,62 +36,103 @@ function normalizeGscVerificationToken(raw) {
   return unwrapped.replace(/["'<>]/g, "");
 }
 
-function buildArticleSchemaGraph(siteOrigin, article) {
-  const articleUrl = `${siteOrigin}/panduan/${article.slug}/`;
-  return JSON.stringify(
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            {
-              "@type": "ListItem",
-              position: 1,
-              name: "Beranda",
-              item: `${siteOrigin}/`,
-            },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "Panduan Usaha AC",
-              item: `${siteOrigin}/panduan/`,
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: article.title,
-              item: articleUrl,
-            },
-          ],
-        },
-        {
-          "@type": "Article",
-          headline: article.title,
-          description: article.metaDescription,
-          datePublished: article.publishedAt,
-          dateModified: article.publishedAt,
-          inLanguage: "id-ID",
-          mainEntityOfPage: articleUrl,
-          image: `${siteOrigin}/images/og-preview.jpg`,
-          author: {
-            "@type": "Person",
-            name: "Nanang Sanjaya",
-          },
-          publisher: {
-            "@type": "Organization",
-            name: "NanangDigital",
-            url: `${siteOrigin}/`,
-          },
-        },
-      ],
-    },
-    null,
-    2
-  );
+function unescapeHtml(text) {
+  return String(text)
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
 }
 
-function customizePageHead(baseHtml, { title, description, canonicalUrl, stripHeroPreload = true, jsonLd }) {
+/** Ambil judul, deskripsi, dan og:image dari template HTML (untuk data terstruktur beranda). */
+function readPageInfo(html) {
+  const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? "";
+  const description = html.match(/<meta\s+name="description"\s+content="([^"]*)"/)?.[1] ?? "";
+  const image = html.match(/<meta\s+property="og:image"\s+content="([^"]*)"/)?.[1] ?? "";
+  return { title: unescapeHtml(title.trim()), description: unescapeHtml(description.trim()), image };
+}
+
+/**
+ * Tanggal commit terakhir (YYYY-MM-DD) sebagai tanggal pembaruan beranda di sitemap.xml dan data
+ * terstruktur. Kalau Git tidak tersedia saat build, pakai tanggal hari ini.
+ */
+function lastCommitDate() {
+  try {
+    const out = execSync("git log -1 --format=%cs", { cwd: rootDir, stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(out)) return out;
+  } catch {
+    // Git tidak tersedia: lanjut ke cadangan di bawah
+  }
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** Data terstruktur sebagai teks JSON yang aman ditaruh di dalam <script>. */
+function jsonLdText(data) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+/** Pengaman gaya penulisan: tanpa tanda pisah panjang maupun titik tengah berantai. */
+const FORBIDDEN_CHARS = /[\u2014\u2013\u00b7]/;
+
+function assertCleanText(label, text) {
+  const match = String(text).match(FORBIDDEN_CHARS);
+  if (match) {
+    const at = String(text).indexOf(match[0]);
+    throw new Error(
+      `${label} mengandung tanda pisah panjang atau titik tengah di sekitar: "${String(text).slice(Math.max(0, at - 40), at + 40)}". Perbaiki teks di src/data/*.ts.`
+    );
+  }
+}
+
+/**
+ * robots.txt: semua mesin pencari dan mesin jawaban AI boleh membaca website ini.
+ * Crawler AI disebut satu per satu supaya izinnya jelas (dicek juga oleh alat audit AI/GEO).
+ */
+function buildRobotsTxt(siteOrigin) {
+  const aiCrawlers = [
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "GPTBot",
+    "Claude-SearchBot",
+    "Claude-User",
+    "ClaudeBot",
+    "PerplexityBot",
+    "Perplexity-User",
+    "Google-Extended",
+    "Applebot-Extended",
+    "meta-externalagent",
+    "meta-externalfetcher",
+    "Amazonbot",
+    "DuckAssistBot",
+    "MistralAI-User",
+    "CCBot",
+  ];
+  return `# robots.txt NanangDigital
+# Semua mesin pencari (Google, Bing) dan mesin jawaban AI (ChatGPT, Claude, Perplexity, Gemini,
+# Copilot, Meta AI, Apple) boleh membaca seluruh halaman website ini.
+# Content-Signal (https://contentsignals.org): search = boleh tampil di hasil pencarian,
+# ai-input = boleh dipakai sebagai sumber jawaban AI, ai-train = boleh dipakai melatih model AI.
+# Alamat /api/ hanya untuk fungsi server (chat dan tracking), bukan halaman, jadi tidak perlu di-crawl.
+
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+Disallow: /api/
+
+# Crawler AI yang disebut satu per satu supaya jelas diizinkan
+${aiCrawlers.map((name) => `User-agent: ${name}`).join("\n")}
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+Disallow: /api/
+
+# Ringkasan website untuk asisten AI: ${siteOrigin}/llms.txt
+Sitemap: ${siteOrigin}/sitemap.xml
+`;
+}
+
+function customizePageHead(baseHtml, { title, description, canonicalUrl, stripHeroPreload = true, jsonLd, article }) {
   let out = baseHtml;
   out = out.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`);
   out = out.replace(
@@ -128,12 +171,33 @@ function customizePageHead(baseHtml, { title, description, canonicalUrl, stripHe
     out = out.replace(/<link\s+rel="preload"\s+as="image"[\s\S]*?\/>\s*/g, "");
   }
   if (jsonLd) {
+    out = replaceJsonLd(out, jsonLd);
+  }
+  if (article) {
+    // Open Graph khusus artikel + nama penulis (dibaca media sosial, Bing, dan mesin jawaban AI)
     out = out.replace(
-      /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
-      `<script type="application/ld+json">\n${jsonLd}\n    </script>`
+      /<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/,
+      [
+        `<meta property="og:type" content="article" />`,
+        `<meta property="article:published_time" content="${escapeHtml(article.publishedAt)}" />`,
+        `<meta property="article:modified_time" content="${escapeHtml(article.updatedAt)}" />`,
+        `<meta property="article:section" content="${escapeHtml(article.category)}" />`,
+      ].join("\n    ")
+    );
+    out = out.replace(
+      /(<meta\s+name="description"\s+content="[^"]*"\s*\/>)/,
+      `$1\n    <meta name="author" content="${escapeHtml(article.author)}" />`
     );
   }
   return out;
+}
+
+function replaceJsonLd(html, jsonLd) {
+  const re = /<script type="application\/ld\+json">[\s\S]*?<\/script>/;
+  if (!re.test(html)) {
+    throw new Error('Tag <script type="application/ld+json"> tidak ditemukan di index.html');
+  }
+  return html.replace(re, () => `<script type="application/ld+json">\n${jsonLd}\n    </script>`);
 }
 
 async function runPrerender() {
@@ -159,20 +223,21 @@ async function runPrerender() {
     },
   });
 
+  // Modul SEO (data terstruktur JSON-LD, llms.txt) memakai data yang sama dengan tampilan halaman
   await viteBuild({
     root: rootDir,
     logLevel: "warn",
     build: {
-      ssr: "src/data/articles.ts",
-      outDir: path.join(ssrOutDir, "articles"),
+      ssr: "src/seo/index.ts",
+      outDir: path.join(ssrOutDir, "seo"),
       emptyOutDir: true,
     },
   });
 
   const { default: App } = await import(path.join(ssrOutDir, "App.js"));
-  const { SEO_ARTICLES } = await import(
-    path.join(ssrOutDir, "articles", "articles.js")
-  );
+  const seo = await import(path.join(ssrOutDir, "seo", "index.js"));
+  const { SEO_ARTICLES } = seo;
+  const siteUpdatedAt = lastCommitDate();
 
   const indexPath = path.join(distDir, "index.html");
   let baseTemplate = fs.readFileSync(indexPath, "utf8");
@@ -202,7 +267,11 @@ async function runPrerender() {
   baseTemplate = deferAppScripts(baseTemplate);
 
   // 1. Prerender Landing Page Utama (/)
-  const homeHtml = baseTemplate.replace(
+  const homeJsonLd = jsonLdText(
+    seo.buildHomeSchema(SITE_ORIGIN, { ...readPageInfo(baseTemplate), dateModified: siteUpdatedAt })
+  );
+  assertCleanText("Data terstruktur beranda", homeJsonLd);
+  const homeHtml = replaceJsonLd(baseTemplate, homeJsonLd).replace(
     '<div id="root"></div>',
     `<div id="root">${renderToString(React.createElement(App, { initialPath: "/" }))}</div>`
   );
@@ -212,12 +281,17 @@ async function runPrerender() {
   // 2. Prerender Halaman Indeks Panduan (/panduan/)
   const hubDir = path.join(distDir, "panduan");
   fs.mkdirSync(hubDir, { recursive: true });
-  const hubTemplate = customizePageHead(baseTemplate, {
+  const hubPage = {
     title: "Panduan Pemasaran & Digitalisasi Usaha Service AC | NanangDigital",
     description:
       "Kumpulan panduan gratis cara cari pelanggan, optimasi Google Maps, contoh kalimat promosi WhatsApp, dan tips website untuk usaha service AC.",
+  };
+  const hubJsonLd = jsonLdText(seo.buildHubSchema(SITE_ORIGIN, hubPage));
+  assertCleanText("Data terstruktur halaman Panduan", hubJsonLd);
+  const hubTemplate = customizePageHead(baseTemplate, {
+    ...hubPage,
     canonicalUrl: `${SITE_ORIGIN}/panduan/`,
-    jsonLd: null,
+    jsonLd: hubJsonLd,
   });
   const hubHtml = hubTemplate.replace(
     '<div id="root"></div>',
@@ -230,11 +304,19 @@ async function runPrerender() {
     const articleDir = path.join(distDir, "panduan", article.slug);
     fs.mkdirSync(articleDir, { recursive: true });
     const articleUrl = `${SITE_ORIGIN}/panduan/${article.slug}/`;
+    const articleJsonLd = jsonLdText(seo.buildArticleSchema(SITE_ORIGIN, article));
+    assertCleanText(`Data terstruktur artikel ${article.slug}`, articleJsonLd);
     const articleTemplate = customizePageHead(baseTemplate, {
       title: article.metaTitle,
       description: article.metaDescription,
       canonicalUrl: articleUrl,
-      jsonLd: buildArticleSchemaGraph(SITE_ORIGIN, article),
+      jsonLd: articleJsonLd,
+      article: {
+        publishedAt: article.publishedAt,
+        updatedAt: article.updatedAt,
+        category: article.category,
+        author: "Nanang Sanjaya",
+      },
     });
     const articleHtml = articleTemplate.replace(
       '<div id="root"></div>',
@@ -246,14 +328,16 @@ async function runPrerender() {
   }
 
   // 4. Generate sitemap.xml otomatis mencakup seluruh halaman SEO statis
+  // lastmod: beranda memakai tanggal commit terakhir, Panduan memakai tanggal artikel terbaru,
+  // artikel memakai updatedAt di src/data/articles.ts (Bing dan mesin jawaban AI memperhatikan tanggal ini)
   const sitemapEntries = [
-    { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
-    { loc: `${SITE_ORIGIN}/panduan/`, priority: "0.9", changefreq: "weekly" },
+    { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly", lastmod: siteUpdatedAt },
+    { loc: `${SITE_ORIGIN}/panduan/`, priority: "0.9", changefreq: "weekly", lastmod: seo.latestArticleUpdate() },
     ...SEO_ARTICLES.map((article) => ({
       loc: `${SITE_ORIGIN}/panduan/${article.slug}/`,
       priority: "0.85",
       changefreq: "monthly",
-      lastmod: article.publishedAt,
+      lastmod: article.updatedAt,
     })),
   ];
 
@@ -273,12 +357,22 @@ ${sitemapEntries
 
   fs.writeFileSync(path.join(distDir, "sitemap.xml"), sitemapXml, "utf8");
 
-  // 5. robots.txt mengikuti alamat website yang aktif
-  fs.writeFileSync(
-    path.join(distDir, "robots.txt"),
-    `User-agent: *\nAllow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`,
-    "utf8"
-  );
+  // 5. robots.txt mengikuti alamat website yang aktif (mesin pencari + crawler AI diizinkan)
+  fs.writeFileSync(path.join(distDir, "robots.txt"), buildRobotsTxt(SITE_ORIGIN), "utf8");
+
+  // 5b. llms.txt & llms-full.txt: ringkasan website dalam Markdown untuk asisten dan agen AI
+  const llmsTxt = seo.buildLlmsTxt(SITE_ORIGIN);
+  const llmsFullTxt = seo.buildLlmsFullTxt(SITE_ORIGIN, siteUpdatedAt);
+  assertCleanText("llms.txt", llmsTxt);
+  assertCleanText("llms-full.txt", llmsFullTxt);
+  fs.writeFileSync(path.join(distDir, "llms.txt"), llmsTxt, "utf8");
+  fs.writeFileSync(path.join(distDir, "llms-full.txt"), llmsFullTxt, "utf8");
+
+  // 5c. File kunci IndexNow (bukti kepemilikan saat memberi tahu Bing soal halaman yang berubah)
+  if (!/^[a-f0-9]{32}$/.test(INDEXNOW_KEY)) {
+    throw new Error("INDEXNOW_KEY di scripts/indexnow-key.mjs harus 32 karakter huruf a-f dan angka.");
+  }
+  fs.writeFileSync(path.join(distDir, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY, "utf8");
 
   // 6. Halaman 404 statis: Cloudflare Pages & Vercel membalas status 404 asli untuk alamat yang tidak ada
   // (tanpa file ini Cloudflare Pages menganggap website SPA dan menampilkan beranda untuk semua alamat).
@@ -295,7 +389,7 @@ ${sitemapEntries
   }
 
   console.log(
-    `✓ Prerendered ${sitemapEntries.length} static SEO pages (/, /panduan/, + ${SEO_ARTICLES.length} articles) & updated sitemap.xml, robots.txt, 404.html`
+    `✓ Prerendered ${sitemapEntries.length} static SEO pages (/, /panduan/, + ${SEO_ARTICLES.length} articles) & updated sitemap.xml, robots.txt, llms.txt, llms-full.txt, 404.html`
   );
   console.log(`✓ Alamat website (SITE_URL): ${SITE_ORIGIN} [sumber: ${siteUrlSource}]`);
   const siteWarning = siteUrlWarning({ ...env, ...process.env });

@@ -46,91 +46,17 @@
          sudah ada di HTML hasil prerender (langsung ditemukan browser) dan di HP letaknya di bawah layar pertama. -->
     <link rel="preconnect" href="https://res.cloudinary.com" />
 
-    <!-- Data Terstruktur Schema.org (Layanan + Katalog Paket + FAQPage) -->
+    <!-- Data terstruktur Schema.org (JSON-LD). Versi lengkapnya (Organization, Person, WebSite, layanan +
+         paket harga, FAQPage, artikel) dibuat otomatis saat build oleh scripts/prerender.mjs dari
+         src/seo/schema.ts, memakai data yang sama dengan isi halaman supaya selalu sinkron.
+         Blok kecil di bawah ini hanya dipakai saat Live Preview (npm run dev). -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "ProfessionalService",
-            "@id": "%SITE_URL%/#organization",
-            "name": "NanangDigital",
-            "url": "%SITE_URL%/",
-            "image": "https://res.cloudinary.com/col2kwnv/image/upload/f_auto,q_auto,w_560,c_limit/photo1",
-            "priceRange": "Rp1.500.000 - Rp2.000.000+",
-            "founder": {
-              "@type": "Person",
-              "name": "Nanang Sanjaya",
-              "jobTitle": "Founder & Web Strategist"
-            },
-            "areaServed": { "@type": "Country", "name": "Indonesia" },
-            "description": "Jasa pembuatan website resmi, akun Google Maps, dan setup iklan Facebook & Instagram khusus teknisi serta bengkel usaha service AC.",
-            "hasOfferCatalog": {
-              "@type": "OfferCatalog",
-              "name": "Paket Jasa Pembuatan Website Usaha Service AC",
-              "itemListElement": [
-                {
-                  "@type": "Offer",
-                  "name": "Paket Basic",
-                  "priceCurrency": "IDR",
-                  "price": "1500000",
-                  "description": "1 landing page / website portfolio responsif, CTA Form WhatsApp, Copywriting High Convert, Free SSL HTTPS, Live Chat AI, gratis domain & hosting 1 tahun, Google My Business, dan Gratis Meta Ads."
-                },
-                {
-                  "@type": "Offer",
-                  "name": "Paket Growth",
-                  "priceCurrency": "IDR",
-                  "price": "2000000",
-                  "description": "Website portfolio profesional, Setup Meta Ads 1 campaign, 2-3 copy iklan kreatif, Basic pixel & tracking, artikel SEO, Google Search Console, Google Analytics, domain & hosting 1 tahun."
-                },
-                {
-                  "@type": "Offer",
-                  "name": "Paket Premium Custom",
-                  "priceCurrency": "IDR",
-                  "description": "Website portfolio lengkap, Setup Meta Ads 2 campaign angle, optimasi awal kampanye, CTA Form WhatsApp + form lead, 10x revisi, artikel SEO sesuai permintaan, Google Search Console & Google Analytics."
-                }
-              ]
-            }
-          },
-          {
-            "@type": "FAQPage",
-            "@id": "%SITE_URL%/#faqpage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "Apa saja yang sudah didapat kalau pesan paket website di NanangDigital?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Semua paket sudah termasuk pembuatan website responsif, copywriting high convert, CTA Form WhatsApp, Free SSL (HTTPS), Live Chat AI, domain & hosting gratis 1 tahun, Akun Google My Business (Google Maps), serta Gratis Meta Ads. Paket Growth dan Premium Custom juga sudah termasuk artikel SEO, Google Search Console, Google Analytics, Pixel tracking, dan materi iklan kreatif."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Berapa hari pengerjaan sampai websitenya jadi?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Rata-rata 3 sampai 5 hari kerja terhitung sejak data dasar usaha Anda diterima. Untuk Paket Premium Custom yang cakupannya lebih lengkap biasanya sekitar 5 sampai 7 hari kerja."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Apakah sudah termasuk biaya domain dan hosting?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Sudah. Tahun pertama domain dan hosting sudah masuk ke harga paket lengkap dengan Free SSL Certificate (HTTPS), jadi Anda tinggal terima beres."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Bagaimana sistem pembayarannya?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Pembayaran dibagi dua tahap: awal pengerjaan cukup DP 50%, lalu sisa 50% baru dilunasi setelah website selesai dikerjakan dan dicek sendiri hasilnya."
-                }
-              }
-            ]
-          }
-        ]
+        "@type": "Organization",
+        "@id": "%SITE_URL%/#organization",
+        "name": "NanangDigital",
+        "url": "%SITE_URL%/"
       }
     </script>
 

@@ -1,10 +1,32 @@
 import { useEffect } from "react";
-import { ArrowLeft, ArrowRight, BookOpen, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, CalendarCheck, Clock, PenLine } from "lucide-react";
 import BrandLogo from "./BrandLogo";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { BUSINESS, WA_LINK_GENERAL, waUrl } from "../data/business";
 import { SEO_ARTICLES, findArticleBySlug } from "../data/articles";
 import type { SeoArticle } from "../data/articles";
+
+const NAMA_BULAN = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+/** "2026-11-04" menjadi "4 November 2026" (tanpa Intl supaya hasil server dan browser selalu sama). */
+function formatTanggal(iso: string): string {
+  const [tahun, bulan, hari] = iso.split("-").map(Number);
+  if (!tahun || !bulan || !hari) return iso;
+  return `${hari} ${NAMA_BULAN[bulan - 1]} ${tahun}`;
+}
 
 interface PanduanPageProps {
   article?: SeoArticle;
@@ -96,9 +118,42 @@ export default function PanduanPage({ article: initialArticle, slug }: PanduanPa
               {article.title}
             </h1>
 
-            <p className="mt-6 rounded-2xl border border-line bg-surface p-5 text-base leading-relaxed text-mist md:p-6 md:text-lg">
-              {article.summary}
-            </p>
+            {/* Penulis & tanggal: sinyal kepercayaan (E-E-A-T) untuk pembaca, Google, dan mesin jawaban AI */}
+            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-mist">
+              <span className="inline-flex items-center gap-2">
+                <PenLine className="h-4 w-4 text-accent" aria-hidden="true" />
+                <span>
+                  Ditulis oleh{" "}
+                  <a href="/#tentang" rel="author" className="font-semibold text-white transition-colors hover:text-accent">
+                    {BUSINESS.founder}
+                  </a>
+                </span>
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CalendarCheck className="h-4 w-4 text-accent" aria-hidden="true" />
+                <span>
+                  Diperbarui <time dateTime={article.updatedAt}>{formatTanggal(article.updatedAt)}</time>
+                </span>
+              </span>
+            </div>
+
+            {/* Jawaban langsung untuk pertanyaan di judul (mudah dikutip Google & mesin jawaban AI) */}
+            <section
+              aria-labelledby="jawaban-singkat"
+              className="mt-8 rounded-2xl border border-accent/40 bg-accent/[0.07] p-5 md:p-6"
+            >
+              <h2
+                id="jawaban-singkat"
+                className="text-xs font-semibold uppercase tracking-[0.2em] text-accent"
+              >
+                Jawaban singkat
+              </h2>
+              <p className="mt-2.5 text-base leading-relaxed text-white md:text-lg">
+                {article.quickAnswer}
+              </p>
+            </section>
+
+            <p className="mt-8 text-base leading-relaxed text-mist md:text-lg">{article.summary}</p>
 
             <div className="mt-10 space-y-10">
               {article.sections.map((section) => (
@@ -130,9 +185,130 @@ export default function PanduanPage({ article: initialArticle, slug }: PanduanPa
                       ))}
                     </ul>
                   )}
+                  {section.table && (
+                    <p className="text-xs text-mist sm:hidden">Geser tabel ke samping untuk melihat semua paket.</p>
+                  )}
+                  {section.table && (
+                    <div
+                      role="region"
+                      aria-label={section.table.caption}
+                      tabIndex={0}
+                      className="overflow-x-auto rounded-2xl border border-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                    >
+                      <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
+                        <caption className="sr-only">{section.table.caption}</caption>
+                        <thead className="bg-surface">
+                          <tr>
+                            {section.table.columns.map((column, index) => (
+                              <th
+                                key={column}
+                                scope="col"
+                                className={`px-4 py-3 font-display font-semibold text-white ${
+                                  index === 0 ? "sticky left-0 z-10 bg-surface" : ""
+                                }`}
+                              >
+                                {column}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.table.rows.map((row) => (
+                            <tr key={row[0]} className="border-t border-line">
+                              {row.map((cell, index) =>
+                                index === 0 ? (
+                                  <th
+                                    key={index}
+                                    scope="row"
+                                    className="sticky left-0 z-10 bg-ink px-4 py-3 font-medium text-white"
+                                  >
+                                    {cell}
+                                  </th>
+                                ) : (
+                                  <td key={index} className="px-4 py-3 text-mist">
+                                    {cell}
+                                  </td>
+                                )
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </section>
               ))}
             </div>
+
+            {/* Tanya jawab artikel (ikut menjadi data terstruktur FAQPage) */}
+            {article.faqs.length > 0 && (
+              <section aria-labelledby="tanya-jawab-artikel" className="mt-14">
+                <h2
+                  id="tanya-jawab-artikel"
+                  className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl"
+                >
+                  Pertanyaan yang Sering Ditanyakan
+                </h2>
+                <div className="mt-6 divide-y divide-line rounded-2xl border border-line bg-surface/70">
+                  {article.faqs.map((faq) => (
+                    <div key={faq.question} className="p-5 md:p-6">
+                      <h3 className="font-display text-base font-semibold leading-snug text-white md:text-lg">
+                        {faq.question}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-mist md:text-base">{faq.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Sumber resmi yang dipakai sebagai dasar isi artikel */}
+            {article.sources && article.sources.length > 0 && (
+              <section aria-labelledby="sumber-artikel" className="mt-10">
+                <h2
+                  id="sumber-artikel"
+                  className="text-xs font-semibold uppercase tracking-[0.2em] text-mist"
+                >
+                  Sumber dan referensi
+                </h2>
+                <ul className="mt-3 space-y-2 text-sm">
+                  {article.sources.map((source) => (
+                    <li key={source.url}>
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block py-1 text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-white"
+                      >
+                        {source.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {/* Kotak penulis */}
+            <section
+              aria-label="Tentang penulis"
+              className="mt-12 flex items-start gap-4 rounded-2xl border border-line bg-surface p-5 md:gap-5 md:p-6"
+            >
+              <img
+                src={BUSINESS.founderPhoto.avatarUrl}
+                alt={BUSINESS.founderPhoto.alt}
+                width={64}
+                height={64}
+                loading="lazy"
+                decoding="async"
+                className="h-16 w-16 shrink-0 rounded-2xl border border-white/10 object-cover"
+              />
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Ditulis oleh</p>
+                <p className="mt-1 font-display text-lg font-bold text-white">{BUSINESS.founder}</p>
+                <p className="text-sm text-mist">{`${BUSINESS.role}, ${BUSINESS.brand}`}</p>
+                <p className="mt-2 text-sm leading-relaxed text-mist">{BUSINESS.authorBio}</p>
+              </div>
+            </section>
 
             {/* Kotak konversi ke Form Pra-WA & Paket Harga */}
             <aside className="mt-14 rounded-3xl border border-accent/45 bg-gradient-to-br from-accent/[0.11] via-surface to-surface p-7 md:p-9">
