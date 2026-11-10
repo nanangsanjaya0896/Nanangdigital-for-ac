@@ -5,6 +5,7 @@ import { PROCESS_STEPS } from "../data/process";
 import { BONUSES } from "../data/bonuses";
 import { SERVICES } from "../data/services";
 import { PROJECTS } from "../data/projects";
+import { BUSINESS } from "../data/business";
 
 /**
  * Mesin jawaban bawaan Live AI Chat.
@@ -38,6 +39,7 @@ type IntentId =
   | "growth"
   | "premium"
   | "artikel"
+  | "sosmed"
   | "ads"
   | "google"
   | "process"
@@ -110,6 +112,20 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
   { id: "premium", keywords: [["premium", 3], ["custom", 2.5], ["kustom", 2.5], ["paling lengkap", 2.5], ["most complete", 2.5]] },
   // Bobot 3,5 supaya "Paket Growth dapat artikel?" dijawab soal artikel, bukan daftar isi paket
   { id: "artikel", keywords: [["~artikel", 3.5], ["blog", 3], ["article", 3.5], ["articles", 3.5], ["konten seo", 3.5]] },
+  // Akun Instagram resmi NanangDigital. Hanya frasa yang jelas menanyakan akun, supaya pertanyaan
+  // iklan di Instagram ("iklan IG", "ads Instagram") tetap dijawab soal Meta Ads.
+  {
+    id: "sosmed",
+    keywords: [
+      ["sosmed", 4], ["medsos", 4], ["media sosial", 4], ["sosial media", 4], ["social media", 4],
+      ["akun instagram", 4.5], ["akun ig", 4.5], ["instagram resmi", 4.5], ["ig resmi", 4.5],
+      ["instagramnya", 4.5], ["instagram nya", 4.5], ["ignya", 4.5], ["ig nya", 4.5],
+      ["instagram nanangdigital", 4.5], ["ig nanangdigital", 4.5], ["instagram nanang", 4.5], ["ig nanang", 4.5],
+      ["profil instagram", 4.5], ["profil ig", 4.5], ["link instagram", 4.5], ["link ig", 4.5],
+      ["punya instagram", 4.5], ["punya ig", 4.5], ["follow ig", 4.5], ["follow instagram", 4.5],
+      ["difollow", 3.5], ["followers", 3.5], ["username", 3.5],
+    ],
+  },
   {
     id: "ads",
     keywords: [
@@ -457,6 +473,13 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
         text: "Cukup siapkan data dasar usaha: nama usaha, daftar layanan dan tarif, area kerja, foto hasil kerja kalau ada, dan nomor WhatsApp. Teks halamannya nanti ditulis oleh Mas Nanang, Anda tinggal cek hasilnya.",
         suggestWhatsApp: true,
         quickReplies: ["Berapa lama jadinya?", "Cara pembayaran"],
+      };
+
+    case "sosmed":
+      return {
+        text: `Instagram resmi NanangDigital: ${BUSINESS.instagram.handle} (${BUSINESS.instagram.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}). Tombolnya juga ada di bagian paling bawah halaman utama website ini.\n\nKalau mau tanya paket atau konsultasi, paling cepat langsung ke Mas Nanang lewat tombol WhatsApp di bawah.`,
+        suggestWhatsApp: true,
+        quickReplies: ["Lihat harga paket", "Cara pesan"],
       };
 
     case "ads": {

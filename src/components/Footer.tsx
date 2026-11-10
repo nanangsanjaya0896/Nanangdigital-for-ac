@@ -1,6 +1,7 @@
 import { ArrowUp } from "lucide-react";
 import Logo from "./Logo";
 import WhatsAppIcon from "./WhatsAppIcon";
+import InstagramIcon from "./InstagramIcon";
 import { useImageFallback } from "../hooks/useImageFallback";
 import { BUSINESS, WA_LINK_GENERAL } from "../data/business";
 import { SEO_ARTICLES } from "../data/articles";
@@ -75,6 +76,17 @@ export default function Footer() {
               >
                 <WhatsAppIcon className="h-4 w-4" />
                 Chat di WhatsApp
+              </a>
+              {/* Akun Instagram resmi. rel="me" menandai profil ini milik pemilik website yang sama. */}
+              <a
+                href={BUSINESS.instagram.url}
+                target="_blank"
+                rel="me noopener noreferrer"
+                className="btn-ghost text-sm"
+              >
+                <InstagramIcon className="h-4 w-4" />
+                <span className="sr-only">Instagram </span>
+                {BUSINESS.instagram.handle}
               </a>
             </div>
           </div>

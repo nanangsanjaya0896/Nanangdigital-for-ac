@@ -1,0 +1,78 @@
+# Salinan lama website di GitHub Pages (https://nanangsanjaya0896.github.io/Nanangdigital-for-ac/)
+# dulu hanya berisi halaman kosong dari versi awal repo. Workflow ini menggantinya dengan halaman
+# pengalih ke domain utama, supaya alamat itu tidak lagi tercatat sebagai website kedua oleh Google
+# dan mesin AI. Alamat tujuan diambil dari PRIMARY_SITE_URL di scripts/site-url.mjs.
+#
+# Berjalan sekali setiap file ini berubah di main, atau manual lewat tab Actions > Run workflow.
+# Kalau GitHub Pages ingin dimatikan total: Settings > Pages > Unpublish site.
+name: Arahkan GitHub Pages ke domain utama
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/github-pages-arahkan.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  arahkan:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Buat halaman pengalih
+        run: |
+          SITE=$(sed -n 's/^export const PRIMARY_SITE_URL = "\(https:\/\/[^"]*\)";$/\1/p' scripts/site-url.mjs)
+          if [ -z "$SITE" ]; then
+            echo "::error::PRIMARY_SITE_URL tidak ditemukan di scripts/site-url.mjs"
+            exit 1
+          fi
+          HOST=${SITE#https://}
+          mkdir -p situs
+          cat > situs/index.html <<'HTML'
+          <!doctype html>
+          <html lang="id">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>NanangDigital sekarang di __HOST__</title>
+          <link rel="canonical" href="__SITE__/">
+          <meta http-equiv="refresh" content="0; url=__SITE__/">
+          <script>
+            (function () {
+              var path = location.pathname.replace(/^\/Nanangdigital-for-ac(?=\/|$)/i, "") || "/";
+              location.replace("__SITE__" + path + location.search + location.hash);
+            })();
+          </script>
+          </head>
+          <body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#0d1116;color:#e6edf3;font-family:system-ui,sans-serif">
+          <p>Website resmi NanangDigital ada di <a href="__SITE__/" style="color:#00df8f">__HOST__</a></p>
+          </body>
+          </html>
+          HTML
+          sed -i "s#__SITE__#${SITE}#g; s#__HOST__#${HOST}#g" situs/index.html
+          # Alamat lama lain (misalnya /Nanangdigital-for-ac/panduan/) diarahkan ke halaman yang sama di domain utama
+          cp situs/index.html situs/404.html
+          echo "Halaman pengalih ke $SITE siap."
+          grep -o '<link rel="canonical"[^>]*>' situs/index.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: situs
+
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Ringkasan
+        run: echo "::notice::GitHub Pages sekarang mengarah ke domain utama (${{ steps.deployment.outputs.page_url }})"

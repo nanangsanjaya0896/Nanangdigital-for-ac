@@ -11,8 +11,27 @@
     }
   },
   "redirects": [
-    { "source": "/en", "destination": "/", "permanent": true },
-    { "source": "/en/:path*", "destination": "/", "permanent": true }
+    {
+      "source": "/:path*",
+      "missing": [
+        {
+          "type": "host",
+          "value": "nanangdigital.web.id"
+        }
+      ],
+      "destination": "https://nanangdigital.web.id/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/en",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/en/:path*",
+      "destination": "/",
+      "permanent": true
+    }
   ],
   "headers": [
     {

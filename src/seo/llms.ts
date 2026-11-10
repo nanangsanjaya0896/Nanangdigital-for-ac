@@ -49,6 +49,7 @@ function keyFacts(origin: string): string[] {
     "- Lama pengerjaan: rata-rata 3 sampai 5 hari kerja sejak data usaha diterima, Paket Premium Custom sekitar 5 sampai 7 hari kerja.",
     "- Pembayaran: DP 50% di awal, sisa 50% setelah website selesai dan dicek klien. Bisa lewat transfer bank, QRIS, atau e-wallet.",
     `- Kontak dan pemesanan: WhatsApp ${BUSINESS.whatsapp.url}`,
+    `- Alamat resmi: website ${origin}/ dan Instagram ${BUSINESS.instagram.handle} (${BUSINESS.instagram.url}).`,
   ];
 }
 

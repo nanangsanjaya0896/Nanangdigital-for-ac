@@ -33,6 +33,14 @@ export const BUSINESS = {
     displayIntl: "+62 859-7257-7637",
     url: "https://wa.me/6285972577637",
   },
+  /**
+   * Akun Instagram resmi. Dipakai tautan di footer, data terstruktur (`sameAs` di Organization),
+   * llms.txt, dan Asisten AI, supaya Google dan mesin AI tahu akun ini milik brand yang sama.
+   */
+  instagram: {
+    handle: "@nanangdigital",
+    url: "https://www.instagram.com/nanangdigital/",
+  },
 } as const;
 
 export function waUrl(message: string): string {
