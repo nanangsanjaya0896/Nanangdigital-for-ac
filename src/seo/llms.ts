@@ -8,7 +8,7 @@
  */
 import { BUSINESS } from "../data/business";
 import { FAQ_ITEMS } from "../data/faq";
-import { PLANS } from "../data/plans";
+import { AD_BUDGET_NOTE_TEXT, PLANS } from "../data/plans";
 import type { Plan } from "../data/plans";
 import { SERVICES } from "../data/services";
 import { PROCESS_STEPS } from "../data/process";
@@ -46,6 +46,7 @@ function keyFacts(origin: string): string[] {
     `- Wilayah layanan: seluruh ${BUSINESS.areaServed}. Semua koordinasi lewat WhatsApp, jadi tidak perlu bertemu langsung.`,
     `- Paket dan harga: ${priceList}.`,
     `- Isi semua paket: domain dan hosting tahun pertama, SSL HTTPS, Live Chat AI, dan pembuatan akun Google Maps (Google Business Profile). Rincian lengkap di ${origin}/#paket`,
+    `- ${AD_BUDGET_NOTE_TEXT}`,
     "- Lama pengerjaan: rata-rata 3 sampai 5 hari kerja sejak data usaha diterima, Paket Premium Custom sekitar 5 sampai 7 hari kerja.",
     "- Pembayaran: DP 50% di awal, sisa 50% setelah website selesai dan dicek klien. Bisa lewat transfer bank, QRIS, atau e-wallet.",
     `- Kontak dan pemesanan: WhatsApp ${BUSINESS.whatsapp.url}`,

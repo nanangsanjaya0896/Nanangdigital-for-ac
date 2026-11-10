@@ -1,4 +1,4 @@
-import { PLANS, PRICING_NOTES } from "../data/plans";
+import { AD_BUDGET_NOTE, AD_BUDGET_NOTE_TEXT, PLANS, PRICING_NOTES } from "../data/plans";
 import type { Plan } from "../data/plans";
 import { FAQ_ITEMS } from "../data/faq";
 import { PROCESS_STEPS } from "../data/process";
@@ -40,6 +40,8 @@ type IntentId =
   | "premium"
   | "artikel"
   | "sosmed"
+  | "budget"
+  | "extras"
   | "ads"
   | "google"
   | "process"
@@ -126,11 +128,37 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
       ["difollow", 3.5], ["followers", 3.5], ["username", 3.5],
     ],
   },
+  // Budget iklan (saldo yang dibayar ke Meta) terpisah dari harga paket. Bobotnya tinggi supaya
+  // "harganya sudah termasuk iklan?" dijawab soal budget iklan, bukan sekadar daftar harga.
+  {
+    id: "budget",
+    keywords: [
+      ["~budget iklan", 8], ["budget ads", 8], ["ads budget", 8], ["ad budget", 8], ["budget meta", 8],
+      ["~budget harian", 6], ["budget per hari", 6], ["saldo", 4], ["~saldo iklan", 8], ["saldo meta", 8],
+      ["~isi saldo", 8], ["~biaya iklan", 8], ["biaya ads", 8], ["~dana iklan", 8], ["~anggaran iklan", 8],
+      ["~uang iklan", 8], ["~modal iklan", 8], ["~ongkos iklan", 8], ["ad spend", 8], ["ads spend", 8],
+      ["~bayar iklan", 8], ["bayar ke meta", 8], ["top up", 6], ["topup", 6], ["~termasuk iklan", 8],
+      ["~termasuk budget", 8], ["~termasuk saldo", 8], ["~iklan gratis", 6], ["~gratis iklan", 6],
+      ["gratis meta ads", 7], ["meta ads gratis", 7], ["~budget promosi", 8], ["~budget marketing", 8],
+      ["~harga iklan", 8], ["~harga ads", 8],
+    ],
+  },
+  // Biaya di luar harga paket: dijawab dengan FAQ biaya (budget iklan terpisah + perpanjangan domain)
+  {
+    id: "extras",
+    keywords: [
+      ["~biaya tambahan", 8], ["~tambahan biaya", 8], ["~biaya lain", 8], ["~biaya tersembunyi", 8],
+      ["~biaya ekstra", 8], ["~biaya extra", 8], ["~biaya apa lagi", 8], ["~bayar apa lagi", 8],
+      ["~nambah biaya", 8], ["~biaya bulanan", 7], ["~bayar bulanan", 7], ["~selain harga", 7],
+      ["~di luar harga", 7], ["~diluar harga", 7], ["hidden cost", 8], ["hidden fee", 8],
+      ["hidden fees", 8], ["extra cost", 8], ["extra costs", 8], ["additional cost", 8], ["additional costs", 8],
+    ],
+  },
   {
     id: "ads",
     keywords: [
       ["~iklan", 3], ["ads", 3], ["advertising", 3], ["meta", 2.5], ["facebook", 2.5], ["fb", 2],
-      ["instagram", 2.5], ["ig", 2], ["campaign", 2.5], ["kampanye", 2.5], ["budget", 2], ["saldo", 2.5],
+      ["instagram", 2.5], ["ig", 2], ["campaign", 2.5], ["kampanye", 2.5], ["saldo", 2.5],
       ["ad spend", 3], ["ad budget", 3.5], ["pixel", 2], ["promosi", 2], ["marketing", 2],
     ],
   },
@@ -201,6 +229,8 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
       ["harga", 3], ["harganya", 3], ["biaya", 3], ["biayanya", 3], ["tarif", 3], ["price", 3],
       ["prices", 3], ["pricing", 3], ["cost", 3], ["costs", 3], ["how much", 3], ["berapa", 1],
       ["murah", 2], ["mahal", 2], ["paket", 1], ["package", 1], ["packages", 1.5], ["fee", 2.5], ["quote", 2],
+      // "budget" saja biasanya soal dana bikin website; budget iklan ditangani intent "budget"
+      ["budget", 2],
     ],
   },
   {
@@ -352,7 +382,7 @@ function planDetail(plan: Plan): LocalReply {
     ...shown.map((feature) => `- ${feature}`),
     ...(rest > 0 ? [`- dan ${rest} fasilitas lainnya`] : []),
     "",
-    plan.priceNote,
+    `${plan.priceNote} ${AD_BUDGET_NOTE.title}`,
   ];
   return {
     text: lines.join("\n"),
@@ -361,6 +391,35 @@ function planDetail(plan: Plan): LocalReply {
       ...others.map((p) => `Isi ${p.name}`),
       "Cara pesan",
     ],
+  };
+}
+
+/** Fasilitas iklan di daftar isi paket (dipakai saat menjawab soal iklan dan budget iklan). */
+const AD_FEATURE_PATTERN = /(setup meta ads|copy iklan|kampanye)/i;
+
+function asksAdBudget(text: string): boolean {
+  return /\b(saldo|budget|spend|biaya iklan|dana iklan|anggaran|top ?up|gratis)/.test(normalize(text));
+}
+
+/** Jawaban soal budget iklan: catatan budget iklan dulu, lalu fasilitas iklan paket yang ditanyakan. */
+function budgetReply(scores: Map<IntentId, number>): LocalReply {
+  const mentioned = PLAN_INTENTS.find((id) => (scores.get(id) ?? 0) >= 2.5) as Plan["id"] | undefined;
+  const plan = mentioned ? findPlan(mentioned) : null;
+  const adFeatures = plan
+    ? plan.features.filter((feature) => AD_FEATURE_PATTERN.test(feature) || /meta ads/i.test(feature))
+    : [];
+  const consult = BONUSES.find((bonus) => /iklan/i.test(bonus.title));
+  return {
+    text: [
+      AD_BUDGET_NOTE_TEXT,
+      ...(plan && adFeatures.length ? ["", `Yang sudah termasuk di ${plan.name}: ${adFeatures.join(", ")}.`] : []),
+      "",
+      consult
+        ? `Saran budget harian yang masuk akal untuk usaha AC Anda bisa dibahas bareng Mas Nanang lewat bonus ${consult.title}.`
+        : "Saran budget harian yang masuk akal untuk usaha AC Anda bisa dibahas bareng Mas Nanang di WhatsApp.",
+    ].join("\n"),
+    suggestWhatsApp: true,
+    quickReplies: ["Lihat harga paket", "Cara pesan"],
   };
 }
 
@@ -386,6 +445,7 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
           ),
           "",
           PRICING_NOTES[0],
+          AD_BUDGET_NOTE.title,
           "",
           "Mau saya jelaskan bedanya?",
         ].join("\n"),
@@ -482,19 +542,26 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
         quickReplies: ["Lihat harga paket", "Cara pesan"],
       };
 
+    case "budget":
+      return budgetReply(scores);
+
+    case "extras":
+      return {
+        text: faqAnswer("biaya"),
+        suggestWhatsApp: true,
+        quickReplies: ["Lihat harga paket", "Cara pembayaran"],
+      };
+
     case "ads": {
+      // Kalau yang ditanyakan saldo/budget iklan, catatan budget iklan langsung jadi jawabannya
+      if (asksAdBudget(text)) return budgetReply(scores);
       const service = SERVICES[1];
-      const adPattern = /(setup meta ads|copy iklan|kampanye)/i;
       const adLines = plans
-        .map((plan) => ({ plan, items: plan.features.filter((feature) => adPattern.test(feature)) }))
+        .map((plan) => ({ plan, items: plan.features.filter((feature) => AD_FEATURE_PATTERN.test(feature)) }))
         .filter((entry) => entry.items.length > 0)
         .map((entry) => `- ${entry.plan.name}: ${entry.items.join(", ")}`);
-      const budgetNote = "Soal saldo iklan yang dibayar ke Meta, nanti dijelaskan langsung oleh Mas Nanang di WhatsApp.";
-      // Kalau yang ditanyakan saldo/budget iklan, jawaban langsungnya ditaruh paling atas
-      const asksBudget = /\b(saldo|budget|spend|biaya iklan)/.test(normalize(text));
-      const details = [service.description, ...(adLines.length ? ["", ...adLines] : [])];
       return {
-        text: (asksBudget ? [budgetNote, "", ...details] : [...details, "", budgetNote]).join("\n"),
+        text: [service.description, ...(adLines.length ? ["", ...adLines] : []), "", AD_BUDGET_NOTE_TEXT].join("\n"),
         suggestWhatsApp: true,
         quickReplies: ["Isi Paket Growth", "Lihat harga paket"],
       };
