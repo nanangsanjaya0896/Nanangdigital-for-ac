@@ -13,7 +13,7 @@
  */
 import { BUSINESS } from "../data/business";
 import { FAQ_ITEMS } from "../data/faq";
-import { PLANS } from "../data/plans";
+import { AD_BUDGET_NOTE, PLANS } from "../data/plans";
 import type { Plan } from "../data/plans";
 import { SERVICES } from "../data/services";
 import { SEO_ARTICLES, articlePlainText, countWords, latestArticleUpdate } from "../data/articles";
@@ -129,7 +129,7 @@ function offerNode(origin: string, plan: Plan): JsonObject {
     url: `${origin}/#paket`,
     priceCurrency: "IDR",
     ...(price ? { price } : {}),
-    description: `${plan.tagline} ${plan.priceNote}${priceText} Isi paket: ${features.join(", ")}.`,
+    description: `${plan.tagline} ${plan.priceNote}${priceText} Isi paket: ${features.join(", ")}. ${AD_BUDGET_NOTE.title}`,
     itemOffered: {
       "@type": "Service",
       name: `Pembuatan website usaha service AC, ${plan.name}`,

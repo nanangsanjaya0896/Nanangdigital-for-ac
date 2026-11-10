@@ -4,7 +4,7 @@ Website resmi dan mesin akuisisi lead untuk **NanangDigital** (oleh **Nanang San
 
 ## Halaman
 
-- **Beranda (`/`):** Paket Basic `Rp1.500.000`, Paket Growth `Rp2.000.000`, dan Paket Premium Custom (`Sesuai Permintaan`).
+- **Beranda (`/`):** Paket Basic `Rp1.500.000`, Paket Growth `Rp2.000.000`, dan Paket Premium Custom (`Sesuai Permintaan`). Budget iklan (saldo yang dibayar ke Meta) terpisah dari harga paket. Catatannya tampil di bawah kartu paket, diambil dari `AD_BUDGET_NOTE` di `src/data/plans.ts` yang juga dipakai Asisten AI, `llms.txt`, dan data terstruktur. Kalimat serupa ada di FAQ (`src/data/faq.ts`) dan tabel perbandingan artikel biaya (`src/data/articles.ts`).
 - **Panduan (`/panduan/`):** pusat artikel SEO organik statis beserta 4 panduan usaha service AC.
 - **Contoh Website (bagian Karya di beranda):** menampilkan website demo [ARKTIS Home Service](https://arktishomeservices.vercel.app/) yang sudah online, lengkap dengan screenshot halaman utama, form booking, dan tampilan HP, plus tombol untuk membuka website aslinya. Website demo diberi label jujur sebagai demo, bukan proyek klien. Untuk menambah website berikutnya, cukup tambahkan datanya di `src/data/projects.ts` dan simpan screenshot WebP di `public/images/`. Asisten AI otomatis ikut mengenali website baru itu setelah `npm run build`.
 - **Bahasa:** seluruh website memakai Bahasa Indonesia. Versi bahasa Inggris (`/en/`) sudah dihapus, dan alamat lama `/en` otomatis diarahkan (301) ke beranda lewat `public/_redirects` (Cloudflare) dan `vercel.json` (Vercel), termasuk parameter iklan seperti `fbclid` dan UTM. Kode versi dua bahasa terakhir tersimpan di riwayat Git (commit `4f4b0b9`) kalau suatu saat ingin dipakai lagi.

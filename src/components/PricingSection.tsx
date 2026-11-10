@@ -1,8 +1,8 @@
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
 import SectionHeader from "./SectionHeader";
 import Reveal from "./Reveal";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { PLANS, PRICING_NOTES } from "../data/plans";
+import { AD_BUDGET_NOTE, PLANS, PRICING_NOTES } from "../data/plans";
 import { waUrl } from "../data/business";
 
 export default function PricingSection() {
@@ -110,6 +110,14 @@ export default function PricingSection() {
                 {note}
               </li>
             ))}
+            {/* Catatan budget iklan: satu baris penuh supaya tidak terlewat */}
+            <li className="mt-2 flex gap-3 border-t border-line pt-5 text-xs leading-relaxed text-mist sm:col-span-3 sm:text-sm">
+              <Info aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+              <span>
+                <strong className="font-semibold text-white">{AD_BUDGET_NOTE.title}</strong>{" "}
+                {AD_BUDGET_NOTE.detail}
+              </span>
+            </li>
           </ul>
         </Reveal>
       </div>

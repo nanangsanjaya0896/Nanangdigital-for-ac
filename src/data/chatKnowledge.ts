@@ -1,6 +1,6 @@
 import { BUSINESS } from "./business";
 import { SERVICES } from "./services";
-import { PLANS, PRICING_NOTES } from "./plans";
+import { AD_BUDGET_NOTE_TEXT, PLANS, PRICING_NOTES } from "./plans";
 import type { Plan } from "./plans";
 import { FAQ_ITEMS } from "./faq";
 import { PROCESS_STEPS } from "./process";
@@ -47,6 +47,7 @@ export function buildChatKnowledge(): string {
   for (const note of PRICING_NOTES) {
     lines.push(`- ${note}`);
   }
+  lines.push(`- ${AD_BUDGET_NOTE_TEXT}`);
 
   lines.push("", "ALUR KERJA:");
   PROCESS_STEPS.forEach((step, index) => {
@@ -73,7 +74,8 @@ export function buildChatKnowledge(): string {
   lines.push("", "CATATAN PENTING:");
   lines.push(
     "- \"No Artikel\" di Paket Basic artinya paket tidak termasuk penulisan artikel blog. Paket Growth sudah termasuk artikel SEO (tulisan di website klien supaya lebih mudah ditemukan lewat Google), jumlah dan topiknya dibahas langsung dengan Mas Nanang di WhatsApp. Di Paket Premium Custom, artikel SEO disesuaikan dengan permintaan.",
-    "- \"Gratis Meta Ads\" artinya bantuan setup iklan Facebook dan Instagram. Website tidak menyebutkan apakah saldo iklan yang dibayar ke Meta sudah termasuk, jadi hal itu dijelaskan langsung oleh Mas Nanang di WhatsApp.",
+    "- Budget iklan (saldo yang dibayar ke Meta supaya iklan Facebook dan Instagram tayang) terpisah dari harga paket dan tidak termasuk di paket mana pun. \"Gratis Meta Ads\" artinya bantuan setup iklan Facebook dan Instagram, bukan saldo iklan gratis.",
+    "- Website tidak menyebutkan angka budget iklan minimal. Besarnya disesuaikan dengan kemampuan usaha klien, dan saran budget harian yang masuk akal dibahas bersama Mas Nanang lewat bonus Konsultasi Strategi Iklan Gratis di WhatsApp.",
     "- Bonus konsultasi strategi iklan berupa saran dan perencanaan iklan, bukan saldo iklan gratis.",
     "- Contoh website di bagian Karya adalah website demo buatan Mas Nanang yang sudah online, bukan proyek klien. Nama usaha, foto, testimoni, dan angka di dalam website demo hanya contoh. Untuk klien, nama usaha, warna, foto, dan tarif disesuaikan dengan usaha klien.",
     "- Website juga punya halaman Panduan berisi artikel gratis seputar promosi usaha service AC dan cara daftar di Google Maps.",

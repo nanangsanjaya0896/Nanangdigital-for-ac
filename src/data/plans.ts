@@ -112,3 +112,16 @@ export const PRICING_NOTES: string[] = [
   "Termasuk pembuatan Akun Google My Business (Google Maps) & Gratis Meta Ads.",
   "Bisa bayar lewat transfer bank, QRIS, atau e-wallet (DP 50%, lunas setelah jadi).",
 ];
+
+/**
+ * Catatan budget iklan. Tampil menonjol di bawah kartu paket, dan dipakai juga oleh Asisten AI,
+ * llms.txt, serta data terstruktur supaya semua bagian website menjelaskan hal yang sama.
+ */
+export const AD_BUDGET_NOTE = {
+  title: "Budget iklan terpisah dari harga paket.",
+  detail:
+    "Fasilitas Gratis Meta Ads belum termasuk saldo iklan yang dibayar ke Meta. Besarnya bisa disesuaikan dengan kemampuan usaha Anda.",
+};
+
+/** Catatan budget iklan dalam satu paragraf utuh. */
+export const AD_BUDGET_NOTE_TEXT = `${AD_BUDGET_NOTE.title} ${AD_BUDGET_NOTE.detail}`;

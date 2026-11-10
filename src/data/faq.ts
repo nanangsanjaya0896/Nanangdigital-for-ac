@@ -22,7 +22,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "paket",
     question: "Apa saja yang sudah didapat kalau pesan paket website di sini?",
     answer:
-      "Semua paket sudah termasuk pembuatan website responsif, copywriting high convert, CTA Form WhatsApp, Free SSL (HTTPS), Live Chat AI, domain & hosting gratis 1 tahun, Akun Google My Business (Google Maps), serta Gratis Meta Ads. Khusus Paket Growth dan Paket Premium Custom juga sudah termasuk artikel SEO, setup Google Search Console, Google Analytics, Pixel tracking, dan materi iklan kreatif.",
+      "Semua paket sudah termasuk pembuatan website responsif, copywriting high convert, CTA Form WhatsApp, Free SSL (HTTPS), Live Chat AI, domain & hosting gratis 1 tahun, Akun Google My Business (Google Maps), serta Gratis Meta Ads. Khusus Paket Growth dan Paket Premium Custom juga sudah termasuk artikel SEO, setup Google Search Console, Google Analytics, Pixel tracking, dan materi iklan kreatif. Budget iklan yang dibayar ke Meta terpisah dari harga paket.",
   },
   {
     id: "waktu",
@@ -57,7 +57,7 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "biaya",
     question: "Berapa biaya bikin website untuk usaha service AC di NanangDigital?",
-    answer: `Paket Basic ${planPrice("basic")}, Paket Growth ${planPrice("growth")}, dan Paket Premium Custom harganya disesuaikan dengan kebutuhan usaha. Ketiganya sudah termasuk domain dan hosting tahun pertama, SSL HTTPS, Live Chat AI, dan pembuatan akun Google Maps. Biaya perpanjangan domain dan hosting untuk tahun berikutnya diinfokan di awal lewat WhatsApp.`,
+    answer: `Paket Basic ${planPrice("basic")}, Paket Growth ${planPrice("growth")}, dan Paket Premium Custom harganya disesuaikan dengan kebutuhan usaha. Ketiganya sudah termasuk domain dan hosting tahun pertama, SSL HTTPS, Live Chat AI, dan pembuatan akun Google Maps. Budget iklan, yaitu saldo yang dibayar ke Meta supaya iklan Facebook dan Instagram tayang, terpisah dari harga paket. Biaya perpanjangan domain dan hosting untuk tahun berikutnya diinfokan di awal lewat WhatsApp.`,
   },
   {
     id: "perlu-website",
