@@ -26,7 +26,7 @@ Kalau sambungan GitHub di Cloudflare bermasalah (misalnya **Missing git connecti
 | Token rahasia | `META_CAPI_ACCESS_TOKEN` (wajib), `GEMINI_API_KEY` (opsional) | sama |
 
 - **Alamat website** diatur di satu tempat: `PRIMARY_SITE_URL` di `scripts/site-url.mjs` (`https://nanangdigital.web.id`). Canonical, JSON-LD, `sitemap.xml`, dan `robots.txt` selalu memakai domain ini, termasuk saat dibuka lewat alamat sementara `.workers.dev` atau `.pages.dev`. Cara menyambungkan domain dari DomaiNesia ke Cloudflare ada di panduan deploy.
-- **Fungsi server:** `worker/index.js` (Workers) dan `functions/api/` (Pages Functions) memanggil logika yang sama di `server/`. Logika itu juga dipakai adapter Vercel di `api/` dan Live Preview lokal, jadi website tetap bisa dideploy ke Vercel (`vercel.json`) kapan saja.
+- **Fungsi server:** `worker/index.js` (Workers) dan `functions/api/` (Pages Functions) memanggil logika yang sama di `server/`. Logika itu juga dipakai adapter Vercel di `api/` dan Live Preview lokal, jadi website tetap bisa dideploy ke Vercel (`vercel.json`) kapan saja. Di Vercel, semua alamat selain `nanangdigital.web.id` (misalnya `*.vercel.app`) otomatis dialihkan permanen ke domain utama, supaya tidak muncul salinan kedua website. Untuk sekadar mengetes di alamat Vercel, hapus sementara aturan pertama di bagian `redirects`.
 - **`wrangler.jsonc`** membuat hanya `/api/*` yang menjalankan Worker, sehingga semua halaman tetap gratis tanpa batas (di Pages perannya dipegang **`public/_routes.json`**). **`public/_headers`** mengatur cache file JS, CSS, dan gambar. **`public/_redirects`** mengarahkan alamat lama `/en` ke beranda.
 - **Halaman 404 statis** (`dist/404.html`) memastikan alamat yang tidak ada membalas status 404 asli, bukan menampilkan beranda.
 
@@ -46,11 +46,13 @@ Kalau sambungan GitHub di Cloudflare bermasalah (misalnya **Missing git connecti
 
 ## AEO & GEO (Mesin Jawaban & AI Generatif)
 
-- **Data terstruktur JSON-LD** (Organization, Person, WebSite, Service + paket harga, FAQPage, BlogPosting, BreadcrumbList) dibuat otomatis saat build dari `src/seo/schema.ts`, memakai data yang sama dengan isi halaman.
+- **Data terstruktur JSON-LD** (Organization + `sameAs`, Person, WebSite, Service + paket harga, FAQPage, BlogPosting, BreadcrumbList) dibuat otomatis saat build dari `src/seo/schema.ts`, memakai data yang sama dengan isi halaman.
 - **Artikel Panduan** punya kotak *Jawaban singkat*, tanya jawab, penulis, tanggal diperbarui, dan sumber resmi. Beranda punya 11 FAQ.
 - **`robots.txt`** mengizinkan mesin pencari dan crawler AI (ChatGPT, Claude, Perplexity, Gemini, Copilot, dan lainnya), plus **`/llms.txt`** dan **`/llms-full.txt`** untuk asisten AI.
 - **IndexNow**: setiap `main` berubah, GitHub Actions (`.github/workflows/indexnow.yml`) memberi tahu Bing soal halaman yang berubah.
-- Langkah yang perlu dilakukan pemilik (Search Console, Bing Webmaster Tools, Cloudflare, Google Business Profile) dan cara mengecek hasilnya ada di [`PANDUAN-AEO-GEO.md`](./PANDUAN-AEO-GEO.md).
+- **Instagram resmi** [@nanangdigital](https://www.instagram.com/nanangdigital/) (`BUSINESS.instagram` di `src/data/business.ts`) dipakai di `sameAs` Organization (semua halaman), tombol di footer beranda, `llms.txt`, dan Asisten AI.
+- **Satu alamat resmi:** salinan lama di GitHub Pages diganti halaman pengalih ke domain utama (`.github/workflows/github-pages-arahkan.yml`). Cara mengalihkan alamat lama di luar repo ini (`nanangdigital.my.id`, `nanangdigital.vercel.app`) ada di bagian 7 panduan AEO & GEO.
+- Langkah yang perlu dilakukan pemilik (Search Console, Bing Webmaster Tools, Cloudflare, Google Business Profile, alamat lama) dan cara mengecek hasilnya ada di [`PANDUAN-AEO-GEO.md`](./PANDUAN-AEO-GEO.md).
 
 ## Menjalankan Proyek Secara Lokal
 

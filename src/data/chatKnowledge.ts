@@ -77,6 +77,7 @@ export function buildChatKnowledge(): string {
     "- Bonus konsultasi strategi iklan berupa saran dan perencanaan iklan, bukan saldo iklan gratis.",
     "- Contoh website di bagian Karya adalah website demo buatan Mas Nanang yang sudah online, bukan proyek klien. Nama usaha, foto, testimoni, dan angka di dalam website demo hanya contoh. Untuk klien, nama usaha, warna, foto, dan tarif disesuaikan dengan usaha klien.",
     "- Website juga punya halaman Panduan berisi artikel gratis seputar promosi usaha service AC dan cara daftar di Google Maps.",
+    `- Instagram resmi NanangDigital: ${BUSINESS.instagram.handle} (${BUSINESS.instagram.url}). Tanya paket dan pemesanan tetap paling cepat lewat WhatsApp.`,
     "- Pemesanan, harga Paket Premium Custom, jadwal, dan biaya perpanjangan domain dikonfirmasi lewat tombol WhatsApp di bawah chat."
   );
 

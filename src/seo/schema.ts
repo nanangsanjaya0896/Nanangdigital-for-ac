@@ -78,6 +78,9 @@ function organizationNode(origin: string): JsonObject {
     founder: { "@id": id.person },
     areaServed: { "@type": "Country", name: BUSINESS.areaServed },
     knowsAbout: KNOWS_ABOUT,
+    // Profil resmi brand di luar website. Membantu Google dan mesin AI menyatukan semua jejak
+    // NanangDigital menjadi satu entitas dengan alamat utama di `url`.
+    sameAs: [BUSINESS.instagram.url],
   };
 }
 
