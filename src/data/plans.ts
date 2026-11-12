@@ -35,7 +35,7 @@ export const PLANS: Plan[] = [
       "Live Chat AI",
       "Gratis domain & hosting 1 tahun",
       "Akun Google My Business (Google Maps)",
-      "Gratis Meta Ads",
+      "Gratis biaya setup Meta Ads",
     ],
     cta: "Ambil Paket Basic",
     waMessage:
@@ -64,7 +64,7 @@ export const PLANS: Plan[] = [
       "Live Chat AI",
       "Gratis domain & hosting 1 tahun",
       "Akun Google My Business (Google Maps)",
-      "Gratis Meta Ads",
+      "Gratis biaya setup Meta Ads",
       "Gratis Setup Google Search Console",
       "Gratis Setup Google Analytics",
     ],
@@ -97,7 +97,7 @@ export const PLANS: Plan[] = [
       "Live Chat AI",
       "Gratis domain & hosting 1 tahun",
       "Akun Google My Business (Google Maps)",
-      "Gratis Meta Ads",
+      "Gratis biaya setup Meta Ads",
       "Gratis Setup Google Search Console",
       "Gratis Setup Google Analytics",
     ],
@@ -109,7 +109,7 @@ export const PLANS: Plan[] = [
 
 export const PRICING_NOTES: string[] = [
   "Gratis domain & hosting 1 tahun, Free SSL HTTPS, dan Live Chat AI di semua paket.",
-  "Termasuk pembuatan Akun Google My Business (Google Maps) & Gratis Meta Ads.",
+  "Termasuk pembuatan Akun Google My Business (Google Maps) & Gratis biaya setup Meta Ads.",
   "Bisa bayar lewat transfer bank, QRIS, atau e-wallet (DP 50%, lunas setelah jadi).",
 ];
 
@@ -120,7 +120,7 @@ export const PRICING_NOTES: string[] = [
 export const AD_BUDGET_NOTE = {
   title: "Budget iklan terpisah dari harga paket.",
   detail:
-    "Fasilitas Gratis Meta Ads belum termasuk saldo iklan yang dibayar ke Meta. Besarnya bisa disesuaikan dengan kemampuan usaha Anda.",
+    "Fasilitas Gratis biaya setup Meta Ads belum termasuk saldo iklan yang dibayar ke Meta. Besarnya bisa disesuaikan dengan kemampuan usaha Anda.",
 };
 
 /** Catatan budget iklan dalam satu paragraf utuh. */

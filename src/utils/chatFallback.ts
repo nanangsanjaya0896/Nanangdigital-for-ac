@@ -139,7 +139,7 @@ const INTENT_RULES: { id: IntentId; keywords: Keyword[] }[] = [
       ["~uang iklan", 8], ["~modal iklan", 8], ["~ongkos iklan", 8], ["ad spend", 8], ["ads spend", 8],
       ["~bayar iklan", 8], ["bayar ke meta", 8], ["top up", 6], ["topup", 6], ["~termasuk iklan", 8],
       ["~termasuk budget", 8], ["~termasuk saldo", 8], ["~iklan gratis", 6], ["~gratis iklan", 6],
-      ["gratis meta ads", 7], ["meta ads gratis", 7], ["~budget promosi", 8], ["~budget marketing", 8],
+      ["gratis meta ads", 7], ["meta ads gratis", 7], ["gratis biaya setup", 7], ["~biaya setup", 7], ["~budget promosi", 8], ["~budget marketing", 8],
       ["~harga iklan", 8], ["~harga ads", 8],
     ],
   },
