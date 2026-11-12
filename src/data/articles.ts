@@ -402,7 +402,7 @@ const ARTICLES: ArticleData[] = [
       "Rincian transparan biaya pembuatan website khusus usaha service AC panggilan mulai Rp1.500.000 lengkap dengan domain, hosting, SSL, Live Chat AI, dan Google Maps.",
     category: "Panduan Website",
     publishedAt: "2026-10-23",
-    updatedAt: "2026-11-10",
+    updatedAt: "2026-11-12",
     summary:
       "Masih menimbang apakah usaha service AC panggilan perlu punya website sendiri atau cukup nomor WA saja? Simak hitungan balik modalnya yang sangat masuk akal.",
     quickAnswer: `Biaya pembuatan website usaha service AC di NanangDigital mulai ${priceOf("basic")} untuk Paket Basic dan ${priceOf("growth")} untuk Paket Growth, sedangkan Paket Premium Custom harganya sesuai permintaan. Semua paket sudah termasuk domain dan hosting tahun pertama, SSL HTTPS, Live Chat AI, dan pembuatan akun Google Maps. Dengan harga ${priceOf("basic")}, biayanya setara sekitar Rp4.100 per hari selama setahun.`,

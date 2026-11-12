@@ -74,7 +74,7 @@ export function buildChatKnowledge(): string {
   lines.push("", "CATATAN PENTING:");
   lines.push(
     "- \"No Artikel\" di Paket Basic artinya paket tidak termasuk penulisan artikel blog. Paket Growth sudah termasuk artikel SEO (tulisan di website klien supaya lebih mudah ditemukan lewat Google), jumlah dan topiknya dibahas langsung dengan Mas Nanang di WhatsApp. Di Paket Premium Custom, artikel SEO disesuaikan dengan permintaan.",
-    "- Budget iklan (saldo yang dibayar ke Meta supaya iklan Facebook dan Instagram tayang) terpisah dari harga paket dan tidak termasuk di paket mana pun. \"Gratis Meta Ads\" artinya bantuan setup iklan Facebook dan Instagram, bukan saldo iklan gratis.",
+    "- Budget iklan (saldo yang dibayar ke Meta supaya iklan Facebook dan Instagram tayang) terpisah dari harga paket dan tidak termasuk di paket mana pun. \"Gratis biaya setup Meta Ads\" artinya jasa setup iklan Facebook dan Instagram tidak dikenakan biaya, sedangkan saldo iklannya tidak gratis.",
     "- Website tidak menyebutkan angka budget iklan minimal. Besarnya disesuaikan dengan kemampuan usaha klien, dan saran budget harian yang masuk akal dibahas bersama Mas Nanang lewat bonus Konsultasi Strategi Iklan Gratis di WhatsApp.",
     "- Bonus konsultasi strategi iklan berupa saran dan perencanaan iklan, bukan saldo iklan gratis.",
     "- Contoh website di bagian Karya adalah website demo buatan Mas Nanang yang sudah online, bukan proyek klien. Nama usaha, foto, testimoni, dan angka di dalam website demo hanya contoh. Untuk klien, nama usaha, warna, foto, dan tarif disesuaikan dengan usaha klien.",
