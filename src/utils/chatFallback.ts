@@ -4,7 +4,7 @@ import { FAQ_ITEMS } from "../data/faq";
 import { PROCESS_STEPS } from "../data/process";
 import { BONUSES } from "../data/bonuses";
 import { SERVICES } from "../data/services";
-import { PROJECTS } from "../data/projects";
+import { PROJECTS, PROJECT_TYPE_LABEL } from "../data/projects";
 import { BUSINESS } from "../data/business";
 
 /**
@@ -591,10 +591,31 @@ function buildReply(intent: IntentId | null, text: string, scores: Map<IntentId,
     }
 
     case "portfolio": {
-      const example = PROJECTS[0];
+      const shortUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+      // Kalau yang ditanyakan satu contoh website tertentu (misalnya "sejukin"), jawab soal website itu saja
+      const asked = normalize(text);
+      const mentioned = PROJECTS.find((project) => asked.includes(` ${project.title.split(" ")[0].toLowerCase()} `));
+      if (mentioned) {
+        return {
+          text: [
+            `${mentioned.title} adalah ${PROJECT_TYPE_LABEL[mentioned.type].toLowerCase()} buatan Mas Nanang yang sudah online di ${shortUrl(mentioned.liveUrl)}.`,
+            "",
+            mentioned.description,
+            ...(mentioned.note ? ["", mentioned.note] : []),
+          ].join("\n"),
+          suggestWhatsApp: false,
+          quickReplies: ["Lihat harga paket", "Berapa lama jadinya?"],
+        };
+      }
+      const allDemo = PROJECTS.length > 0 && PROJECTS.every((project) => project.type === "demo");
       return {
-        text: example
-          ? `Contohnya bisa dilihat di bagian Karya di halaman ini: website ${example.title} yang sudah online di ${example.liveUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}. Itu website demo lengkap buatan Mas Nanang, ada paket harga, form booking, dan tombol WhatsApp yang bisa langsung dicoba. Untuk usaha Anda, nama usaha, warna, foto, dan daftar tarifnya disesuaikan penuh.`
+        text: PROJECTS.length
+          ? [
+              `Contohnya bisa dilihat di bagian Karya di halaman ini. ${allDemo ? "Semuanya website demo buatan Mas Nanang" : "Semuanya website buatan Mas Nanang"} yang sudah online dan bisa langsung dicoba:`,
+              ...PROJECTS.map((project) => `- ${project.title} (${project.category}): ${shortUrl(project.liveUrl)}`),
+              "",
+              "Untuk usaha Anda, nama usaha, warna, foto, dan daftar tarifnya disesuaikan penuh.",
+            ].join("\n")
           : "Contoh website bisa dilihat di bagian Karya di halaman ini. Nama usaha, warna, foto, dan daftar tarifnya nanti disesuaikan penuh dengan usaha Anda.",
         suggestWhatsApp: false,
         quickReplies: ["Lihat harga paket", "Berapa lama jadinya?"],
