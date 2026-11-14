@@ -1,0 +1,80 @@
+# SEMENTARA: ambil kandidat screenshot website Sejukin untuk bagian Karya (dihapus lagi sebelum merge)
+name: Ambil screenshot karya (sementara)
+on:
+  push:
+    branches: [arena/babb84e5-nanangdigital-for-ac]
+    paths: ['.github/workflows/ambil-screenshot-sementara.yml']
+permissions:
+  contents: write
+jobs:
+  foto:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Siapkan Chrome dan sharp
+        run: |
+          set +e
+          mkdir -p /tmp/shot && cd /tmp/shot && npm init -y >/dev/null
+          CHROME=$(command -v google-chrome || command -v google-chrome-stable)
+          if [ -n "$CHROME" ]; then export PUPPETEER_SKIP_DOWNLOAD=1; echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"; fi
+          npm i --no-audit --no-fund puppeteer@24 sharp@0.34 2>&1 | tail -2
+          echo "::notice title=Chrome::${CHROME:-unduhan puppeteer}"
+      - name: Ambil screenshot
+        run: |
+          cat > /tmp/shot/ambil.mjs <<'JS'
+          import puppeteer from "puppeteer";
+          import sharp from "sharp";
+          import fs from "node:fs";
+          const BASE = "https://sejukin-ac.vercel.app";
+          const OUT = process.env.GITHUB_WORKSPACE + "/tmp-screens";
+          fs.mkdirSync(OUT, { recursive: true });
+          const browser = await puppeteer.launch({
+            executablePath: process.env.CHROME_PATH || undefined,
+            args: ["--no-sandbox", "--disable-dev-shm-usage", "--hide-scrollbars"],
+          });
+          const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+          async function shot(name, path, { mobile = false, find = null } = {}) {
+            const page = await browser.newPage();
+            if (mobile) await page.setViewport({ width: 390, height: 664, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+            else await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
+            try { await page.goto(BASE + path, { waitUntil: "networkidle2", timeout: 60000 }); } catch (e) { console.log("goto", name, e.message); }
+            await sleep(2500);
+            // gulir sampai bawah supaya semua animasi muncul dan gambar lazy termuat
+            await page.evaluate(async () => {
+              for (let y = 0; y < document.documentElement.scrollHeight; y += 300) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 90)); }
+            });
+            await sleep(1200);
+            const top = await page.evaluate((text) => {
+              if (!text) return 0;
+              const el = [...document.querySelectorAll("h1,h2,h3,p,span")].find((n) => n.textContent.trim().startsWith(text));
+              return el ? Math.max(0, el.getBoundingClientRect().top + window.scrollY - 110) : -1;
+            }, find);
+            await page.evaluate((y) => window.scrollTo(0, Math.max(0, y)), top);
+            await sleep(1800);
+            const png = await page.screenshot({ type: "png" });
+            await sharp(png).webp({ quality: 92 }).toFile(`${OUT}/${name}.webp`);
+            const kb = Math.round(fs.statSync(`${OUT}/${name}.webp`).size / 1024);
+            console.log(`::notice title=${name}::${path} scrollTop=${top} ${kb}KB`);
+            await page.close();
+          }
+          await shot("beranda", "/");
+          await shot("layanan-atas", "/services");
+          await shot("layanan-daftar", "/services", { find: "Semua layanan" });
+          await shot("layanan-paket", "/services", { find: "Paket harga" });
+          await shot("kontak-atas", "/contact");
+          await shot("kontak-form", "/contact", { find: "Kirim permintaan layanan" });
+          await shot("proyek-atas", "/projects");
+          await shot("tentang-atas", "/about");
+          await shot("hp-beranda", "/", { mobile: true });
+          await shot("hp-layanan", "/services", { mobile: true, find: "Semua layanan" });
+          await browser.close();
+          JS
+          cp /tmp/shot/ambil.mjs /tmp/shot/run.mjs && cd /tmp/shot && node run.mjs
+      - name: Simpan ke branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add tmp-screens
+          git commit -q -m "Sementara: kandidat screenshot Sejukin"
+          git push -q origin HEAD:${GITHUB_REF_NAME}
+          echo "::notice title=Tersimpan::$(git rev-parse --short HEAD)"
