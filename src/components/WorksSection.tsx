@@ -18,7 +18,7 @@ export default function WorksSection() {
               Lihat Langsung <span className="text-accent">Website Servis AC</span> Buatan Saya.
             </>
           }
-          description="Bukan sekadar gambar mockup. Ini website lengkap yang sudah online dan bisa Anda buka sendiri, mulai dari daftar paket, form booking, sampai tombol WhatsApp."
+          description="Bukan sekadar gambar mockup. Semua contoh di bawah ini website lengkap yang sudah online dan bisa Anda buka sendiri, dari landing page satu halaman sampai company profile beberapa halaman."
         />
 
         <div className="mt-14 space-y-24 md:mt-16 md:space-y-32">
